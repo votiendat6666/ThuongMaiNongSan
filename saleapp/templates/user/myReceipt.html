@@ -1,0 +1,142 @@
+{% extends 'user/layout.html' %}
+
+{% block title %} Đơn hàng của tôi {% endblock %}
+
+
+{% block content_right %}
+<!-- Thanh menu -->
+<div class="myReceipt-menu">
+    <a href="#" class="myReceipt-menu-item {% if status == 'all' %}myReceipt-active{% endif %}" data-status="all">Tất
+        cả</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'waiting' %}myReceipt-active{% endif %}"
+       data-status="waiting">Chờ thanh toán</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'shipping' %}myReceipt-active{% endif %}"
+       data-status="shipping">Vận chuyển</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'delivery' %}myReceipt-active{% endif %}"
+       data-status="delivery">Chờ giao hàng</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'done' %}myReceipt-active{% endif %}" data-status="done">Hoàn
+        thành</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'cancelled' %}myReceipt-active{% endif %}"
+       data-status="cancelled">Đã hủy</a>
+    <a href="#" class="myReceipt-menu-item {% if status == 'returned' %}myReceipt-active{% endif %}"
+       data-status="returned">Trả hàng/Hoàn tiền</a>
+</div>
+
+
+<!-- Receipt items -->
+<div id="receipt-list">
+  {% include 'user/receipt_list.html' %}
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const menuItems = document.querySelectorAll('.myReceipt-menu-item');
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        const status = this.getAttribute('data-status');
+
+        fetch(`/api/receipts?status=${status}`)
+          .then(res => res.text())
+          .then(html => {
+            document.getElementById('receipt-list').innerHTML = html;
+
+            // Đổi URL nếu muốn
+            window.history.pushState({ status: status }, '', `/MyReceipt?status=${status}`);
+
+            // Đổi class active
+            menuItems.forEach(i => i.classList.remove('myReceipt-active'));
+            this.classList.add('myReceipt-active');
+          })
+          .catch(err => console.error(err));
+      });
+    });
+  });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuItems = document.querySelectorAll('.myReceipt-menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const status = this.getAttribute('data-status');
+
+                // Đổi URL trên thanh địa chỉ
+                const newUrl = `/MyReceipt?status=${status}`;
+                window.history.pushState({status: status}, '', newUrl);
+
+                // Gửi fetch để lưu session
+                fetch('/api/set_receipt_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: status })
+                }).then(res => res.json())
+                  .then(data => {
+                      console.log('Status saved:', data);
+                  });
+
+                // Đổi class active ngay
+                menuItems.forEach(i => i.classList.remove('myReceipt-active'));
+                this.classList.add('myReceipt-active');
+
+            });
+        });
+    });
+</script>
+
+<style>
+    .myReceipt-menu {
+        display: flex;
+        justify-content: space-around;
+        background-color: #f9f9f9;
+        padding-top:10px;
+
+        border-bottom: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    .myReceipt-menu-item {
+        color: #333;
+        text-decoration: none;
+        padding: 15px 0px;
+        transition: color 0.3s;
+    }
+    .myReceipt-menu-item.myReceipt-active {
+        color: #ff0000;
+        border-bottom: 2px solid #ff0000;
+    }
+    .myReceipt-menu-item:hover {
+        color: #ff0000;
+    }
+    .mua-hang-lai {background-color: #ee4d2d; border:1px solid #ba2b0f; color:white; padding:8px 40px; font-size:14px; border-radius:4px; cursor:pointer;}
+
+  .mua-hang-lai:hover {
+    background-color: #d73211;
+    border-color: #ee4d2d;
+  }
+    .hien-he-shop{
+     background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:4px; cursor:pointer;}
+
+    .hien-he-shop:hover {
+        background-color: rgba(0,0,0,.05);
+        border-color: rgba(0,0,0,.15);
+    }
+    .danh-gia-san-pham {  background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:4px; cursor:pointer;}
+
+    .danh-gia-san-pham:hover {
+         background-color: rgba(0,0,0,.05);
+         border-color: rgba(0,0,0,.15);
+        }
+
+
+</style>
+
+{% endblock %}
+
+

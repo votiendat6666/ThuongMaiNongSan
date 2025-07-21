@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "name": "Mã Giảm 10k - Toàn Sản Phẩm",
+    "code": "TDF001",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 10.000đ cho đơn hàng từ 129.000đ.",
+    "hsd": "31/12/2025",
+    "price_voucher": 10000,
+    "min_order_value": 129000
+  },
+  {
+    "id": 2,
+    "name": "Mã Giảm 20k - Toàn Sản Phẩm",
+    "code": "TDF002",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 20.000đ cho đơn hàng từ 249.000đ.",
+    "hsd": "31/12/2025",
+    "price_voucher": 20000,
+    "min_order_value": 249000
+  },
+  {
+    "id": 3,
+    "name": "Mã Giảm 40k - Toàn Sản Phẩm",
+    "code": "TDF003",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 30.000đ cho đơn hàng từ 499.000đ.",
+    "hsd": "31/12/2025",
+    "price_voucher": 40000,
+    "min_order_value": 499000
+  },
+  {
+    "id": 4,
+    "name": "Mã Giảm 80k - Toàn Sản Phẩm",
+    "code": "TDF004",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 80.000đ cho đơn hàng từ 999.000đ.",
+    "hsd": "31/12/2025",
+    "price_voucher": 80000,
+    "min_order_value": 999000
+  },
+  {
+    "id": 5,
+    "name": "Mã Giảm 15k - Toàn Sản Phẩm",
+    "code": "TDF005",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm tối đa 50K cho đơn hàng từ 150k.",
+    "hsd": "31/12/2025",
+    "price_voucher": 15000,
+    "min_order_value": 150000
+  },
+  {
+    "id": 6,
+    "name": "Mã Giảm 25K - Toàn Sản Phẩm",
+    "code": "TDF006",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 25.000đ cho đơn hàng từ 300K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 25000,
+    "min_order_value": 300000
+  },
+  {
+    "id": 7,
+    "name": "Mã Giảm 35k - Toàn Sản Phẩm",
+    "code": "TDF007",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm tối đa 30K cho đơn hàng từ 400k.",
+    "hsd": "31/12/2025",
+    "price_voucher": 35000,
+    "min_order_value": 400000
+  },
+  {
+    "id": 8,
+    "name": "Mã Giảm 45K",
+    "code": "TDF008",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 45.000đ cho đơn hàng từ 520K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 45000,
+    "min_order_value": 520000
+  },
+  {
+    "id": 9,
+    "name": "Mã Giảm 55K",
+    "code": "TDF009",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 55.000đ cho đơn hàng từ 650K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 55000,
+    "min_order_value": 650000
+  },
+  {
+    "id": 10,
+    "name": "Mã Giảm 65K",
+    "code": "TDF010",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 65.000đ cho đơn hàng từ 700K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 65000,
+    "min_order_value": 700000
+  },
+  {
+    "id": 11,
+    "name": "Mã Giảm 75K",
+    "code": "TDF011",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 75.000đ cho đơn hàng từ 870K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 75000,
+    "min_order_value": 870000
+  },
+  {
+    "id": 12,
+    "name": "Mã Giảm 9K - Toàn Sản Phẩm",
+    "code": "TDF012",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 9.000đ cho đơn hàng từ 99K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 9000,
+    "min_order_value": 99000
+  },
+  {
+    "id": 13,
+    "name": "Mã Giảm 19K - Toàn Sản Phẩm",
+    "code": "TDF013",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 19.000đ cho đơn hàng từ 149K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 19000,
+    "min_order_value": 149000
+  },
+  {
+    "id": 14,
+    "name": "Mã Giảm 29K - Toàn Sản Phẩm",
+    "code": "TDF014",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 29.000đ cho đơn hàng từ 299K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 29000,
+    "min_order_value": 299000
+  },
+  {
+    "id": 15,
+    "name": "Mã Giảm 39K - Toàn Sản Phẩm",
+    "code": "TDF015",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 39.000đ cho đơn hàng từ 399K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 39000,
+    "min_order_value":  399000
+  },
+  {
+    "id": 16,
+    "name": "Mã Giảm 2.999k - Toàn Sản Phẩm",
+    "code": "TDF016",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 2.999.000đ cho đơn hàng từ 49K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 2999,
+    "min_order_value": 49000
+  },
+  {
+    "id": 17,
+    "name": "Mã Giảm 1.999k - Toàn Sản Phẩm",
+    "code": "TDF017",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm tối đa 30K cho đơn hàng từ 29K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 1999,
+    "min_order_value": 29000
+  },
+  {
+    "id": 18,
+    "name": "Mã Giảm 12K - Toàn Sản Phẩm",
+    "code": "TDF018",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 12.000đ cho đơn hàng từ 129K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 12000,
+    "min_order_value": 129000
+  },
+  {
+    "id": 19,
+    "name": "Mã Giảm 16K",
+    "code": "TDF019",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 16.000đ cho đơn hàng từ 169K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 16000,
+    "min_order_value": 169000
+  },
+  {
+    "id": 20,
+    "name": "Mã Giảm 11K - Toàn Sản Phẩm",
+    "code": "TDF020",
+    "description": "TD Food kính tặng Quý khách hàng mã giảm 11.000đ cho đơn hàng từ 109K.",
+    "hsd": "31/12/2025",
+    "price_voucher": 11000,
+    "min_order_value": 109000
+  }
+]

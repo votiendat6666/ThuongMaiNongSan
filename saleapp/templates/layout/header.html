@@ -1,0 +1,364 @@
+<div class="imgTieuDe">
+    <img src="{{ url_for('static', filename='images/thanhtieude.png') }}" alt="Hạng Bạc"
+         style="display: block; width: 100%;">
+</div>
+
+
+<nav class="navbar navbar-expand-sm navbar-dark"
+     style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%);
+     position: sticky; top: 0; z-index: 1000; ">
+    <div class="container d-flex align-items-center justify-content-between flex-nowrap" style="gap: 10px;">
+
+
+        <!-- Logo -->
+        <a class="navbar-brand flex-shrink-1" href="/" style="min-width: 120px;" translate="no">
+            <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}"
+                 class="img-fluid d-none d-sm-block"
+                 style="height: 45px; margin-top: -5px;" alt="DoubleTD Logo">
+        </a>
+
+        <!-- Danh mục + Tìm kiếm -->
+        <div class="d-flex align-items-center flex-grow-1 mx-2 flex-nowrap" style="gap: 10px; overflow: hidden;" translate="no">
+
+            <!-- Dropdown danh mục -->
+            <div class="nav-item custom-dropdown me-2 flex-shrink-0" id="categoryDropdown">
+                <a class="nav-link text-white d-flex align-items-center" href="#"
+                   style="  height: 40px;  display: flex;align-items: center;">
+
+                    <span class="material-symbols-outlined"
+                          style=" display:block; font-size: 45px; line-height:1; color: white;
+                                font-variation-settings:'FILL' 0, 'wght' 100,'GRAD' 0, 'opsz' 24;">dashboard
+                    </span>
+
+                </a>
+                <ul class="dropdown-menu"
+                    style="width:300px; max-height: 300px; overflow-y: auto; border-radius: 10px; margin: 0px -40px;">
+                    {% for cat in categories %}
+                    <li style="border-bottom:1px solid #eee;">
+                        <a class="dropdown-item" href="?category_id={{ cat.id }}">{{ cat.name }}</a>
+                    </li>
+
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+            <style>
+                .custom-dropdown .dropdown-menu {
+                  display: none;
+                  opacity: 0;
+                  transition: opacity 0.2s ease-in-out;
+                }
+
+                .custom-dropdown:hover .dropdown-menu {
+                  display: block;
+                  opacity: 1;
+                }
+            </style>
+
+
+            <!-- Thanh tìm kiếm -->
+            <div class="flex-grow-1" translate="no">
+<form class="d-flex" action="/category/0" method="get" style="width: 100%;">
+    <div style="position: relative; width: 100%;">
+        <input class="form-control" name="q" type="text" placeholder="Nhập từ khóa..."
+               style="height: 40px; border-radius: 0.5rem; padding-right: 45px; box-shadow: none;">
+        <button type="submit"
+                style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: none;">
+            <img src="https://cdn-icons-png.flaticon.com/128/17949/17949015.png"
+                 style="width: 22px; height: 22px;">
+        </button>
+    </div>
+</form>
+            </div>
+
+        </div>
+
+        <!-- Cart + User -->
+        <div class="d-flex align-items-center flex-shrink-0" style="gap: 15px; margin" >
+            <!-- Cart -->
+            <a class="nav-link text-white d-flex align-items-center" href="/cart" style="position: relative;" translate="no">
+                <span class="material-symbols-outlined"
+                      style="font-size: 26px;
+                              font-variation-settings:
+                              'FILL' 0,
+                              'wght' 200,
+                              'GRAD' 0,
+                              'opsz' 24"> shopping_cart
+                </span>
+
+                <span class="cart-counter"
+                      style="position: absolute; top: -1px; left: 50%; transform: translateX(10%);
+                     background: white; color: red; font-size: 10px; padding: 1px 6px;
+                     border-radius: 10px; font-weight: bold; white-space: nowrap;">
+                        {{ cart_stats.total_items if cart_stats else 0 }}
+                    <script>
+                        // Cập nhật số lượng giỏ hàng khi trang tải
+                        document.addEventListener("DOMContentLoaded", function () {
+                        const el = document.querySelector('.cart-counter');
+                        if (el && el.innerText.trim() === '' || el.innerText.trim() === '0') {
+                        fetch('/api/cart-stats')
+                              .then(res => res.json())
+                              .then(data => {
+                                const count = data.total_items || 0; // fallback về 0
+                                el.innerText = count;
+                              });
+                        }
+                          });
+                    </script>
+                </span>
+            </a>
+
+            <!-- User dropdown -->
+            <div class="nav-item dropdown ms-auto flex-nowrap " style="margin-top:4px;" id="cartDropdown">
+
+                <!-- Người dùng -->
+                {% if current_user.is_authenticated %}
+                <div class="nav-item dropdown" id="userDropdown">
+                    <div class="nav-link text-white d-flex align-items-center flex-nowrap"
+                         id="userDropdownToggle" data-bs-toggle="dropdown" style="cursor: pointer;">
+
+                        {% if current_user.avatar and current_user.avatar|length > 5 %}
+                        <img src="{{ current_user.avatar }}"
+                             style="width:25px; height:25px; border-radius:50%; margin-right:4px; object-fit:cover;">
+                        {% else %}
+                        <span class="material-symbols-outlined"
+                              style=" display:block; font-size: 25px; line-height:1; color: white; margin-bottom: 5px;
+                              margin-right: 2px;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">account_circle
+                        </span>
+                        {% endif %}
+
+                        <span
+                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:300; color: white;">
+                        {{ current_user.name }}
+                    </span>
+                    </div>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownToggle"
+                        style="width: 300px; list-style: none; margin-left: -100px; border-radius:10px; ">
+                        <li class="dropdown-item disabled d-flex align-items-center"
+                            style=" border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
+                            {% if current_user.avatar and current_user.avatar|length > 5 %}
+                            <img src="{{ current_user.avatar }}"
+                                 style="width:60px; height:60px; border-radius:50%; object-fit:cover; margin-right: 10px;">
+                            {% else %}
+                            <i class="fa-regular fa-user"
+                               style="font-size: 40px; color: gray; margin-right: 20px; padding-top: 2px;"></i>
+                            {% endif %}
+                            <div>
+                                <div style="color:black; font-size:24px;">{{ current_user.name }}</div>
+                                <div style="font-size: 12px; color: gray;">Thành viên TDShop</div>
+                            </div>
+                        </li>
+
+
+                        <li class="dropdown-item d-flex align-items-center justify-content-between"
+                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
+                            <a class="dropdown-item d-flex align-items-center" href="/profile">
+                                <span class="material-symbols-outlined"
+                                      style=" display:block; font-size: 25px; line-height:1; color: #5084C1;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">account_circle
+                                </span>
+
+                                <span style="margin-left: 10px;">Thông tin tài khoản</span>
+                            </a>
+                        </li>
+
+                        <li class="dropdown-item d-flex align-items-center justify-content-between"
+                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
+                            <a class="dropdown-item d-flex align-items-center" href="/MyReceipt">
+                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #f56b0f;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">receipt_long
+                                </span>
+
+                                <span style="margin-left: 10px;">Đơn hàng của tôi</span>
+                            </a>
+                        </li>
+
+                        <li class="dropdown-item d-flex align-items-center justify-content-between"
+                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
+                            <a class="dropdown-item d-flex align-items-center" href="/loveProduct">
+                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #EA3323;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">favorite
+                                </span>
+                                <span style="margin-left: 10px;">Sản phẩm yêu thích</span>
+                            </a>
+                        </li>
+
+                        <li class="dropdown-item d-flex align-items-center justify-content-between"
+                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
+                            <div class="dropdown-item d-flex align-items-center">
+                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #d4ac0d;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">dark_mode
+                                </span>
+
+                                <span>Giao diện tối</span>
+                                <label class="switch mb-0" style="margin-left: 10px;">
+                                    <input type="checkbox" id="modeToggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                        </li>
+
+                        <li class="dropdown-item d-flex align-items-center justify-content-between">
+                            <form action="/logout" method="post" style="margin: 0;">
+                                <button type="submit" class="dropdown-item text-danger d-flex align-items-center">
+                                    <span class="material-symbols-outlined" style=" font-size: 24px; color: #EA3323;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">logout
+                                </span>
+                                    <span style="margin-left: 10px;">Đăng xuất</span>
+                                </button>
+                            </form>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                {% else %}
+                <!-- Khi chưa đăng nhập -->
+                <div class="nav-item dropdown position-relative" id="guestDropdown">
+                    <div class="nav-link text-white d-flex align-items-center"
+                         id="accountDropdownToggle"
+                         style="cursor: pointer;">
+                       <span class="material-symbols-outlined"
+                             style=" display:block; font-size: 25px; line-height:1; color: white; margin-bottom: 5px;
+                              margin-right: 2px;
+                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">account_circle
+                        </span>
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:300;">
+                          Tài khoản
+                        </span>
+                    </div>
+
+                    <ul class="dropdown-menu p-3 shadow"
+                        style="min-width: 370px; margin-left: -150px; border-radius: 6px;">
+                        <!-- 👋 Dòng chào -->
+                        <li class="mb-3" style="font-weight: 500; font-size: 16px; padding-bottom: 7px; color: black;">
+                            <img src="https://cdn-icons-png.flaticon.com/128/3898/3898671.png" style="width:6%;">
+                            Xin chào, vui lòng đăng nhập
+
+                        </li>
+
+                        <!-- Nút Đăng nhập & Đăng ký nằm ngang (bọc trong div để border kéo full) -->
+                        <li class="mb-3" style="width: 100%;">
+                            <div class="d-flex justify-content-between"
+                                 style="border-bottom: 1px solid #ddd; padding-bottom: 20px; width: 100%;">
+                                <a href="{{ url_for('login_my_user', next=request.path) }}"
+                                   class="btn btn-green me-2"
+                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                                    Đăng nhập
+                                </a>
+                                <a href="{{ url_for('login_my_user') }}?form=register"
+                                   class="btn btn-outline-green"
+                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                                    Đăng ký
+                                </a>
+                            </div>
+                        </li>
+
+                        <!-- Trợ giúp -->
+                        <li style="font-size: 14px; color: black;">
+                            <img src="https://cdn-icons-png.flaticon.com/128/471/471664.png" style="width:6%"> Trợ
+                            giúp
+                        </li>
+                    </ul>
+                </div>
+
+
+                {% endif %}
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      function handleHoverDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+        const menu = dropdown.querySelector('.dropdown-menu');
+        if (!menu) return;
+
+        let timeout;
+
+        dropdown.addEventListener('mouseenter', () => {
+          clearTimeout(timeout);
+          dropdown.classList.add('show');
+        });
+
+        dropdown.addEventListener('mouseleave', () => {
+          timeout = setTimeout(() => {
+            dropdown.classList.remove('show');
+          }, 200);
+        });
+      }
+
+      handleHoverDropdown('userDropdown');  // Đã có
+      handleHoverDropdown('guestDropdown'); // Thêm dòng này
+    });
+</script>
+
+<style>
+/* Menu luôn display: block để transform hoạt động */
+#cartDropdown .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transform-origin: top right; /* Điểm hút */
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+  display: block; /* LUÔN block */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#cartDropdown:hover .dropdown-menu {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Tam giác */
+#cartDropdown .dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid white;
+}
+
+/* Nút Đăng nhập/ Đăng kí */
+.btn-green {
+  background-color: #00713b;
+  color: #fff;
+  border: none;
+}
+    /* Nút Đăng nhập/ Đăng kí */
+.btn-green:hover {
+  background-color: #00592f; /* màu đậm hơn */
+  color: #fff;
+}
+/* Nút Đăng nhập/ Đăng kí */
+.btn-outline-green {
+  background-color: transparent;
+  border: 2px solid #00713b;
+  color: #00713b;
+}
+/* Nút Đăng nhập/ Đăng kí */
+.btn-outline-green:hover {
+  background-color: #00713b;
+  color: #fff;
+
+</style>

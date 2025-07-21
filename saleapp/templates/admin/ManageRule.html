@@ -1,0 +1,48 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center text-primary mb-4">Quản lý quy định</h1>
+        <form method="POST" class="needs-validation" novalidate>
+            <div class="mb-4">
+                <label for="import_quantity_min" class="form-label fw-bold">Số lượng nhập tối thiểu:</label>
+                <input type="number" id="import_quantity_min" name="import_quantity_min" class="form-control"
+                       value="{{ rule.import_quantity_min }}" required>
+            </div>
+            <div class="mb-4">
+                <label for="quantity_min" class="form-label fw-bold">Số lượng tồn tối thiểu:</label>
+                <input type="number" id="quantity_min" name="quantity_min" class="form-control"
+                       value="{{ rule.quantity_min }}" required>
+            </div>
+            <div class="mb-4">
+                <label for="cancel_time" class="form-label fw-bold">Thời gian hủy đơn hàng (giờ):</label>
+                <input type="number" id="cancel_time" name="cancel_time" class="form-control"
+                       value="{{ rule.cancel_time }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">Lưu thay đổi</button>
+        </form>
+
+
+
+    </div>
+</div>
+
+<script>
+    // Custom Bootstrap validation
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

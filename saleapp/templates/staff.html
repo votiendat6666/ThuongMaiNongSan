@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%if current_user.is_authenticated %}
+
+    <title>Quản Lý Hóa Đơn Bán Sách</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #444;
+        }
+        .invoice-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 30px auto;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #5c6bc0;
+        }
+        .invoice-header span {
+            font-size: 1.2em;
+            color: #777;
+        }
+        .invoice-table th, .invoice-table td {
+            text-align: left;
+            vertical-align: middle;
+            padding: 12px;
+        }
+        .invoice-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .total-amount {
+            font-size: 1.6em;
+            font-weight: bold;
+            text-align: right;
+            color: #2e7d32;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .remove-book-row {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .remove-book-row:hover {
+            background-color: #e53935;
+        }
+        .add-book-btn {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        .add-book-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex justify-content-end align-items-center" style="position: absolute; top: 0; right: 0; padding: 10px;">
+    <form class="nav-item" action="/logout" method="post">
+        <button
+                class="nav-link"
+                type="submit"
+                style="
+                background-color: #8B0000;
+                color: white;
+                font-size: 15px;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            "
+                onmouseover="this.style.backgroundColor='#5A0000';"
+                onmouseout="this.style.backgroundColor='#8B0000';">
+            <img
+                    style="width: 25px; height: 25px; margin-right: 5px;"
+                    src="https://cdn-icons-png.flaticon.com/128/11741/11741058.png"
+                    alt="" > Đăng xuất
+        </button>
+    </form>
+</div>
+<br><br>
+
+
+<div style=" width: 80%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" >
+    <div class="invoice-header">
+        <h2>Hóa Đơn Bán Sách</h2>
+        <span>Ngày Lập: <span id="invoice-date-display"></span></span>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="customer-name" class="form-label">Họ Tên Khách Hàng:</label>
+            <input type="text" id="customer-name" class="form-control" placeholder="Nhập họ tên khách hàng" required>
+        </div>
+        <div class="col-md-6">
+            <label for="staff-name" class="form-label">Nhân Viên Thanh Toán:</label>
+            <input type="text" id="staff-name" value="{{current_user.name}}" class="form-control"
+                   placeholder="Nhập tên nhân viên" readonly required>
+        </div>
+    </div>
+
+    <!-- Invoice Table -->
+    <br>
+    <table class="table table-bordered invoice-table">
+        <thead class="table-light">
+        <tr  style="text-align:center;">
+            <th  style="text-align:center;">STT</th>
+            <th  style="text-align:center;">Sách</th>
+            <th  style="text-align:center;">Thể Loại</th>
+            <th  style="text-align:center;">Số Lượng</th>
+            <th  style="text-align:center;">Đơn Giá</th>
+            <th  style="text-align:center;">Thành Tiền</th>
+            <th  style="text-align:center;">  Xóa</th>
+        </tr >
+        </thead>
+        <tbody  style="text-align:center;" id="book-details">
+        </tbody>
+    </table>
+
+    <div class="mb-4 text-start">
+        <button type="button" id="add-book-row" class="add-book-btn">Thêm Sách</button>
+    </div>
+
+    <!-- Total Amount -->
+    <div class="total-amount">
+        Tổng Tiền: <span id="total-amount">0 VNĐ</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button style="margin-right:1%;" type="button" id="save-invoice" class="btn btn-success">Lưu Hóa Đơn</button>
+        <button type="button" id="cancel-invoice" class="btn btn-danger">Hủy Hóa Đơn</button>
+    </div>
+</div>
+
+{%endif%}
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    document.getElementById("invoice-date-display").textContent = formattedDate;
+
+    const bookDetails = document.getElementById("book-details");
+    const addBookRowBtn = document.getElementById("add-book-row");
+    const totalAmountField = document.getElementById("total-amount");
+    const saveInvoiceBtn = document.getElementById("save-invoice");
+    const cancelInvoiceBtn = document.getElementById("cancel-invoice");
+
+    const fetchBooks = async () => {
+        try {
+            const response = await fetch('/api/books');
+            if (!response.ok) throw new Error("Error loading book list.");
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    const books = await fetchBooks();
+
+    // Tạo danh sách datalist
+    const datalist = document.createElement('datalist');
+    datalist.id = 'book-list';
+    datalist.innerHTML = books.map(book => `
+        <option value="${book.name}" data-id="${book.id}" data-category="${book.category}" data-price="${book.price}"></option>
+    `).join('');
+    document.body.appendChild(datalist);
+
+    const calculateTotalAmount = () => {
+        let total = 0;
+        Array.from(bookDetails.rows).forEach(row => {
+            const totalField = row.querySelector('.total');
+            total += parseFloat(totalField.value || 0);
+        });
+        totalAmountField.textContent = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    };
+
+    const addBookRow = () => {
+        const rowCount = bookDetails.rows.length + 1;
+        const row = bookDetails.insertRow();
+
+        row.innerHTML = `
+            <td  style="text-align:center;">${rowCount}</td>
+            <td>
+                <input  style="text-align:center;" list="book-list" class="form-control book-input" placeholder="Nhập tên sách" />
+            </td>
+            <td><input  style="text-align:center;" type="text" class="form-control category" readonly></td>
+            <td><input  style="text-align:center;" type="number" class="form-control quantity" min="1" value="1"></td>
+            <td><input  style="text-align:center;" type="text" class="form-control price" readonly></td>
+            <td><input  style="text-align:center;" type="text" class="form-control total" readonly></td>
+            <td><button style="text-align:center;" type="button" class="remove-book-row">-</button></td>
+        `;
+
+        const bookInput = row.querySelector('.book-input');
+        const categoryField = row.querySelector('.category');
+        const priceField = row.querySelector('.price');
+        const totalField = row.querySelector('.total');
+        const quantityField = row.querySelector('.quantity');
+
+        bookInput.addEventListener('input', function () {
+            const selectedOption = Array.from(datalist.options).find(option => option.value === this.value);
+
+            if (selectedOption) {
+                const category = selectedOption.getAttribute('data-category');
+                const price = selectedOption.getAttribute('data-price');
+
+                categoryField.value = category;
+                priceField.value = price;
+                totalField.value = (quantityField.value * price).toFixed(2);
+                calculateTotalAmount();
+            } else {
+                categoryField.value = '';
+                priceField.value = '';
+                totalField.value = '';
+            }
+        });
+
+        quantityField.addEventListener('input', function () {
+            const price = parseFloat(priceField.value);
+            totalField.value = (this.value * price).toFixed(2);
+            calculateTotalAmount();
+        });
+
+        row.querySelector(".remove-book-row").addEventListener("click", function () {
+            row.remove();
+            updateRowNumbers();
+            calculateTotalAmount();
+        });
+    };
+
+    const updateRowNumbers = () => {
+        Array.from(bookDetails.rows).forEach((row, index) => {
+            row.cells[0].innerText = index + 1;
+        });
+    };
+
+    const getInvoiceData = () => {
+        const customerName = document.getElementById("customer-name").value;
+        const invoiceDate = document.getElementById("invoice-date-display").textContent;
+        const staffName = document.getElementById("staff-name").value;
+        const details = Array.from(bookDetails.rows).map(row => {
+            const bookName = row.querySelector('.book-input').value;
+            const bookOption = Array.from(datalist.options).find(option => option.value === bookName);
+            const bookId = bookOption ? bookOption.getAttribute('data-id') : null;
+            const quantity = row.querySelector('.quantity').value;
+
+            return { bookId, quantity };
+        });
+
+        return { customerName, invoiceDate, staffName, details };
+    };
+
+    const saveInvoice = async () => {
+        const data = getInvoiceData();
+        if (!data.customerName || data.details.some(detail => !detail.bookId)) {
+            alert("Please enter complete invoice information.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/import_bill', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('Invoice saved successfully!');
+                window.location.reload();
+            } else {
+                alert(result.message || 'An error occurred.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred while saving the invoice.');
+        }
+    };
+
+    // Event listeners
+    addBookRowBtn.addEventListener('click', addBookRow);
+    saveInvoiceBtn.addEventListener('click', saveInvoice);
+    cancelInvoiceBtn.addEventListener('click', () => window.location.reload());
+});
+
+</script>
+</body>
+</html>

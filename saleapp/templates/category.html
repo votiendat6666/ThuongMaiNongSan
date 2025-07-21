@@ -1,0 +1,212 @@
+{% extends 'layout/base.html' %}
+{% block title %}Danh mục{% endblock %}
+
+{% block content %}
+
+
+<!-- KHUNG MENU + CONTENT ĐỘC LẬP CHIỀU CAO -->
+<div class="container-fluid" style="display: flex; margin: 10px 0;">
+  <!-- MENU BÊN TRÁI -->
+  <div class="col-2"
+       style=" height:717px;; overflow-y:auto ; border-right: 1px solid #eee; scrollbar-width: none; background-color: #f8f9fa; border-radius: 8px; margin-top:39.5px;">
+    <div style="padding: 0 10px;">
+      <ul style="list-style: none; padding-left: 0;">
+        {% for parent in categories if parent.parent_id is none %}
+        <li>
+          <div class="parent-item">
+            <a href="{{ url_for('category_page', category_id=parent.id) }}"
+               class="parent-link {% if parent.id == selected_parent_id %}active{% endif %}">
+               {{ parent.name }}
+            </a>
+            <span id="arrow-{{ parent.id }}"
+                  class="fa-solid fa-chevron-down chevron-icon {% if parent.id == selected_parent_id %}rotate{% endif %}"
+                  onclick="event.stopPropagation(); toggleSubMenu({{ parent.id }})">
+            </span>
+          </div>
+          <ul id="submenu-{{ parent.id }}"
+              class="submenu {% if parent.id == selected_parent_id %}open{% endif %}">
+            {% for child in categories if child.parent_id == parent.id %}
+            <li>
+              <a href="{{ url_for('category_page', category_id=child.id) }}"
+                 class="category-link {% if child.id == selected_category_id|int %}active{% endif %}">
+                {{ child.name }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- KHUNG BÊN PHẢI -->
+<div class="col-10 d-flex flex-column"
+     style="padding: 10px; border-radius: 8px; ">
+
+  <!-- TIÊU ĐỀ + TAM GIÁC BÁM VIỀN -->
+  <div style="
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -30px;
+  ">
+    <!-- Tam giác trái -->
+    <div style="
+      width: 0; height: 0;
+      border-bottom: 31px solid #00ac5b;
+      border-left: 20px solid transparent;
+    "></div>
+
+    <!-- Tiêu đề -->
+        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                SẢN PHẨM CỦA BẠN
+            </h1>
+        </div>
+
+    <!-- Tam giác phải -->
+    <div style="
+      width: 0; height: 0;
+      border-bottom: 31px solid #00ac5b;
+      border-right: 20px solid transparent;
+    "></div>
+  </div>
+
+  <!-- KHUNG SẢN PHẨM -->
+  <div style="background-color: white;padding: 50px 15px;border-radius: 10px;border: 3px solid rgb(0 172 91);height:717px;">
+    <!-- Lưới sản phẩm -->
+    <div id="product-container" style="
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 5px;">
+      {% include 'product-items.html' %}
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+
+<style>
+    .col-2 {
+        width: 19%;
+    }
+
+    .submenu {
+        max-height: 400px;            /* Hiển thị tối đa 300px */
+        overflow-y: auto;             /* Cho phép cuộn */
+        transition: max-height 0.4s ease;
+        padding-left: 1em;
+        list-style: none;
+        scrollbar-width: none; /* Ẩn thanh cuộn ngang */
+    }
+    .submenu.open {
+    max-height: 400px; /* đủ lớn để hiển thị toàn bộ */
+    }
+    .submenu:not(.open) {
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .category-link {
+        text-decoration: none;
+        font-size: 15px;
+        line-height: 2.8;
+        font-weight: 500;
+        display: inline-block;
+        transition: color 0.3s;
+        color: #555;
+    }
+
+    .category-link:hover,
+
+    .category-link.active {
+        color: rgb(0 172 91);
+    }
+    .parent-link.active {
+    color: rgb(0 172 91); /* hoặc màu gì bạn muốn */
+}
+
+    .parent-item {
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #333;
+        padding: 13.5px 0;
+        transition: color 0.3s;
+    }
+
+    .parent-item:hover {
+        color: rgb(0 172 91);
+    }
+
+    .chevron-icon {
+        font-size: 12px;
+        color: #999;
+        transition: transform 0.3s;
+    }
+
+    .chevron-icon.rotate {
+        transform: rotate(180deg);
+    }
+    .parent-link {
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.parent-link:hover {
+    color: rgb(0 172 91);;
+}
+
+    .chevron-icon {
+    font-size: 12px;
+    color: #999;
+    transition: transform 0.3s;
+    padding: 15px; /* tăng vùng bấm */
+    cursor: pointer;
+}
+
+</style>
+
+<script>
+    //Đóng mở menu con
+function toggleSubMenu(id) {
+const allSubmenus = document.querySelectorAll('.submenu');
+const allArrows = document.querySelectorAll('.chevron-icon');
+
+const currentSubmenu = document.getElementById('submenu-' + id);
+const currentArrow = document.getElementById('arrow-' + id);
+
+// Đóng tất cả các submenu khác
+allSubmenus.forEach(sub => {
+    if (sub !== currentSubmenu) sub.classList.remove('open');
+});
+
+// Xoay lại tất cả mũi tên khác
+allArrows.forEach(arrow => {
+    if (arrow !== currentArrow) arrow.classList.remove('rotate');
+});
+
+// Toggle submenu được bấm
+currentSubmenu.classList.toggle('open');
+currentArrow.classList.toggle('rotate');
+}
+</script>
+{%endblock %}
+

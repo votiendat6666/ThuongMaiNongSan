@@ -1,0 +1,109 @@
+{% extends 'user/layout.html' %}
+
+{% block title %}Ưu đãi thành viên{% endblock %}
+
+{% block content_right %}
+<div class="membership-section-wrapper">
+    <div class="membership-info-card">
+        <div class="info-column">
+            <h3>Ưu đãi của bạn</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">F-Point hiện có</span>
+                    <span class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Freeship hiện có</span>
+                    <span class="info-value">0 lần</span>
+                </div>
+            </div>
+        </div>
+        <div class="info-column">
+            <h3>Thành tích năm 2025</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Số đơn hàng</span>
+                    <span class="info-value">0 đơn hàng</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Đã thanh toán</span>
+                    <span class="info-value">0 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Your existing CSS for the info cards */
+    .membership-info-card {
+        display: flex;
+        gap: 20px;
+        font-family: Arial, sans-serif;
+        color: #333333;
+    }
+
+    .info-column {
+        flex: 1;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-column h3 {
+        font-size: 18px;
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #333333;
+        font-weight: 600;
+        font-family: 'Nunito Sans', sans-serif;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .info-item {
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 70px;
+    }
+
+    .info-label {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #e44d26;
+    }
+</style>
+
+<script>
+    // This script block is for Bootstrap tabs, not directly related to highlighting the sidebar link.
+    // Keep it if you're using Bootstrap tabs elsewhere on this page.
+    document.addEventListener('DOMContentLoaded', function () {
+        var triggerTabList = [].slice.call(document.querySelectorAll('#pills-tab button'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+            })
+        })
+    });
+</script>
+
+{%endblock%}

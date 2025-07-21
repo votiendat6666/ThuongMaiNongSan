@@ -1,0 +1,278 @@
+{% extends 'layout/base.html' %}
+{% block title %} Giỏ hàng {% endblock %}
+
+{%block navbar%}
+<div style="width:100%; background: linear-gradient(  to bottom,  #00713b,  #469c4b); height:40px;"></div>
+<div class="container-fluid"
+     style="padding:0; background-color:white; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+
+    <!-- Thanh tiêu đề -->
+    <div style="height:100px; display:flex; align-items:center;">
+        <div class="container" style="display:flex; align-items:center; padding:0 20px;">
+            <a class="navbar-brand" href="/" style="font-size:30px; color:#ee4d2d; display:flex; align-items:center;">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}"
+                     style="height:45px; width:auto; margin-right:15px;" alt="DoubleTD Logo">
+            </a>
+            <div style="width:2px; height:40px; background-color:#00713b; margin-right:15px;"></div>
+            <div style="font-size:30px; color:#00713b; font-weight:600; line-height:35px; position: relative; padding-top:19px;">
+                Giỏ Hàng
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<!-- Nội dung giỏ hàng -->
+
+<div class="cart-wrapper" style=" min-height: calc(100vh - 120px); /* Chiều cao tối thiểu, tùy chỉnh theo FOOTER nếu có */display: flex; flex-direction: column;background: white;">
+
+    <!-- Danh sách sản phẩm -->
+    <div style="flex: 1;">
+
+        {% if cart_items %}
+        <table class="table" style="margin-top:10px; margin-bottom:10px; font-size:14px;">
+            <!-- Thanh tiêu đề -->
+            <tr style="text-align:center; color:#00713b; font-weight:900;">
+                <th style="text-align: center;">
+                    <label style="display:inline-flex; align-items:center; cursor:pointer; position:relative;">
+                        <input type="checkbox" id="select-all-checkbox"
+                               onchange="toggleSelectAll(this)"
+                               {% if all_selected %}checked{% endif %}
+                               style="opacity:0; position:absolute; cursor:pointer; height:0; width:0;">
+                        <span style="display:inline-block; width:18px; height:18px; border:1px solid #ddd; border-radius:3px;
+            box-shadow:inset 0 2px 0 0 rgba(0,0,0,.02); background-color:#fff; position:relative;"></span>
+                    </label>
+                </th>
+                <th>Sản Phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th>Thao tác</th>
+            </tr>
+
+            <!-- Sản phẩm -->
+            {% for c in cart_items %}
+
+            <tr id="product{{ c.product.id }}" style="vertical-align: middle;">
+
+                <td style="text-align:center; width:10%;">
+                    <label style="display:inline-flex; align-items:center; cursor:pointer; position:relative;">
+                        <input type="checkbox"
+                               class="cart-checkbox"
+                               data-cart-id="{{ c.id }}"
+                               data-product-id="{{ c.product.id }}"
+                               data-price="{{ c.product.price }}"
+                               data-quantity="{{ c.quantity }}"
+                               onchange="toggleCheckbox(this)"
+                               {% if c.is_selected %}checked{% endif %}
+                               style="opacity:0; position:absolute; cursor:pointer; height:0; width:0;">
+                        <span style="display:inline-block; width:18px; height:18px; border:1px solid #ddd; border-radius:3px;
+                                     box-shadow:inset 0 2px 0 0 rgba(0,0,0,.02); background-color:#fff; position:relative;"></span>
+                    </label>
+                </td>
+                <td style="width:50%;">
+                    <a href="/products/{{ c.product.id }}"
+                       style="display:inline-flex; align-items:center; text-decoration: none; color:inherit;">
+                        <img src="{{ c.product.image }}" alt="{{ c.product.name }}"
+                             style="width:70px; height:70px; margin-right:10px;">
+                        <span>{{ c.product.name }}</span>
+                    </a>
+                </td>
+
+                <td id="product-price-{{ c.product.id }}" style="text-align:center;">
+                    {{ c.product.price|format_vnd }}<sup style="font-size:12px;">đ</sup>
+                </td>
+
+                <td style="padding: 0; width: 80px;">
+                    <div style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; height: 34px; width: 100%;">
+                        <button type="button" onclick="changeQuantity({{ c.product.id }}, -1)"
+                                style="flex: 0.4; border: none; background: white; cursor: pointer; font-size: 20px; color: #333; line-height: 1;">
+                            -
+                        </button>
+                        <div style="width: 1px; background-color: rgba(0,0,0,0.1); height: 60%;"></div>
+                        <input type="text"
+                               id="quantity-display-{{ c.product.id }}"
+                               value="{{ c.quantity }}"
+                               oninput="validateQuantity(this)"
+                               onblur="updateCart({{ c.product.id }}, this)"
+                               style="flex: 1; border: none; text-align: center; font-size: 16px; outline: none; padding: 0; height: 100%; max-width: 40px;">
+                        <div style="width: 1px; background-color: rgba(0,0,0,0.1); height: 60%;"></div>
+                        <button type="button" onclick="changeQuantity({{ c.product.id }}, 1)"
+                                style="flex: 0.4; border: none; background: white; cursor: pointer; font-size: 20px; color: #333; line-height: 1;">
+                            +
+                        </button>
+                    </div>
+                </td>
+
+                <td id="product-total-{{ c.product.id }}"
+                    style="color:#ee4d2d; text-align:center; width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}<sup
+                        style="font-size:12px;">đ</sup>
+                </td>
+
+                <td style="text-align:center;">
+                    <button style="color: red; background: none; border: none; cursor: pointer;"
+                            onclick="deleteCart({{ c.product.id }})">Xóa
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% else %}
+        <div style="padding: 50px; text-align: center;">
+            <p>Không có sản phẩm nào trong giỏ hàng</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Thanh toán -->
+    <div style="
+    background: white;
+    padding: 15px 30px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  ">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <h5 style="color: black; margin-right: 30px;">
+                    Tổng sản phẩm: <span style="color:red;" id="selected-total-quantity">0</span>
+                </h5>
+                <h5 style="color: black;">
+                    Tổng tiền: <span style="color:red;" id="selected-total-amount">0 VND</span>
+                </h5>
+            </div>
+
+            <button class="btn btn-success"
+                    style="background-color: rgb(238, 77, 45); color: white; font-size: 17px; padding: 8px 35px; border-radius: 8px; text-decoration: none; border: none;"
+                    onmouseover="this.style.transform='scale(1.01)';"
+                    onmouseout="this.style.transform='scale(1)'; this.style.fontWeight='normal';"
+                    onclick="handlePayment()">Thanh toán
+            </button>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal cảnh báo -->
+<div id="no-product-modal"
+     style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:white;padding:30px;border-radius:8px;max-width:400px;text-align:center;">
+        <h4 style="margin-bottom:20px;">Thông báo</h4>
+        <p style="margin-bottom:20px;">Bạn chưa chọn sản phẩm nào để thanh toán!</p>
+        <button onclick="hideNoProductModal()"
+                style="background:#00713b;color:white;border:none;padding:8px 20px;border-radius:4px;">Đóng
+        </button>
+    </div>
+</div>
+
+
+<script>
+    //✅ hàm xử lý khi giỏ hàng rổng thì hiện modals thông báo -> không được thanh toán
+  function handlePayment() {
+    const checked = document.querySelectorAll('.cart-checkbox:checked');
+    if (checked.length === 0) {
+      showNoProductModal();
+    } else {
+      window.location.href = '/api/pay';
+    }
+  }
+
+  function showNoProductModal() {
+    document.getElementById('no-product-modal').style.display = 'flex';
+  }
+
+  function hideNoProductModal() {
+    document.getElementById('no-product-modal').style.display = 'none';
+  }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // ✅ Style chung pseudo ::after
+      const style = document.createElement('style');
+      style.textContent = `
+            span[style]::after {
+              content: "";
+              position: absolute;
+              display: var(--after-display, none);
+              left: 50%;
+              top: 40%;
+              width: 5px;
+              height: 10px;
+              border: solid #fff;
+              border-width: 0 2px 2px 0;
+              transform: translate(-50%, -50%) rotate(45deg);
+            }
+      `;
+      document.head.appendChild(style);
+
+      // ✅ Hàm xử lý toggle tick
+      function update(box, input) {
+        if (input.checked) {
+          box.style.backgroundColor = '#00713b';
+          box.style.setProperty('--after-display', 'block');
+        } else {
+          box.style.backgroundColor = '#fff';
+          box.style.setProperty('--after-display', 'none');
+        }
+      }
+
+      // ✅ Xử lý cho select-all
+      const selectAll = document.getElementById('select-all-checkbox');
+      if (selectAll) {
+        const box = selectAll.nextElementSibling;
+        selectAll.addEventListener('change', () => update(box, selectAll));
+        update(box, selectAll);
+      }
+
+      // ✅ Xử lý cho tất cả cart-checkbox
+      const cartCheckboxes = document.querySelectorAll('.cart-checkbox');
+      cartCheckboxes.forEach(cb => {
+        const box = cb.nextElementSibling;
+        cb.addEventListener('change', () => update(box, cb));
+        update(box, cb);
+      });
+    });
+
+
+   // ✅ Hàm toggle Select All: tick/un-tick all
+    function toggleSelectAll(master) {
+      const isChecked = master.checked;
+      const boxes = document.querySelectorAll('.cart-checkbox');
+
+      boxes.forEach(cb => {
+        cb.checked = isChecked;
+
+        // ✅ Tìm box pseudo của từng cb
+        const box = cb.nextElementSibling;
+
+        // ✅ Tự update nền + tick pseudo
+        if (isChecked) {
+          box.style.backgroundColor = '#00713b';
+          box.style.setProperty('--after-display', 'block');
+        } else {
+          box.style.backgroundColor = '#fff';
+          box.style.setProperty('--after-display', 'none');
+        }
+
+        // ✅ Gọi hàm xử lý tính lại tổng
+        toggleCheckbox(cb);
+      });
+    }
+</script>
+<style>
+    nav.navbar {
+    display:none;
+    }
+    .imgTieuDe{
+     display:none;
+    }
+            table.table tr:last-child {
+          border-bottom: 1px solid transparent;
+        }
+</style>
+
+
+{% endblock %}

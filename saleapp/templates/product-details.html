@@ -1,0 +1,611 @@
+{% extends 'layout/base.html' %}
+{% block title %} Chi tiết sản phẩm {% endblock %}
+
+{% block content %}
+
+<!-- Wrapper Grid -->
+<div style="display: grid; grid-template-columns: 40% 59%; gap: 10px; align-items: start; margin-top: 10px;">
+
+    <!-- CỘT TRÁI -->
+    <div id="col-left"
+         style="background: white; border-radius: 10px; display: flex; flex-direction: column; color: #212121; overflow: hidden;">
+        <img src="{{ products.image }}" alt="Ảnh sản phẩm"
+             style="width: 486px; height: 486px; border-radius: 10px 10px 0 0;">
+        <div style="margin: 0 10px; padding: 20px;">
+            <!-- Like -->
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding-bottom: 30px;">
+                {% if current_user.is_authenticated %}
+                <i id="like-icon" class="{{ 'fa-solid' if is_liked else 'fa-regular' }} fa-heart"
+                   style="color:#EA3323; font-size:23px; cursor: pointer;"
+                   onclick="toggleLike({{ products.id }})"></i>
+                {% else %}
+                <a href="/login"><i class="fa-regular fa-heart"
+                                    style="color:#EA3323; font-size:23px; cursor: pointer;"></i></a>
+                {% endif %}
+                <span id="like-text" style="font-size:16px;">Đã thích ({{ products.like|int }})</span>
+            </div>
+
+            <!-- Chính sách -->
+            <p style="font-weight: bold; font-size: 25px; color: #C92127; border-left: 4px solid #C92127; padding-left: 12px;">
+                Chính sách ưu đãi của TD Shop</p>
+            <ul style="padding: 0; font-size: 18px; list-style: none; line-height: 3; margin-top: 15px; word-wrap: break-word;">
+                <li><i class="fa-solid fa-truck-fast" style="color: #C92127; margin-right: 5px;"></i><strong>Thời gian
+                    giao hàng:</strong> Giao nhanh và uy tín
+                </li>
+                <li><i class="fa-solid fa-repeat" style="color: #C92127; margin-right: 8px;"></i><strong>Chính sách đổi
+                    trả:</strong> Đổi trả miễn phí toàn quốc
+                </li>
+                <li><i class="fa-solid fa-tags" style="color: #C92127; margin-right: 8px;"></i><strong>Chính sách khách
+                    sỉ:</strong> Ưu đãi khi mua số lượng lớn
+                </li>
+                <li><i class="fa-solid fa-square-check" style="color: #C92127; margin-right: 8px;"></i><strong>Cam
+                    kết:</strong> Sản phẩm chính hãng
+                </li>
+                <li><i class="fa-solid fa-calendar-check" style="color: #C92127; margin-right: 8px;"></i><strong>Tham
+                    gia:</strong> 2009
+                </li>
+                <li><i class="fa-solid fa-percent" style="color: #C92127; margin-right: 8px;"></i><strong>Tỉ lệ phản
+                    hồi:</strong> 100%
+                </li>
+                <li><i class="fa-solid fa-clock" style="color: #C92127; margin-right: 8px;"></i><strong>Thời gian phản
+                    hồi:</strong> Trong 10 phút
+                </li>
+                <li><i class="fa-solid fa-quote-left" style="color: #C92127; margin-right: 8px;"></i><strong>Châm
+                    ngôn:</strong> <em>Chất lượng, uy tín, giá rẻ</em></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- CỘT PHẢI -->
+    <div id="col-right" style="display: flex; flex-direction: column; min-height: 100%;">
+        <!-- Thẻ 1 -->
+        <div style="background: white; border-radius: 10px; margin-bottom: 10px; padding: 10px;">
+            <img style="width: 60px; height: 60px;" src="https://cdn-icons-png.flaticon.com/128/791/791968.png" alt="">
+            <span style="color: #212121; font-size:1.7rem; font-weight:600;">{{ products.name }}</span>
+
+            <div class="rating-summary">
+                <div class="average-rating">
+                    <span class="score">4.9</span>
+                    <div class="stars">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star half">★</span></div>
+                </div>
+                <div class="rating-divider"></div>
+                <div class="total-reviews">
+                    <span class="count">19,4k</span>
+                    <span class="label">Đánh Giá</span>
+                </div>
+            </div>
+
+            <div class="flash-sale-wrapper">
+                <div class="flash-sale">
+                    <div class="flash-sale-header">
+                        <div class="flash-sale-title">
+                            <i class="fas fa-bolt" style="color: yellow; margin-right: 8px;"></i>
+                            FLASH SALE
+                        </div>
+                        <div class="flash-sale-timer">
+                            <i class="fa-regular fa-clock" style="margin-right: 6px;"></i>
+                            KẾT THÚC TRONG
+                            <div class="countdown-digits" id="countdownTimer">
+                                <span class="digit-box" id="hours">00</span>:
+                                <span class="digit-box" id="minutes">00</span>:
+                                <span class="digit-box" id="seconds">00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flash-sale-price-row">
+                        <p class="price-current">{{ products.price | format_vnd }}đ</p>
+
+                        <div class="voucher-tag">
+                            <img src="{{ url_for('static', filename='images/voucher.png') }}" alt="voucher">
+                            <span>Giảm {{ products.voucher|int }}%</span>
+                        </div>
+
+                        <p class="price-original">
+                            <del>{{ (products.price / (1 - products.voucher / 100)) | format_vnd }}đ</del>
+                        </p>
+                    </div>
+
+                    <p class="flash-sale-sold">Đã bán: <span>{{ products.daban|int }}</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thẻ 2 -->
+        <div style="background: white; border-radius: 10px; margin-bottom: 10px; padding: 10px;">
+            <div style="padding: 10px;">
+                <b style="font-size:18px;">Thông tin vận chuyển</b>
+                <table style="font-size: 16px; line-height: 2 ;padding: 10px 20px;   ">
+                    <tbody>
+                    <tr>
+                        <td style="vertical-align: top; color: #C92127;padding-right:10px; ">
+                            <i class="fa-solid fa-location-dot " style="padding-left:20px;"></i>
+                        </td>
+                        <td>
+                            <b>Trụ sở chính:</b> Thành phố Hồ Chí Minh
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; color: #C92127; padding-right:8px;">
+                            <i class="fa-solid fa-truck-fast" style="padding-left:20px;"></i>
+                        </td>
+                        <td>
+                            <b>Giao hàng tiêu chuẩn:</b> Đơn hàng sẽ xuất đi sau 2 giờ kể từ khi được đặt
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Số lượng + Thêm giỏ -->
+                <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <!-- Số lượng -->
+                    <span style="font-size: 16px; color: #888888;">Số lượng</span>
+
+                    <!-- Ô chọn số lượng -->
+                    <div style="width: 190px; display: inline-block;">
+                        <div style="display: flex; align-items: stretch; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; height: 40px; width: 100%;
+                                     font-size: 17px; color: #333;">
+
+                            <!-- Nút Giảm -->
+                            <button type="button"
+                                    onclick="changeQuantity({{ products.id }}, -1)"
+                                    style="width: 100%; border-right: 1px solid #ccc; border-left:none ; border-top:none ;border-bottom:none ;
+                                            background: transparent; cursor: pointer; font-size: 25px; color: #333; display: flex; align-items: center;
+                                            justify-content: center;">
+                                -
+                            </button>
+
+                            <!-- Input số lượng -->
+                            <input type="text"
+                                   id="quantity-display-{{ products.id }}"
+                                   value="1"
+                                   oninput="validateQuantity(this)"
+                                   onblur="updateCartPreview({{ products.id }}, this)"
+                                   style="width: 100%;
+                                            text-align: center; color: rgb(238, 77, 45); border: none; font-size: 20px; outline: none; background:
+                                            transparent; display: flex; align-items: center; justify-content: center;">
+
+
+                            <!-- Nút Tăng -->
+                            <button type="button"
+                                    onclick="changeQuantity({{ products.id }}, 1)"
+                                    style="width: 100%;border-right:none; border-left: 1px solid #ccc ; border-top:none ;border-bottom:none ;
+                                     background: transparent; cursor: pointer; font-size: 25px;
+                                     color: #333; display: flex; align-items: center; justify-content: center;">
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+                    <span style="color:#888888;"> Đơn vị: <span style="color:#212529;">1 kg</span></span>
+
+
+                    <!-- Nút thêm vào giỏ -->
+                    {% if current_user and current_user.is_authenticated %}
+                    {# Nếu người dùng đã đăng nhập #}
+                    <a href="#" class="themVaoGioHang"
+                       onclick="addToCart(event, {{ products.id }}, '{{ products.name }}', {{ products.price }}, parseInt(document.getElementById('quantity-display-{{ products.id }}').value))">
+                        <div style="display: flex; align-items: center;" >
+                            <span> Thêm vào giỏ</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    {# Nếu người dùng CHƯA đăng nhập #}
+                    <a href="{{ url_for('login_my_user', next=request.path) }}" class="themVaoGioHang">
+                        <div style="display: flex; align-items: center;" >
+                            <span>  Thêm vào giỏ</span>
+                        </div>
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Thẻ 3: Cuộn -->
+        <div style=" background: white;border-radius: 10px; padding: 10px;flex: 1 1 auto;overflow-y: auto;overflow-x:
+               hidden;max-height: 610px; scrollbar-width: none;">
+            <p style="font-weight: bold;">Thông tin chi tiết</p>
+            <table style="width: 100%; table-layout: fixed; font-size: 16px; line-height: 2.2; word-wrap: break-word;">
+                <tbody>
+                <tr>
+                    <td style="color: #777; width: 30%; padding: 8px 0;">Mã hàng:</td>
+                    <td style="padding: 8px 0;">{{ products.id }}</td>
+                </tr>
+                {% for key in products.extra_info.order %}
+                <tr>
+                    <td style="color: #777; padding: 8px 0;">{{ key }}:</td>
+                    <td style="padding: 8px 0;">{{ products.extra_info[key] }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Đánh giá sản phẩm -->
+
+<div class="col-12" style=" padding:20px; background-color: white; border-radius: 10px; margin:10px 0px;">
+    <h5 style="font-weight:bold; color:red;">Đánh giá sản phẩm</h5>
+
+    {% if current_user.is_authenticated %}
+    <textarea class="form-control" placeholder="Nhập bình luận...." rows="5" id="comment"></textarea>
+    <input type="submit" class="btn btn-primary mt-2" value="Bình luận">
+    {% else %}
+    <a href="{{ url_for('login_my_user', next='cart') }}"
+       style="display: inline-block;
+                      padding: 10px 20px;
+                      color: #ff0000;
+                      text-decoration: none;
+                      border: 2px solid red;
+                      background-color: #ffcccc;
+                      font-size: 16px;
+                      border-radius: 5px;">
+        Login to comment
+    </a>
+    {% endif %}
+
+    <!-- Hiển thị bình luận mẫu -->
+    <div class="row comment d-flex align-items-center" style="margin-top:10px;">
+        <div class="col-md-1 col-xs-4">
+            <img src="{{ url_for('static', filename='images/default.png') }}"
+                 class="img-fluid rounded-circle" alt="demo">
+        </div>
+        <div class="col-md-11 col-xs-8">
+            <p>Sản phẩm tuyệt vời</p>
+            <p><em>2021-12-07 12:12</em></p>
+        </div>
+    </div>
+</div>
+
+<!-- Sản phẩm liên quan -->
+<div style="margin-top: 70px; position: relative;">
+
+    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+
+        <!-- Tam giác bên trái -->
+        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+        <!-- Tiêu đề -->
+        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                SẢN PHẨM LIÊN QUAN
+            </h1>
+        </div>
+
+        <!-- Tam giác bên phải -->
+        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
+    </div>
+    <!-- Khung danh sách sản phẩm -->
+    <div style="display: grid;grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));gap: 20px;background-color: white;
+    padding: 50px 15px;border-radius: 10px;border: 3px solid rgb(0 172 91);margin-top: 40px;">
+        {% with products = related_products %}
+        {% include 'product-items.html' %}
+        {% endwith %}
+    </div>
+
+
+</div>
+
+
+{%include 'product-section.html' %}
+
+<style>
+    .themVaoGioHang {
+    background-color: rgb(238, 77, 45);
+    color: white;
+    font-size: 17px;
+    padding: 9px 45px;
+    border-radius: 4px;
+    text-decoration: none;
+    }
+  .themVaoGioHang:hover {
+    background-color: #d73211;
+    color: white;
+  }
+
+    /*✅ Phần flash sale */
+    .flash-sale-wrapper {
+        max-width: 100%;
+        overflow-x: hidden;
+    1}
+
+    .flash-sale {
+    background-color:rgba(208, 1, 27, .08);
+
+    }
+
+    .flash-sale-header {
+        display: flex;
+        background-color: #f25d3b;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px 8px 0 0;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .flash-sale-title {
+        font-weight: bold;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .flash-sale-timer {
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        gap: 6px;
+    }
+
+    .countdown-digits {
+        display: flex;
+        gap: 4px;
+        font-weight: bold;
+    }
+
+    .digit-box {
+        background: black;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        min-width: 24px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .flash-sale-price-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        padding-bottom: 0px;
+        overflow: hidden;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+    }
+
+    .price-current {
+        font-size: 24px;
+        font-weight: bold;
+        color: #C92127;
+        flex-shrink: 0;
+        margin: 0;
+    }
+
+    .voucher-tag {
+        position: relative;
+        width: 100px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    .voucher-tag img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 4px;
+    }
+
+    .voucher-tag span {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 13px;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .price-original {
+        color: #888;
+        font-size: 15px;
+        flex-shrink: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+    }
+
+    .flash-sale-sold {
+        padding:10px  ;
+        font-size: 15px;
+        color: #555;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /*✅ Phần flash sale */
+    .rating-summary {
+        display: flex;
+        align-items: center;
+        font-family: sans-serif;
+        color: #333;
+        max-width: fit-content;
+        margin: 10px;
+        background-color: white;
+    }
+
+    .average-rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding-right: 15px;
+    }
+
+    .average-rating .score {
+        font-size: 1em;
+        font-weight: bold;
+        border-bottom: 1px solid currentColor;
+
+    }
+    .stars {
+        display: flex;
+        align-items: center;
+    }
+
+    .star {
+        font-size: 1.2em;
+        color: #ccc;
+        margin: 0 1px;
+    }
+
+    .star.filled {
+        color: #ffc107;
+    }
+
+    .rating-divider {
+        width: 1px;
+        background-color: #e0e0e0;
+        height: 30px;
+        margin: 0 15px;
+    }
+
+    .total-reviews {
+        display: flex;
+        align-items: baseline;
+    }
+
+    .total-reviews .count {
+        font-size: 1em;
+        font-weight: bold;
+        margin-right: 5px;
+        border-bottom: 1px solid currentColor;
+    }
+
+    .total-reviews .label {
+        font-size: 0.9em;
+        color: #777;
+    }
+
+
+</style>
+<script>
+    <!-- ✅JS đồng bộ chiều cao -->
+  window.addEventListener('load', () => {
+    const left = document.getElementById('col-left');
+    const right = document.getElementById('col-right');
+    right.style.height = left.offsetHeight + 'px';
+  });
+  window.addEventListener('resize', () => {
+    const left = document.getElementById('col-left');
+    const right = document.getElementById('col-right');
+    right.style.height = left.offsetHeight + 'px';
+  });
+
+
+    // ✅Script xử lý số lượng
+    function changeQuantity(productId, delta) {
+        const input = document.getElementById("quantity-display-" + productId);
+        let value = parseInt(input.value) || 1;
+        value = Math.max(1, value + delta);
+        input.value = value;
+    }
+    function validateQuantity(input) {
+        let value = parseInt(input.value);
+        if (isNaN(value) || value < 1) {
+            input.value = 1;
+        }
+    }
+
+    function updateCartPreview(productId, input) {
+    }
+
+
+    // ✅JavaScript để xử lý lượt thích
+
+    let liked = {{ 'true' if is_liked else 'false' }};
+    let likeCount = {{ products.like }};  // Số lượt thích từ server
+    function toggleLike(productId) {
+        fetch(`/api/like-product/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            liked = data.liked;
+            likeCount = data.like_count;
+
+            const icon = document.getElementById("like-icon");
+            const text = document.getElementById("like-text");
+
+            if (liked) {
+                icon.classList.remove("fa-regular");
+                icon.classList.add("fa-solid");
+            } else {
+                icon.classList.remove("fa-solid");
+                icon.classList.add("fa-regular");
+            }
+
+            text.textContent = `Đã thích (${likeCount})`;
+        });
+    }
+
+    // ✅JavaScript để xử lý đếm ngược thời gian
+        function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        function getNextTargetTime() {
+            const now = new Date();
+            const target = new Date(now);
+            target.setHours(targetHour, targetMinute, targetSecond, 0);
+
+            if (target.getTime() <= now.getTime()) {
+                target.setDate(target.getDate() + 1);
+            }
+
+            return target.getTime();
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = nextTargetTime - now;
+
+            if (distance <= 0) {
+                nextTargetTime = getNextTargetTime(); // Reset lại mốc 24h mới
+            }
+
+            const totalSeconds = Math.floor(distance / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+        }
+
+        let nextTargetTime = getNextTargetTime();
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        }
+
+        // Gọi đếm ngược đến 20:00 hàng ngày
+        startRecurringCountdown(20, 0, 0);
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,111 @@
+[
+  {
+    "id": 10000,
+    "name": "Rau củ quả",
+    "parent_id": null
+  },
+    { "id": 10001, "name": "Rau ăn lá", "parent_id": 10000 },
+    { "id": 10002, "name": "Củ quả tươi", "parent_id": 10000 },
+    { "id": 10003, "name": "Nấm các loại", "parent_id": 10000 },
+    { "id": 10004, "name": "Rau gia vị", "parent_id": 10000 },
+    { "id": 10005, "name": "Rau hữu cơ", "parent_id": 10000 },
+
+  {
+    "id": 20000,
+    "name": "Trái cây tươi",
+    "parent_id": null
+  },
+  { "id": 20001, "name": "Trái cây miền nhiệt đới", "parent_id": 20000 },
+  { "id": 20002, "name": "Trái cây nhập khẩu", "parent_id": 20000 },
+  { "id": 20003, "name": "Trái cây theo mùa", "parent_id": 20000 },
+  { "id": 20004, "name": "Trái cây sấy khô", "parent_id": 20000 },
+  { "id": 20005, "name": "Trái cây hữu cơ", "parent_id": 20000 },
+
+  {
+    "id": 30000,
+    "name": "Gạo & Ngũ cốc",
+    "parent_id": null
+  },
+  { "id": 30001, "name": "Gạo đặc sản", "parent_id": 30000 },
+  { "id": 30002, "name": "Gạo hữu cơ", "parent_id": 30000 },
+  { "id": 30003, "name": "Ngũ cốc nguyên cám", "parent_id": 30000 },
+  { "id": 30004, "name": "Các loại đậu", "parent_id": 30000 },
+  { "id": 30005, "name": "Hạt dinh dưỡng", "parent_id": 30000 },
+
+  {
+    "id": 40000,
+    "name": "Đặc sản vùng miền",
+    "parent_id": null
+  },
+  { "id": 40001, "name": "Đặc sản miền Bắc", "parent_id": 40000 },
+  { "id": 40002, "name": "Đặc sản miền Trung", "parent_id": 40000 },
+  { "id": 40003, "name": "Đặc sản miền Nam", "parent_id": 40000 },
+  { "id": 40004, "name": "Hải sản khô", "parent_id": 40000 },
+  { "id": 40005, "name": "Mật ong & sản phẩm ong", "parent_id": 40000 },
+
+  {
+    "id": 50000,
+    "name": "Thực phẩm khô",
+    "parent_id": null
+  },
+  { "id": 50001, "name": "Các loại mứt", "parent_id": 50000 },
+  { "id": 50002, "name": "Các loại hạt khô", "parent_id": 50000 },
+  { "id": 50003, "name": "Nấm khô", "parent_id": 50000 },
+  { "id": 50004, "name": "Miến & bún khô", "parent_id": 50000 },
+  { "id": 50005, "name": "Gia vị khô", "parent_id": 50000 },
+
+  {
+    "id": 60000,
+    "name": "Sản phẩm công nghiệp",
+    "parent_id": null
+  },
+  { "id": 60001, "name": "Cà phê hạt & bột", "parent_id": 60000 },
+  { "id": 60002, "name": "Chè xanh, chè đen", "parent_id": 60000 },
+  { "id": 60003, "name": "Cao su sơ chế", "parent_id": 60000 },
+  { "id": 60004, "name": "Hạt điều rang muối", "parent_id": 60000 },
+  { "id": 60005, "name": "Hạt tiêu đen, tiêu sọ", "parent_id": 60000 },
+
+  {
+    "id": 70000,
+    "name": "Nông sản xuất khẩu",
+    "parent_id": null
+  },
+  { "id": 70001, "name": "Gạo xuất khẩu", "parent_id": 70000 },
+  { "id": 70002, "name": "Điều xuất khẩu", "parent_id": 70000 },
+  { "id": 70003, "name": "Hồ tiêu xuất khẩu", "parent_id": 70000 },
+  { "id": 70004, "name": "Trái cây đông lạnh", "parent_id": 70000 },
+  { "id": 70005, "name": "Thủy sản sơ chế đông lạnh", "parent_id": 70000 },
+
+  {
+    "id": 80000,
+    "name": "Thảo dược ",
+    "parent_id": null
+  },
+  { "id": 80001, "name": "Lá & rễ thuốc nam", "parent_id": 80000 },
+  { "id": 80002, "name": "Trà thảo dược", "parent_id": 80000 },
+  { "id": 80003, "name": "Tinh dầu thiên nhiên", "parent_id": 80000 },
+  { "id": 80004, "name": "Đông trùng hạ thảo", "parent_id": 80000 },
+  { "id": 80005, "name": "Nấm dược liệu", "parent_id": 80000 },
+
+  {
+    "id": 90000,
+    "name": "Sản phẩm chăn nuôi",
+    "parent_id": null
+  },
+  { "id": 90001, "name": "Thịt heo sạch", "parent_id": 90000 },
+  { "id": 90002, "name": "Thịt gà, vịt ", "parent_id": 90000 },
+  { "id": 90003, "name": "Trứng gà ta, trứng vịt", "parent_id": 90000 },
+  { "id": 90004, "name": "Thịt sơ chế", "parent_id": 90000 },
+  { "id": 90005, "name": "Thịt bò", "parent_id": 90000 },
+
+  {
+    "id": 100000,
+    "name": "Thuỷ sản",
+    "parent_id": null
+  },
+  { "id": 100001, "name": "Tôm", "parent_id": 100000 },
+  { "id": 100002, "name": "Cá biển", "parent_id": 100000 },
+  { "id": 100003, "name": "Mực", "parent_id": 100000 },
+  { "id": 100004, "name": "Sò, ngao, ốc", "parent_id": 100000 },
+  { "id": 100005, "name": "Cua, ghẹ", "parent_id": 100000 }
+]

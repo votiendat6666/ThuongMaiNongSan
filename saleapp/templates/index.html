@@ -1,0 +1,640 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Trang chủ{% endblock %}
+
+{% block imageBackground %}
+{% if show_full_image %}
+ <div class="hero-wrapper" style="position: relative; width: 100%; overflow: hidden;">
+    <img src="https://nonglamfood.com/uploads/images/images-trangchu/bg-top.png"
+         alt="Background"
+         style="width: 100%; height: auto; display: block; margin-top:-200px;">
+    <div class="hero-content"
+         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%; padding: 0 20px; box-sizing: border-box;">
+        <h1 style="font-size: 40px; color: #fff; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 0 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2); max-width: 100%; word-break: break-word;">
+            Cung cấp nông sản sạch
+        </h1>
+        <h2 style="font-size: 30px; color: #00713b; font-weight: 900; text-transform: uppercase; margin: 20px 0 0 0;">
+            An toàn - Chất lượng - Uy tín - Giá rẻ
+        </h2>
+        <div class="stats-box">
+            <div class="stats-item">
+                <div class="top">Sản lượng hàng tháng</div>
+                <div class="bottom" data-target="250" data-unit="tấn">0 tấn</div>
+            </div>
+            <div class="stats-item">
+                <div class="top">Đánh giá sản phẩm</div>
+                <div class="bottom" data-target="5" data-unit="sao">0 sao</div>
+            </div>
+            <div class="stats-item">
+                <div class="top">Cung cấp</div>
+                <div class="bottom" data-target="64" data-unit="tỉnh thành">0 tỉnh thành</div>
+            </div>
+            <div class="stats-item">
+                <div class="top">Xuất khẩu</div>
+                <div class="bottom" data-target="20" data-unit="quốc gia">0 quốc gia</div>
+            </div>
+        </div>
+
+        <div class="image-row">
+            <div class="image-item">
+                <img src="https://sanodyna.com.vn/wp-content/uploads/2020/12/0QDG8alS9V.jpg" alt="Ảnh 1">
+            </div>
+            <div class="image-item">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWttt1ozOrjlYPkON0iUuRZ_lLyF8RY3v0JGNlHCOmxuWkjJ-OPXmj_jxulB7CdigP-ik&usqp=CAU"
+                     alt="Ảnh 2">
+            </div>
+            <div class="image-item">
+                <img src="https://vcdn1-suckhoe.vnecdn.net/2023/07/14/A-nh-chu-p-Ma-n-hi-nh-2023-07-2247-7986-1689303203.png?w=0&h=0&q=100&dpr=2&fit=crop&s=EOHNQtXnGbL8N30OupOCFw"
+                     alt="Ảnh 3">
+            </div>
+            <div class="image-item">
+                <img src="https://image.plo.vn/1200x630/Uploaded/2025/tmuihk/2022_06_10/thi-9990.jpg" alt="Ảnh 4">
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div>
+    <img src="https://cdn-icons-png.flaticon.com/128/18080/18080046.png"
+         alt="Scroll to Top"
+         id="scrollToTop"
+         style="position: fixed; bottom: 270px; right: 20px; width: 30px; height: 30px; cursor: pointer; transition: transform 0.3s ease;"
+         onmouseover="this.style.transform='scale(1.2)'"
+         onmouseout="this.style.transform='scale(1)'"/>
+
+    <!-- Nút cuộn xuống cuối trang -->
+    <img src="https://cdn-icons-png.flaticon.com/128/18080/18080046.png"
+         alt="Scroll to Bottom"
+         id="scrollToBottom"
+         style="position: fixed; bottom: 230px; right: 20px; width: 30px; height: 30px; cursor: pointer; transform: rotate(180deg); transition: transform 0.3s ease;"
+         onmouseover="this.style.transform='rotate(180deg) scale(1.2)'"
+         onmouseout="this.style.transform='rotate(180deg) scale(1)'"/>
+
+    <!--    Gioiw thiệu trang chủ-->
+    <div class="intro-section">
+        <div class="intro-box intro-box-1">
+            <img src="https://hongthaigroup.com/wp-content/uploads/2022/10/Giai-phap-che-bien-nong-san.jpg"
+                 alt="Nông nghiệp">
+        </div>
+
+        <div class="intro-box intro-box-2">
+            <p>
+                <strong style="color:#00713b;">TD SHOP</strong> là nhà sản xuất và xuất khẩu chuyên nghiệp các sản phẩm
+                nông sản sạch, chất
+                lượng cao từ Việt Nam.
+                <br><br>
+                Chúng tôi khởi nguồn từ Trường Đại học Mở TP.HCM, mang trong mình sứ mệnh “Gìn giữ giá trị tự nhiên”
+                thông qua khoa học công nghệ và phát triển bền vững.
+                <br><br>
+                Với đội ngũ nghiên cứu & phát triển (R&D) giàu kinh nghiệm, hợp tác chặt chẽ cùng các nhà khoa học,
+                Nonglamfood không ngừng đổi mới để đem đến những sản phẩm nông sản an toàn, giữ trọn hương vị tự nhiên,
+                đáp ứng nhu cầu trong nước và quốc tế.
+                <br><br>
+                Nguyên liệu được chọn lọc từ những vùng nông nghiệp đặc sản của Việt Nam, như vùng phù sa sông Mê Kông,
+                cao nguyên đất đỏ bazan Tây Nguyên và nhiều vùng trồng nổi tiếng khác. Mỗi sản phẩm đều bắt đầu từ những
+                mùa vụ đạt chất lượng cao nhất, đảm bảo hương vị, màu sắc và giá trị dinh dưỡng vượt trội.
+            </p>
+        </div>
+    </div>
+<div style="display: flex; justify-content: center; align-items: center; margin-bottom:3vh">
+  <div style="display: flex; gap: 10px; max-width: 1200px; border-radius: 8px; overflow: hidden;">
+     <img src="{{ url_for('static', filename='images/rauCu.png') }}"
+         alt="Banner 1"
+         style="width: 100%; height: auto; display: block;">
+  </div>
+</div>
+
+    <div class="product-title-wrapper">
+        <h2 class="product-title">DANH MỤC SẢN PHẨM</h2>
+    </div>
+    <!-- KHUNG MENU + CONTENT ĐỘC LẬP CHIỀU CAO -->
+    <div class="container-fluid" style="display: flex; height: 400px;  ">
+
+        {%block menu%}
+        <!-- MENU CỐ ĐỊNH BÊN TRÁI -->
+        <div class="col-2"
+             style="height: 400px; overflow-y: auto; border-right: 1px solid #eee; scrollbar-width: none; background-color: white; border-radius: 8px;">
+            <div style="padding: 0 10px;">
+                <ul style="list-style: none; padding-left: 0;">
+                    {% for parent in categories if parent.parent_id is none %}
+                    <li>
+                        <div class="parent-item">
+                            <a  href="{{ url_for('category_page', category_id=parent.id) }}" class="parent-link">{{ parent.name }}</a>
+                            <span id="arrow-{{ parent.id }}"
+                                  class="fa-solid fa-chevron-down chevron-icon {% if parent.id == selected_parent_id %}rotate{% endif %}"
+                                  onclick="event.stopPropagation(); toggleSubMenu({{ parent.id }})">
+                            </span>
+                        </div>
+
+                        <ul id="submenu-{{ parent.id }}"
+                            class="submenu {% if parent.id == selected_parent_id %}open{% endif %}">
+                            {% for child in categories if child.parent_id == parent.id %}
+                            <li>
+                                <a href="{{ url_for('category_page', category_id=child.id) }}"
+                                   class="category-link {% if child.id == selected_category_id|int %}active{% endif %}">
+                                    {{ child.name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endblock %}
+
+        <!-- NỘI DUNG BÊN PHẢI -->
+        <div class="col-10 d-flex flex-column"
+             style="overflow: hidden; margin-left: 10px; border-radius: 8px;height: 100%;">
+            <!-- Hàng trên 70% -->
+            <div class="d-flex" style="flex: 4; gap: 10px;">
+
+                <!-- Cột 7 bên trái -->
+                <div id="banner-wrapper"
+                     style="position: relative; flex: 6; border-radius: 4px; overflow: hidden; aspect-ratio: 655/393; width: 100%;">
+                    <!-- Slide container -->
+                    <div id="main-banner" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+                        <!-- Slide hiện tại -->
+                        <div id="slide-current"
+                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://vn4u.vn/wp-content/uploads/2023/07/bai-viet-rau-sach.jpeg'); background-repeat: no-repeat; background-size: cover; background-position: center;"></div>
+                        <!-- Slide mới -->
+                        <div id="slide-next"
+                             style="position: absolute; top: 0; left: 100%; width: 100%; height: 100%; background-repeat: no-repeat; background-size: cover; background-position: center;"></div>
+                    </div>
+
+                    <!-- Nút trái -->
+                    <button id="prev-btn"
+                            style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: transparent; color: white; border: none; padding: 10px; cursor: pointer;">
+                        ❮
+                    </button>
+
+                    <!-- Nút phải -->
+                    <button id="next-btn"
+                            style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: transparent; color: white; border: none; padding: 10px; cursor: pointer;">
+                        ❯
+                    </button>
+                </div>
+
+
+                <!-- Cột 3 bên phải, chia 2 hàng nhỏ -->
+                <div class="d-flex flex-column" style="flex: 3; gap: 10px;">
+                    <div style="flex: 1;
+                                  border-radius: 4px;
+                                  overflow: hidden;
+                                  aspect-ratio: 655 / 191;
+                                  width: 100%;
+                                  background-image: url('https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2022/1/18/20190425063710470758rauxanhmax-800x8001-164247973908380094864.jpg');
+                                  background-repeat: no-repeat;
+                                  background-size: cover; /* Đảm bảo ảnh phủ đầy */
+                                  background-position: center; /* Căn giữa ảnh */
+                                ">
+                    </div>
+                    <div style="flex: 1;
+                              border-radius: 4px;
+                              overflow: hidden;
+                              aspect-ratio: 655 / 391;
+                              width: 100%;
+                              background-image: url('https://hongthaigroup.com/wp-content/uploads/2022/10/Giai-phap-che-bien-nong-san.jpg');
+                              background-repeat: no-repeat;
+                              background-size: cover; /* Đảm bảo ảnh phủ đầy */
+                              background-position: center; /* Căn giữa ảnh */
+                            ">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div style="width: 100%; text-align: center; margin-top: 60px; background-color: #52a851; padding: 10px; ">
+        <p style="font-size: 25px; margin-bottom: 0; color: #FFF; font-weight: 700; text-transform: uppercase;">
+            Nông sản Việt - Mang sức khỏe và cuộc sống an lành đến mọi nơi
+        </p>
+    </div>
+
+
+    {%include 'product-section.html' %}
+
+</div>
+
+<script>
+    // Hiệu ứng đếm số ngẫu nhiên
+    document.addEventListener('DOMContentLoaded', function() {
+      const counters = document.querySelectorAll('.bottom');
+
+      // Unit giả để loạn
+      const fakeUnits = ['Kg', 'tấn', 'lô', 'thùng', 'hộp', 'sao', 'tỉnh', 'thành','', 'quốc gia', 'mặt hàng'];
+
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const realUnit = counter.getAttribute('data-unit') || '';
+
+        let startTime = null;
+        const duration = 1000; // tổng thời gian random, ms
+
+        function animate(time) {
+          if (!startTime) startTime = time;
+          const elapsed = time - startTime;
+
+          if (elapsed < duration) {
+            const randomNumber = Math.floor(Math.random() * target * 1.2);
+            const randomUnit = fakeUnits[Math.floor(Math.random() * fakeUnits.length)];
+            counter.textContent = `${randomNumber} ${randomUnit}`;
+            requestAnimationFrame(animate);
+          } else {
+            // Kết thúc, gán số thật
+            counter.textContent = `${target} ${realUnit}`;
+          }
+        }
+
+        requestAnimationFrame(animate);
+      });
+    });
+
+
+
+        //Đóng mở menu con
+    function toggleSubMenu(id) {
+        const allSubmenus = document.querySelectorAll('.submenu');
+        const allArrows = document.querySelectorAll('.chevron-icon');
+
+        const currentSubmenu = document.getElementById('submenu-' + id);
+        const currentArrow = document.getElementById('arrow-' + id);
+
+        // Đóng tất cả các submenu khác
+        allSubmenus.forEach(sub => {
+            if (sub !== currentSubmenu) sub.classList.remove('open');
+        });
+
+        // Xoay lại tất cả mũi tên khác
+        allArrows.forEach(arrow => {
+            if (arrow !== currentArrow) arrow.classList.remove('rotate');
+        });
+
+        // Toggle submenu được bấm
+        currentSubmenu.classList.toggle('open');
+        currentArrow.classList.toggle('rotate');
+    }
+        // --- Nút cuộn lên/xuống (giữ nguyên) ---
+        document.getElementById("scrollToTop").addEventListener("click", function() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        document.getElementById("scrollToBottom").addEventListener("click", function() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        });
+
+        // --- Logic cho nút Xem thêm / Thu gọn ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-products-btn');
+            const productContainer = document.getElementById('product-container');
+
+            const initialProductCount = 24;
+            const loadLimit = 156;
+
+            let currentOffset = initialProductCount;
+            let allProductsLoaded = false;
+
+            const initialProductsHTML = productContainer.innerHTML;
+
+            if (toggleButton && productContainer) {
+                toggleButton.addEventListener('click', function() {
+                    if (toggleButton.textContent === 'Xem thêm') {
+                        if (!allProductsLoaded) {
+                            const params = new URLSearchParams(window.location.search);
+                            params.set("offset", currentOffset);
+                            params.set("limit", loadLimit);
+
+                            fetch(`/load-products?${params.toString()}`)
+                                .then(res => res.text())
+                                .then(html => {
+                                    if (html.trim() === '') {
+                                        allProductsLoaded = true;
+                                        toggleButton.textContent = 'Thu gọn';
+                                    } else {
+                                        productContainer.insertAdjacentHTML('beforeend', html);
+                                        currentOffset += loadLimit;
+
+                                        // Kiểm tra có còn sản phẩm không
+                                        const checkParams = new URLSearchParams(window.location.search);
+                                        checkParams.set("offset", currentOffset);
+                                        checkParams.set("limit", 1);
+                                        fetch(`/load-products?${checkParams.toString()}`)
+                                            .then(resCheck => resCheck.text())
+                                            .then(htmlCheck => {
+                                                if (htmlCheck.trim() === '') {
+                                                    allProductsLoaded = true;
+                                                    toggleButton.textContent = 'Thu gọn';
+                                                }
+                                            })
+                                            .catch(error => console.error('Error checking more products:', error));
+                                    }
+                                })
+                                .catch(error => console.error('Error loading products:', error));
+                        } else {
+                            toggleButton.textContent = 'Thu gọn';
+                        }
+                    } else {
+                        productContainer.innerHTML = initialProductsHTML;
+                        toggleButton.textContent = 'Xem thêm';
+                        currentOffset = initialProductCount;
+                        allProductsLoaded = false;
+                    }
+                });
+            }
+        });
+
+        // --- Logic cho slide ảnh ---
+         const images = [
+        'https://vn4u.vn/wp-content/uploads/2023/07/bai-viet-rau-sach.jpeg',
+        'https://cdn.tgdd.vn/2021/04/CookProduct/13-1200x676.jpg',
+        'https://bvlvpqn.vn/wp-content/uploads/2021/11/well-foods-microbiome-superJumbo-e1638112303735.jpg',
+        'https://vcdn1-suckhoe.vnecdn.net/2023/07/14/A-nh-chu-p-Ma-n-hi-nh-2023-07-2247-7986-1689303203.png?w=0&h=0&q=100&dpr=2&fit=crop&s=EOHNQtXnGbL8N30OupOCFw',
+        'https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2021/7/22/le1bbb1a20che1bb8dn20trc3a1i20cc3a2y20c491e1bb8320c491e1baa3m20be1baa3o20dinh20dc6b0e1bba1ng20te1bb91t20nhe1baa5t-1626924648367-1626924649678706100128.jpg'
+      ];
+
+      let currentIndex = 0;
+
+      const slideCurrent = document.getElementById('slide-current');
+      const slideNext = document.getElementById('slide-next');
+
+      function slide(direction) {
+        let nextIndex = currentIndex + direction;
+        if (nextIndex < 0) nextIndex = images.length - 1;
+        if (nextIndex >= images.length) nextIndex = 0;
+
+        // Cập nhật ảnh slide mới
+        slideNext.style.backgroundImage = `url('${images[nextIndex]}')`;
+
+        // Xác định slide đi sang trái hay phải
+        slideCurrent.style.transition = 'transform 0.5s ease';
+        slideNext.style.transition = 'transform 0.5s ease';
+
+        slideCurrent.style.transform = `translateX(${direction > 0 ? '-100%' : '100%'})`;
+        slideNext.style.transform = `translateX(${direction > 0 ? '-100%' : '100%'})`;
+
+        // Sau khi chạy xong
+        setTimeout(() => {
+          // Reset vị trí
+          slideCurrent.style.transition = 'none';
+          slideNext.style.transition = 'none';
+
+          slideCurrent.style.transform = 'translateX(0)';
+          slideNext.style.transform = 'translateX(0)';
+
+          // Gán ảnh mới
+          slideCurrent.style.backgroundImage = `url('${images[nextIndex]}')`;
+          slideNext.style.left = '100%'; // Đẩy slideNext về phải
+
+          currentIndex = nextIndex;
+        }, 500);
+      }
+
+      document.getElementById('prev-btn').addEventListener('click', () => {
+        slide(-1);
+        resetAutoSlide();
+      });
+      document.getElementById('next-btn').addEventListener('click', () => {
+        slide(1);
+        resetAutoSlide();
+      });
+
+      // Auto slide 10s
+      let autoSlide = setInterval(() => slide(1), 3000);
+
+      function resetAutoSlide() {
+        clearInterval(autoSlide);
+        autoSlide = setInterval(() => slide(1), 3000);
+      }
+
+
+</script>
+
+<style>
+    .col-2{
+        width: 17%;
+    }
+
+    /* CSS cho tiêu đề sản phẩm */
+    .product-title-wrapper {
+      display: flex;
+      justify-content: center; /* Căn ngang */
+      align-items: center;     /* Căn dọc */
+      border-bottom: 5px solid rgb(0 172 91); /* Gạch dưới */
+      margin-bottom: 60px ; /* Khoảng cách trên dưới */
+      text-shadow: 0 0 2px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(255, 255, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+      .product-title {
+      text-align: center;
+      color: #459e27;
+      font-weight: 800;
+      font-size: 50px;
+      margin-bottom: 60px; /* Khoảng cách trên dưới */
+      position: relative;
+      display: inline-block; /* Để gạch chỉ dài bằng chữ */
+    }
+
+
+    /* CSS cho phần giới thiệu trang chủ */
+    .intro-section {
+      display: flex;
+      justify-content: center;
+      align-items: stretch; /* 2 box cao bằng nhau */
+      gap: 0;
+      width: 90%;
+      max-width: 1200px;
+      margin: 40px auto;
+    }
+
+    .intro-box {
+      border-radius: 30px;
+      width: 50%;
+      box-sizing: border-box;
+      overflow: hidden; /* Bo góc + ẩn tràn ảnh */
+    }
+
+    .intro-box-1 {
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro-box-1 img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .intro-box-2 {
+      background: white;
+      color: #333;
+      margin-left: -50px; /* Đè nhẹ qua trái */
+      z-index: 2;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      line-height: 1.6;
+      padding: 40px;
+    }
+
+
+
+        /* CSS cho phần hero-wrapper */
+    .image-row {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 20px;
+      max-width: 1240px;
+      margin: 40px auto;
+      padding: 0 20px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .image-item {
+      flex: 0 0 auto; /* Giữ nguyên kích thước */
+      width: calc(25% - 20px);
+      min-width: 200px; /* Không nhỏ hơn để đảm bảo đẹp */
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    /* Stats box giữ trên 1 dòng */
+    .stats-box {
+      display: flex;
+      flex-wrap: nowrap; /* Không xuống dòng */
+      justify-content: space-between;
+      background: linear-gradient(to right, transparent, #459E27, transparent);
+      padding: 20px 200px;
+      overflow-x: auto; /* Có thể cuộn ngang nếu thiếu chỗ */
+      overflow-y: hidden;
+      margin: 20px auto;
+      scrollbar-width: none; /* Ẩn thanh cuộn ngang */
+
+    }
+
+    .stats-item {
+      flex: 0 0 auto; /* Không co */
+      min-width: 120px; /* Giữ chiều rộng tối thiểu */
+      margin-right: 20px; /* Khoảng cách giữa các box */
+    }
+
+    .stats-item .top {
+      color: #000;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .stats-item .bottom {
+      color: #fff;
+      font-size: 28px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+
+        .submenu {
+            max-height: 400px;            /* Hiển thị tối đa 300px */
+            overflow-y: auto;             /* Cho phép cuộn */
+            transition: max-height 0.4s ease;
+            padding-left: 1em;
+            list-style: none;
+            scrollbar-width: none; /* Ẩn thanh cuộn ngang */
+        }
+        .submenu.open {
+        max-height: 400px; /* đủ lớn để hiển thị toàn bộ */
+        }
+        .submenu:not(.open) {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .category-link {
+            text-decoration: none;
+            font-size: 13px;
+            line-height: 2.5;
+            font-weight: 500;
+            display: inline-block;
+            transition: color 0.3s;
+            color: #555;
+        }
+
+        .category-link:hover,
+        .category-link.active {
+            color: #FF6600;
+        }
+
+        .parent-item {
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .parent-item:hover {
+            color: #FF6600;
+        }
+
+        .chevron-icon {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.3s;
+        }
+
+        .chevron-icon.rotate {
+            transform: rotate(180deg);
+        }
+        .parent-link {
+        font-weight: 700;
+        font-size: 13px;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .parent-link:hover {
+        color: #FF6600;
+    }
+
+        .chevron-icon {
+        font-size: 12px;
+        color: #999;
+        transition: transform 0.3s;
+        padding: 15px; /* tăng vùng bấm */
+        cursor: pointer;
+    }
+    #main-banner {
+      overflow: hidden;
+    }
+
+    .slide-anim {
+      transition: transform 0.5s ease;
+    }
+</style>
+
+{% endblock %}
+
+

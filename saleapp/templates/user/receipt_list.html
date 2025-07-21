@@ -1,0 +1,106 @@
+<!-- Receipt items -->
+{% for receipt in receipts %}
+<div class="receipt-item border rounded p-3 mb-4"
+     style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+    <!-- Dòng 1: Header -->
+    <div class="d-flex justify-content-between align-items-center mb-2" style="border-bottom: 1px solid #ddd; padding-bottom: 20px;
+         padding-top: 20px;">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background-color: #ee4d2d; color: white; padding: 5px 10px;">Yêu thích</span>
+            <span style=" text-transform: uppercase;font-weight:bold;">
+        {% if receipt.receipt_details and receipt.receipt_details[0].product.category %}
+          {{ receipt.receipt_details[0].product.category.name }}
+        {% else %}
+          Không có danh mục
+        {% endif %}
+      </span>
+            <a href="#" style="text-decoration: none;">Xem chi tiết</a>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+      <span style="color: #26aa99; padding-right: 10px; border-right: 1px solid #ccc;">
+        {{ receipt.status|title }}
+      </span>
+            <span style="color:#ee4d2d;">HOÀN THÀNH</span>
+        </div>
+    </div>
+
+    <!-- Dòng 2: Chi tiết sản phẩm -->
+    {% for detail in receipt.receipt_details %}
+    <div class="d-flex justify-content-between align-items-center mb-2"
+         style=" padding-bottom: 10px; padding-top: 10px;">
+        <div class="d-flex align-items-center flex-grow-1">
+            <img src="{{ detail.product.image }}" alt="Product" class="me-3"
+                 style="width: 80px; height: 80px; object-fit: cover;">
+            <div>
+                <div style="font-size: 16px;">{{ detail.product.name }}</div>
+                <div style="color: #555; font-size:13px;">Số lượng: <span
+                        style="font-size:15px;">x{{ detail.quantity }}</span></div>
+            </div>
+        </div>
+        <div class="text-end" style="display: flex; font-size: 13px;">
+            <div style="display: flex; margin-right: 10px; position: relative;">
+                <del style="color: #888;">
+                    <span style="font-size: 10px; position: relative; top: -3px;">₫</span>{{ ((detail.product.price) /
+                    (1 - detail.product.voucher / 100)) | format_vnd }}
+                </del>
+            </div>
+            <div style="color: #ee4d2d; display: flex; position: relative;">
+                <span style="font-size: 10px; position: relative;">₫</span> <span>{{ '{:,.0f}'.format(detail.price).replace(',', '.') }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Dòng 3: Tổng -->
+    <div class="text-end" style="border-top: 1px solid #ddd; padding-top: 20px; background-color: #fffefb;">
+        <span style="color: rgba(0,0,0,.8); margin-right: 5px;">Thành tiền: </span>
+        <span style="color: #ee4d2d; font-size: 24px;">
+      <span style="vertical-align: 6px; font-size: 17px;">₫</span>{{ '{:,.0f}'.format(receipt.final_amount).replace(',', '.') }}
+    </span>
+    </div>
+
+    <!-- Dòng 4: Các nút thao tác -->
+    <div class="d-flex justify-content-end gap-2 mt-3" style="background-color: #fffefb;">
+        {% set one = rebuy_by_receipt | selectattr("receipt_id", "equalto", receipt.id) | first %}
+        {% if one %}
+        <button class="mua-hang-lai"
+                onclick='addAllToCart({{ one.details | tojson | safe }})'>
+            Mua lại
+        </button>
+        {% endif %}
+        <button class="hien-he-shop">Liên hệ shop</button>
+        <button class="danh-gia-san-pham">Đánh giá sản phẩm</button>
+    </div>
+
+</div>
+{% endfor %}
+<script>
+    async function addAllToCart(products) {
+      if (!products || products.length === 0) {
+        alert("Không có sản phẩm để mua lại");
+        return;
+      }
+
+      // Chạy tất cả addToCart và chờ nó xong
+      const promises = products.map(p => {
+        return fetch('/api/add-cart', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            quantity: p.quantity
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(res => res.json());
+      });
+
+      await Promise.all(promises);
+
+      // ✅ Khi tất cả đã xong → chuyển hướng giỏ hàng
+      window.location.href = '/cart';
+    }
+</script>

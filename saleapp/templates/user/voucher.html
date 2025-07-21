@@ -1,0 +1,76 @@
+
+
+{% extends 'user/layout.html' %}
+{% import 'user/voucher_macro.html' as voucher_macros %}
+
+{% block title %} Voucher {% endblock %}
+
+{% block content_right %}
+<div style="background-color:#fff; padding:20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+  {{ voucher_macros.voucher_modal(voucher,order_total_amount_selected, session_voucher_code) }}
+<script>
+  // 👉 Biến giữ voucher đang chọn
+  var sessionVoucherCode = "{{ session_voucher_code | default('', true) }}";
+  var selectedVoucher = {
+    code: sessionVoucherCode || null,
+    price: 0,
+    minOrder: 0
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.copy-button');
+    const wrappers = document.querySelectorAll('.voucher-code-wrapper');
+
+    // Nếu mở ra có sẵn session voucher → gán nút 'Đã chọn'
+    if (sessionVoucherCode) {
+      buttons.forEach(b => {
+        if (b.dataset.voucherCode === sessionVoucherCode) {
+          selectedVoucher.code = sessionVoucherCode;
+          updateButtonState(b);
+        }
+      });
+    }
+
+    // Click nút 'Chọn mã'
+    buttons.forEach(button => {
+      button.addEventListener('click', function () {
+        handleVoucherClick(this, buttons);
+      });
+    });
+
+    // Click wrapper → cũng chọn
+    wrappers.forEach(wrapper => {
+      wrapper.addEventListener('click', function () {
+        const button = this.closest('.voucher-card').querySelector('.copy-button');
+        handleVoucherClick(button, buttons);
+      });
+    });
+
+    function handleVoucherClick(button, buttons) {
+      const code = button.dataset.voucherCode;
+
+      if (selectedVoucher.code === code) {
+        selectedVoucher.code = null;
+      } else {
+        selectedVoucher.code = code;
+      }
+
+      buttons.forEach(b => {
+        if (b.dataset.voucherCode === selectedVoucher.code) {
+          updateButtonState(b);
+        } else {
+          b.textContent = 'Chọn mã';
+          b.classList.remove('copied');
+        }
+      });
+    }
+
+    function updateButtonState(button) {
+      button.textContent = 'Đã chọn';
+      button.classList.add('copied');
+    }
+  });
+</script>
+</div>
+{% endblock %}

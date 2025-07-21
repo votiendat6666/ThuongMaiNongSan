@@ -1,0 +1,319 @@
+{% macro voucher_modal(voucher,order_total_amount_selected, session_voucher_code) %}
+{% macro wallet_icon(fill_color="#f56b0f", width="24px", height="24px") %}
+<svg xmlns="http://www.w3.org/2000/svg" height="{{ height }}" viewBox="0 -960 960 960" width="{{ width }}"
+     fill="{{ fill_color }}">
+    <path d="M480.01-293.85q12.76 0 21.37-8.63 8.62-8.62 8.62-21.38t-8.63-21.37q-8.63-8.62-21.38-8.62-12.76 0-21.37
+      8.63-8.62 8.63-8.62 21.39 0 12.75 8.63 21.37 8.63 8.61 21.38 8.61Zm0-156.15q12.76 0 21.37-8.63 8.62-8.63 8.62-21.38
+      0-12.76-8.63-21.37-8.63-8.62-21.38-8.62-12.76 0-21.37 8.63-8.62 8.63-8.62 21.38 0 12.76 8.63 21.37 8.63 8.62 21.38
+      8.62Zm0-156.15q12.76 0 21.37-8.63 8.62-8.63 8.62-21.39 0-12.75-8.63-21.37-8.63-8.61-21.38-8.61-12.76 0-21.37 8.63-8.62
+      8.62-8.62 21.38t8.63 21.37q8.63 8.62 21.38 8.62ZM787.69-180H172.31q-29.83 0-51.07-21.24Q100-222.48
+      100-252.31v-131.53q34.16-6.54 57.08-33.51Q180-444.31 180-480t-22.92-62.65q-22.92-26.97-57.08-33.51v-131.53q0-29.83
+      21.24-51.07Q142.48-780 172.31-780h615.38q29.83 0 51.07 21.24Q860-737.52 860-707.69v131.53q-34.16 6.54-57.08 33.51Q780-515.69
+      780-480t22.92 62.65q22.92 26.97 57.08 33.51v131.53q0 29.83-21.24 51.07Q817.52-180 787.69-180Zm0-60q5.39 0
+      8.85-3.46t3.46-8.85V-342q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-89.69q0-5.39-3.46-8.85t-8.85-3.46H172.31q-5.39 0-8.85 3.46t-3.46 8.85V-618q37
+      22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v89.69q0 5.39 3.46 8.85t8.85 3.46h615.38ZM480-480Z"/>
+</svg>
+{% endmacro %}
+
+<div class="voucher-container">
+    {% for p in voucher %}
+    <div class="voucher-card">
+        <div class="voucher-icon-section">
+            {{ wallet_icon(fill_color="#fff", width="40px", height="40px") }}
+        </div>
+
+        <div class="voucher-content">
+            <div class="voucher-header">
+                <h3 class="voucher-title">{{ p.name }}</h3>
+                <p class="voucher-detail-link"
+                   onclick="openVoucherDetails(
+                      '{{ p.name }}',
+                     '{{ p.code }}',
+                     '{{ p.min_order_value }}',
+                     '{{ p.hsd }}',
+                     '{{ p.description }}',
+                     '{{ p.price_voucher }}')">Chi tiết
+                </p>
+            </div>
+            <p onclick="openVoucherDetails()" class="voucher-description">{{ p.description }}</p>
+
+            <div class="voucher-code-wrapper"
+                 data-voucher-code="{{ p.code }}"
+                 data-voucher-price="{{ p.price_voucher }}">
+                <span class="code-icon"><i class="fa-regular fa-copy" style="color:#333333;"></i></span>
+                <span class="voucher-code-display">{{ p.code }}</span>
+            </div>
+
+            <div class="voucher-footer">
+                <span class="voucher-hsd">HSD: {{ p.hsd }}</span>
+                <button class="copy-button"
+                        data-voucher-code="{{ p.code }}"
+                        data-voucher-price="{{ p.price_voucher }}"
+                        data-min-order="{{ p.min_order_value }}">
+
+                    Chọn mã
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- ✅ MODAL CHI TIẾT VOUCHER -->
+<div id="voucher-details-modal"
+     style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+     background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;"
+     onclick="closeVoucherDetails(event)">
+
+    <div id="voucher-details-content"
+         style="background: #fff; border-radius: 8px; max-width: 600px; text-align: left; width: 100%;"
+         onclick="event.stopPropagation()">
+
+        <!-- ✅ Header chính nằm giữa -->
+        <div style="  display: flex;  align-items: center;  box-shadow: 0 4px 7px -2px rgba(0,0,0,0.15);">
+            <h3 style="flex: 1; text-align: center; padding: 20px 30px; font-size: 18px; font-weight: bold; color: #0071c2; margin: 0;">
+                ĐIỀU KIỆN ÁP DỤNG
+            </h3>
+        </div>
+
+        <div style="padding: 20px 30px; padding-bottom: 0;">
+            <p style="font-weight: 600;">MÃ GIẢM GIÁ</p>
+            <div style="background: #f2ddc3ab; min-height: 200px; color: #ea7601; padding: 10px; border-radius: 4px;">
+                <p>Tên Voucher: <span id="modal-voucher-name"></span></p>
+                <p>Mã Code: <span id="modal-voucher-code"></span></p>
+                <p><span id="modal-voucher-price"></span></p>
+                <p><span id="modal-voucher-condition"></span></p>
+                <p>Hạn sử dụng: <span id="modal-voucher-hsd"></span></p>
+            </div>
+            <div>
+                <p style="font-size:13px;line-height:2; padding:10px 0;">
+                    <span style="font-weight: 600; font-size:16px;">ĐIỀU KIỆN ÁP DỤNG</span> <br>
+                    - Áp dụng cho tất cả đơn hàng nông sản tươi, rau củ quả và đặc sản vùng miền.<br>
+                    - Đơn hàng phải đạt giá trị tối thiểu theo quy định để được áp dụng mã giảm giá.<br>
+                    - Không áp dụng đồng thời với các chương trình khuyến mãi khác trừ khi có quy định riêng.<br>
+                    - Mỗi khách hàng chỉ được sử dụng 1 mã giảm giá cho 1 đơn hàng.<br>
+                    - Mã giảm giá không quy đổi thành tiền mặt và không hoàn lại tiền thừa.<br>
+                    - Chỉ áp dụng cho các đơn hàng giao trong nội thành và các khu vực hỗ trợ giao nhanh.<br>
+                    - Thời hạn áp dụng theo thời gian ghi trên voucher hoặc đến khi hết ngân sách chương trình.<br>
+                    - Khách hàng có thể áp dụng cùng lúc với mã giảm phí vận chuyển.
+                </p>
+            </div>
+        </div>
+
+
+        <!-- ✅ Nút đóng to, rộng full -->
+        <div style="padding : 15px 15px; text-align: center;    display: flex;  align-items: center;  box-shadow: 0 -4px 7px -2px rgba(0,0,0,0.15);">
+                    <button onclick="closeVoucherDetails()"
+                style=" padding: 12px 0; width: 100%;
+                   background: #0071c2; color: #fff; border: none; border-radius: 6px;
+                   cursor: pointer; font-size: 16px; font-weight: 600;">ĐÓNG
+        </button>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+    function openVoucherDetails(name,code, minOrder, hsd, description, price) {
+  <!--    // Xử lý cắt chuỗi description-->
+  <!--    let desc = description;-->
+  <!--    const idx = desc.toLowerCase().indexOf('mã');-->
+  <!--    if (idx !== -1) {-->
+  <!--      desc = desc.substring(idx).trim();-->
+  <!--      // Viết hoa ký tự đầu nếu cần-->
+  <!--      desc = desc.charAt(0).toUpperCase() + desc.slice(1);-->
+  <!--    }-->
+
+       document.getElementById('modal-voucher-name').innerText = name;
+      document.getElementById('modal-voucher-code').innerText = code;
+      document.getElementById('modal-voucher-condition').innerText = 'Đơn tối thiểu: ' + parseFloat(minOrder).toLocaleString() + ' VND';
+      document.getElementById('modal-voucher-hsd').innerText = hsd;
+  <!--    document.getElementById('modal-voucher-description').innerText = desc;-->
+      document.getElementById('modal-voucher-price').innerText = 'Giảm: ' + parseFloat(price).toLocaleString() + ' VND';
+      document.getElementById('voucher-details-modal').style.display = 'flex';
+    }
+
+    function closeVoucherDetails(evt) {
+      if (!evt || evt.target.id === 'voucher-details-modal') {
+        document.getElementById('voucher-details-modal').style.display = 'none';
+      }
+    }
+</script>
+
+
+<!-- ✅ Modal Thông Báo Lỗi Voucher -->
+<div id="voucher-error-modal"
+     style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+     background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;"
+     onclick="closeVoucherErrorModal(event)">
+    <div id="voucher-error-content"
+         style="background: #fff; border-radius: 8px; padding: 20px 30px; max-width: 400px; text-align: center;"
+         onclick="event.stopPropagation()">
+        <h4 style="margin-bottom: 15px;">Thông báo</h4>
+        <p id="voucher-error-message" style="margin-bottom: 20px; color: #555;"></p>
+        <button onclick="closeVoucherErrorModal()"
+                style="padding: 8px 20px; background: #ee4d2d; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+            Đóng
+        </button>
+    </div>
+</div>
+
+<!-- ✅ Macro voucher + SCRIPT LOGIC -->
+<style>
+    .voucher-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 cột mỗi hàng */
+        gap: 20px; /* Khoảng cách giữa các thẻ */
+        justify-content: center;
+        height: 100%;
+    }
+
+    .voucher-card {
+        background-color:white;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.08);
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        min-height: 160px;
+    }
+
+    .voucher-icon-section {
+        background-color: #28B928;
+        width: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .voucher-icon-section svg {
+        fill: #ffffff;
+        width: 40px;
+        height: 40px;
+    }
+
+    .voucher-content {
+        flex-grow: 1;
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .voucher-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .voucher-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.3;
+        margin-right: 10px;
+        margin-top: 0;
+    }
+
+    .voucher-detail-link {
+        font-size: 13px;
+        color: #007bff;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .voucher-detail-link:hover {
+        text-decoration: none;
+    }
+
+    .voucher-description {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.4;
+    }
+
+    .voucher-code-wrapper {
+        display: flex;
+        align-items: center;
+        background-color: #E3E5E5;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 6px 8px;
+        width: fit-content;
+        cursor: pointer;
+    }
+
+    .code-icon {
+        font-size: 16px;
+        color: red;
+        margin-right: 8px;
+    }
+
+    .voucher-code-display {
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .voucher-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .voucher-hsd {
+        font-size: 13px;
+        color: rgb(0, 123, 255);
+        align-items:bottom;
+        cursor: pointer;
+        margin-top:15px;
+    }
+
+    .copy-button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 100px; /* giữ cố định chiều rộng */
+      height: 36px; /* cố định chiều cao */
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Khi đã copy */
+    .copy-button.copied {
+        background-color: transparent;
+        color: #28a745;
+        border: none;
+    }
+
+    /* Dấu tích */
+    .copy-button.copied::before {
+        content: "✔";
+        color: #28a745;
+        font-weight: bold;
+}
+
+</style>
+{% endmacro %}
+
+

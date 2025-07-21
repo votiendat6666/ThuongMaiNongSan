@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kết quả thanh toán MoMo</title>
+</head>
+<body>
+  <h1>Kết quả thanh toán MoMo</h1>
+
+  <div id="qr"></div>
+  <div id="success" style="display:none; color:green; font-size:24px;">✅ Thanh toán thành công!</div>
+  <div id="fail" style="display:none; color:red; font-size:24px;">❌ Thanh toán thất bại!</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const resultCode = params.get('resultCode');
+
+      const payUrl = localStorage.getItem('momo_payUrl');
+      const receiptId = localStorage.getItem('momo_receipt_id');
+
+      if (!resultCode) {
+        // Chưa có resultCode: Hiển thị QR + mở link
+        if (payUrl) {
+          new QRCode(document.getElementById('qr'), payUrl);
+          window.open(payUrl, '_blank');
+        } else {
+          document.getElementById('qr').innerText = "Không tìm thấy link thanh toán!";
+        }
+
+        // ✅ POLLING kiểm tra trạng thái thanh toán
+        const checkPaid = setInterval(() => {
+          fetch(`/api/check_paid?receipt_id=${receiptId}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.is_paid) {
+                clearInterval(checkPaid);
+                document.getElementById('qr').style.display = 'none';
+                document.getElementById('success').style.display = 'block';
+              }
+            })
+            .catch(err => console.error('Lỗi kiểm tra thanh toán:', err));
+        }, 3000);
+
+      } else {
+        // Có resultCode (nếu redirect): Hiển thị kết quả
+        document.getElementById('qr').style.display = 'none';
+
+        if (resultCode === '0') {
+          document.getElementById('success').style.display = 'block';
+        } else {
+          document.getElementById('fail').style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

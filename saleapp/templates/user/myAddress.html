@@ -1,0 +1,202 @@
+{% extends 'user/layout.html' %}
+{% block title %}Sản phẩm bạn đã thích{% endblock %}
+
+{% block content_right %}
+<div style="background-color:#fff; padding:20px 0px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="padding: 20px; border-bottom: 1px solid #ddd;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 style="text-align: left; font-size: 28px; font-weight: 800; color: #565555; margin: 0;">
+                Danh sách địa chỉ
+            </h2>
+            <div class="address-add">
+                <button type="button" onclick="openEditAddressModal(false)"
+                        style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: #fff; color: #00713b; border: none;
+                       height: 41px; border-radius: 4px; cursor: pointer; border: 1px solid #00713b; padding: 0 12px;">
+                <span class="material-symbols-outlined"
+                      style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">add</span>
+                    Thêm địa chỉ mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    {% for address in addresses %}
+    <label class="address-item custom-radio">
+        <div class="address-content">
+            <div class="address-top">
+                <div class="address-info">
+                    <input type="radio" name="addressOption"
+                           value="{{ address.id }}"
+                           data-name="{{ address.receiver_name }}"
+                           data-phone="{{ address.receiver_phone }}"
+                           data-province="{{ address.receiver_province }}"
+                           data-district="{{ address.receiver_district }}"
+                           data-ward="{{ address.receiver_ward }}"
+                           data-line="{{ address.receiver_address_line }}"
+                           {% if address.is_default or loop.first %} checked {% endif %}>
+                    <strong style="font-size:20px;">{{ address.receiver_name }}</strong>
+                    <span style="height:30px; border-right: 1px solid #ccc;"></span>
+                    <span>(+84) {{ address.receiver_phone }}</span>
+                </div>
+                <button type="button"
+                        style="background: transparent; border: none; color: #08f; padding: 8px 16px; border-radius: 4px; cursor: pointer;"
+                        onclick="openEditAddressModal(true, '{{ address.id }}')">
+                    Thay đổi
+                </button>
+            </div>
+            <div class="address-line">{{ address.receiver_address_line }}</div>
+            <div class="address-region">{{ address.receiver_ward }}, {{ address.receiver_district }}, {{
+                address.receiver_province }}
+            </div>
+        </div>
+    </label>
+    {% endfor %}
+
+</div>
+<div id="editAddressModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header" id="editAddressModalTitle">Sửa Địa Chỉ</div>
+        <div class="modal-body">
+            <div class="input-group">
+                <input type="text" id="editName" placeholder="Họ tên">
+                <input type="text" id="editPhone" placeholder="Số điện thoại">
+            </div>
+            <div class="dropdown-address" id="provinceDropdown">
+                <button type="button" id="addressResult" onclick="toggleAddressTabs()">Chọn Tỉnh/Thành phố, Quận/Huyện,
+                    Phường/Xã ⌵
+                </button>
+                <div id="addressTabs" class="dropdown-box">
+                    <div class="tab-header">
+                        <div id="tab-province" onclick="switchTab('province')" class="tab active">Tỉnh/Thành phố</div>
+                        <div id="tab-district" onclick="switchTab('district')" class="tab">Quận/Huyện</div>
+                        <div id="tab-ward" onclick="switchTab('ward')" class="tab">Phường/Xã</div>
+                    </div>
+                    <div id="tabList" class="tab-list"></div>
+                </div>
+            </div>
+            <textarea style="height:269px;" id="editSpecificAddress" placeholder="Nhập địa chỉ cụ thể"></textarea>
+        </div>
+
+        <button type="button" onclick="deleteAddress()"
+                style="display: inline-flex; align-items: center; justify-content: center; gap: 1px; background:#fff ; color: red; border: none;
+                  height: 41px; border-radius: 4px; cursor: pointer;  margin: 5px 12px;">
+            <span style="width:15px; border-bottom:2px solid red; border-radius:60px; margin-right:4px;">  </span> Xoá
+            địa chỉ
+        </button>
+
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="closeEditAddressModal()">Huỷ</button>
+            <button class="btn-primary" onclick="saveAddress()">Lưu</button>
+        </div>
+    </div>
+</div>
+<style>
+    /* ✅ Modal overlay */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+
+    /* ✅ Modal overlay active */
+    .modal-overlay.active { display: flex; }
+
+    /* ✅ Hộp modal */
+    .modal-box {  background: #fff;  width: 500px;  max-width: 600px;  height: 600px; /* Hoặc height: auto; min-height: 600px; */ border-radius: 8px;  overflow: hidden;  display: flex;  flex-direction: column;}
+
+    /* ✅ Header modal */
+    .modal-header { padding: 16px; font-weight: 500; font-size: 25px; border-bottom: 1px solid #ddd; color: rgba(0,0,0,.8); }
+
+    /* ✅ Body modal */
+    .modal-body { padding: 16px; padding-bottom:0; display: flex; flex-direction: column; gap: 12px; }
+
+    /* ✅ Footer modal */
+    .modal-footer { padding: 12px 16px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #ddd; }
+
+    /* ✅ Radio container */
+    .custom-radio { position: relative; cursor: pointer; user-select: none; }
+
+    /* ✅ Ẩn radio gốc */
+    .custom-radio input[type="radio"] { position: absolute; opacity: 0; }
+
+    /* ✅ Hình radio custom */
+    .custom-radio .radio-check { position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 18px; width: 18px; border: 2px solid rgba(0,0,0,0.26); border-radius: 50%; box-sizing: border-box; }
+
+    /* ✅ Khi checked */
+    .custom-radio input[type="radio"]:checked + .radio-check { border-color: #00713b; }
+
+    /* ✅ Chấm bên trong */
+    .custom-radio .radio-check::after { content: ""; position: absolute; display: none; }
+    .custom-radio input[type="radio"]:checked + .radio-check::after { display: block; }
+    .custom-radio .radio-check::after { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background: #00713b; }
+
+    /* ✅ Hover không đổi border */
+    .custom-radio:hover .radio-check { border-color: rgba(0,0,0,0.26); }
+
+    /* ✅ Danh sách địa chỉ */
+    .address-list {  flex: 1;  overflow-y: auto;  scrollbar-width: none;}
+
+    /* ✅ Mỗi item địa chỉ */
+    .address-item { display: block; padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
+
+    /* ✅ Bỏ border item cuối */
+    .address-list .address-item:last-of-type { border-bottom: none; }
+
+    /* ✅ Nội dung item */
+    .address-content { display: flex; flex-direction: column; gap: 6px; }
+
+    /* ✅ Phần trên item */
+    .address-top { display: flex; justify-content: space-between; align-items: center; }
+
+    /* ✅ Info trong item */
+    .address-info { display: flex; align-items: center; gap: 10px; position: relative; padding-left: 28px; }
+
+    /* ✅ Dòng địa chỉ */
+    .address-line, .address-region { padding-left: 28px; color: #333; }
+
+    /* ✅ Vùng thêm mới */
+    .address-add { padding: 12px 16px; text-align: left; }
+
+    /* ✅ Nhóm input */
+    .input-group { display: flex; gap: 10px; }
+    .input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+    /* ✅ Dropdown address */
+    .dropdown-address { position: relative; }
+    .dropdown-address button { width: 100%; padding: 10px; text-align: left; border: 1px solid #ddd;  background: #fff; }
+    .dropdown-box { display: none; position: absolute; top: 100%; left: 0; width: 100%; border: 1px solid #ddd; background: #fff; z-index: 1000; }
+
+    /* ✅ Tab header */
+    .tab-header { display: flex; border-bottom: 1px solid #eee; }
+
+    /* ✅ Tab */
+    .tab { flex: 1; text-align: center; padding: 8px; cursor: pointer; }
+
+    /* ✅ Tab active */
+    .tab.active { border-bottom: 2px solid red; color: red; }
+
+    /* ✅ Danh sách tab */
+    .tab-list { max-height: 290px; overflow-y: auto; }
+    .tab-list div { padding: 8px; cursor: pointer; }
+    .tab-list div:hover { color: #00713b; }
+    .tab.disabled { cursor: not-allowed; opacity: 0.5; }
+
+    /* ✅ Textarea */
+    textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+    /* ✅ Button chính */
+    .btn-primary { background: #00713b; color: #fff; border: none; width: 180px; height: 41px; border-radius: 4px; cursor: pointer; border: 1px solid #00713b; }
+
+    .btn-primary:focus, .btn-primary:active { background: #00713b !important; border-color: #00713b !important; color: #fff !important; outline: none !important;  box-shadow: none !important;}
+
+    /* ✅ Button viền */
+    .btn-outline { background: transparent; border: 1px solid #00713b; color: #00713b; width: 150px; height: 41px; border-radius: 4px; cursor: pointer; }
+
+    /* ✅ Hover button */
+    .btn-primary:hover { background-color:  #005f2c; color: #fff; border-color: #005f2c; }
+
+    .btn-outline:hover { background-color: #00713b; color: #fff; }
+
+
+</style>
+
+
+{%endblock %}
+

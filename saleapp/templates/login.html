@@ -1,0 +1,658 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Đăng nhập / Đăng ký{% endblock %}
+
+{% block wrapper %}
+<div class="background-section" style="margin:1px 1px;">
+
+    <div class="center-wrapper">
+        <div class="pulse-container">
+            <div class="pulse-effect"></div>
+            <div class="circle-outer"></div>
+            <div class="center-box">
+                <img class="td" src="{{ url_for('static', filename='images/td.png') }}" alt="">
+            </div>
+        </div>
+
+        <div class="gradient-text">Welcome Back</div>
+
+        <div class="form-wrapper">
+            <!-- Login Form -->
+            <form id="login-form" method="POST" action="/login"
+                  class="form-box {% if active_form == 'login' %}active{% endif %}">
+                <h1 class="name-form"> ĐĂNG NHẬP</h1>
+
+                <input type="hidden" name="form_type" value="login">
+
+
+                <!--                                <div class="input-box">-->
+                <!--                                    <div class="custom-dropdown" onclick="toggleDropdown(event)" style="display:inline-block;">-->
+                <!--                                        <div class="custom-dropdown-selected">Khách hàng</div>-->
+                <!--                                        <div class="custom-dropdown-options">-->
+                <!--                                            <div class="role-option selected" onclick="selectRole(event, 'user')">Khách hàng</div>-->
+                <!--                                            <div class="role-option" onclick="selectRole(event, 'admin')">Admin</div>-->
+                <!--                                            <div class="role-option" onclick="selectRole(event, 'staff')">Nhân viên</div>-->
+                <!--                                            <div class="role-option" onclick="selectRole(event, 'manager')">Manager</div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                    <input type="hidden" name="role" id="role-input" value="user">-->
+                <!--                                </div>-->
+
+                <div class="input-box" style="font-weight:500;">
+                    <input type="text" id="username" name="username" placeholder=" Tên đăng nhập "
+                           required>
+                </div>
+
+                <div class="input-box">
+                    <input type="password" id="password" name="password" placeholder=" Mật khẩu" required>
+                </div>
+
+                <div class="login-options">
+
+                    <a href="#" class="forgot-password"> Quên mật khẩu<span style="margin-left:3px; margin-right:3px;font-weight:100;">?</span> </a>
+                </div>
+
+                <div class="wrap">
+                    <button type="submit" class="button">ĐĂNG NHẬP</button>
+                </div>
+
+                <div class="divider">
+                  <p> HOẶC </p>
+                </div>
+
+<div class="login-container">
+  <a href="{{ url_for('login_google', next=request.args.get('next')) }}" class="login-button google-button">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google Login">
+    <span>Google</span>
+  </a>
+  <a href="{{ url_for('facebook_login') }}" class="login-button facebook-button">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/2048px-2021_Facebook_icon.svg.png" alt="Facebook Login">
+    <span> Facebook</span>
+  </a>
+</div>
+
+<style>
+  .login-container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 45px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 15px;
+    transition: background 0.3s;
+  }
+
+  .login-button img {
+    height: 24px;
+    margin-right: 10px;
+  }
+
+  .google-button {
+    background: white;
+    color: #333;
+    border:none;
+  }
+
+  .google-button:hover {
+    background: #f5f5f5;
+    color: #333;
+  }
+
+  .facebook-button {
+    background: #3B5998;
+    color: #fff;
+    border: none;
+    font-weight: 300;
+  }
+
+  .facebook-button:hover {
+    color: #fff;
+
+  }
+</style>
+
+
+
+                <div class="switch-link">
+                    <span style="color:#ccc;">Bạn mới biết đến TD Food<span style="margin-left:3px; margin-right:3px;font-weight:500;">? </span> </span>
+                    <a onclick="showForm('register')" class="login-register"> Đăng ký </a>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" method="POST" action="/login"
+                  class="form-box {% if active_form == 'register' %}active{% endif %}">
+                <h1 class="name-form"> ĐĂNG KÝ</h1>
+
+                <input type="hidden" name="form_type" value="register">
+
+                <div class="input-box">
+                    <input type="text" id="name" name="name" placeholder=" Tên người dùng" required>
+                </div>
+
+                <div class="input-box">
+                    <input type="text" id="username2" name="username" placeholder="Tài khoản" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" id="password2" name="password" placeholder=" Mật khẩu" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" id="confirm" name="confirm" placeholder="Nhập lại mật khẩu" required>
+                </div>
+                <div class="input-box">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                </div>
+
+                <div class="wrap">
+                    <button type="submit" class="button"> ĐĂNG KÝ </button>
+                </div>
+
+                <div class="switch-link">
+                    <span style="color:#ccc; font-weight:500;">Bạn đã có tài khoản<span style="margin-left:3px; margin-right:3px;">? </span> </span>
+                    <a onclick="showForm('login')" class="login-register"> Đăng nhập </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="errorModal" class="custom-modal">
+  <div class="modal-content-login">
+    <span onclick="closeErrorModal()">
+      <i class="fa-solid fa-circle-xmark" style="font-size:100px; margin:40px; color:red;"></i>
+    </span>
+    <p>{{ err_msg }}</p>
+  </div>
+</div>
+
+<style>
+
+/* ✅ Vùng nền có hình ảnh */
+.background-section {
+background: linear-gradient(to bottom,black, gray);  background-size: cover; /* Hình nền phủ toàn bộ */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ✅ Khối chứa nội dung trung tâm */
+.center-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: top;
+  max-width: 100%;
+  justify-content: center;
+  height: 250px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* ✅ Khung form đăng nhập */
+.form-wrapper {
+  width: 700px;
+  max-width: 430px;
+  border: 2px solid rgba(255, 255, 255, .2); /* Viền mờ trắng */
+  backdrop-filter: blur(20px); /* Làm mờ nền phía sau */
+  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  color: white;
+  border-radius: 5px;
+  padding: 10px 30px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* ✅ Tiêu đề h1 */
+h1{
+  text-align: center;
+  font-weight:900
+  }
+.name-form{
+    padding:20px 0px;
+     font-size:30px;
+    }
+
+ /* ✅ Thanh chữ Hoặc */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #ccc; /* màu chữ */
+    font-weight: 300;
+    font-size: 13px;
+    }
+
+.divider p {
+    margin: 0 10px;
+    white-space: nowrap;
+    padding: 20px 0;
+    }
+.divider::before,.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #aaa; /* màu gạch */
+    }
+
+/* ✅ Quên mật khẩu */
+.login-options {
+  text-align: right;
+  margin: 10px 10px 20px;
+  font-size: 14px;
+  color: white;
+
+}
+
+/* ✅ Link "Quên mật khẩu" */
+.forgot-password {
+  color: white;
+  text-decoration: none;
+  font-weight: ;
+  right: 0;
+  font-weight: 100;
+}
+
+.forgot-password:hover {
+  text-decoration: none;
+  color: #2ee59d;
+    transition: color 0.3s ease;
+
+}
+
+/* ✅ Hiệu ứng nhịp tim (pulse) */
+.pulse-container {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pulse-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5rem;
+  height: 5rem;
+  border: 2px solid #00ffff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 2s infinite;
+  z-index: 0;
+}
+
+/* ✅ Keyframes cho hiệu ứng nhịp tim */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* ✅ Khung giữa chứa hình ảnh logo */
+.center-box {
+  width: 55px;
+  height: 55px;
+  z-index: 2;
+}
+
+.center-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+/* ✅ Dòng chữ "Welcome back" có hiệu ứng gradient */
+.gradient-text {
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(to right, #2fd6cc,#ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border-radius: 60px;
+  background-color: black;
+}
+
+/* ✅ Nhãn nhỏ cho "Tài khoản" hoặc "Mật khẩu" */
+.tk-mk {
+  font-size: 15px;
+  margin-bottom: -15px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* ✅ chữ Đăng nhâp/ Đnăg kí cuối form */
+.login-register  {
+  color: white;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.login-register:hover {
+    color: #2ee59d;
+  text-decoration: none;
+}
+
+/* ✅ Đăg nhâp băng google */
+.google-login-box {
+  background-color: #ffffff; /* Màu nền bạn muốn */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.google-login-box a {
+  text-decoration: none;
+  color: #333; /* Màu chữ */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa icon và text */
+}
+
+.google-login-box:hover {
+  background-color: #f0f0f0; /* Màu nền khi hover */
+}
+
+
+/* ✅ Gỡ cố định navbar */
+nav.navbar {
+  position: static !important;
+}
+
+/* ✅ Ẩn banner trên cùng */
+.top-banner {
+display: none !important;
+}
+
+
+/* ✅ Ô nhập liệu */
+.input-box {
+  position: relative;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.input-box input {
+  width: 100%;
+  height: 45px;
+  font-weight: 300;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .2);
+  border-radius: 5px;
+  font-size: 15px;
+  color: white;
+  padding: 23px 15px;
+  outline: none;
+}
+
+.input-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ✅ Canh giữa toàn khung */
+.wrap {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: px 0px;
+}
+
+/* ✅ Nút đăng nhập */
+.button {
+  width: 100%;
+  height: 45px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+    background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%);  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* ✅ Hiệu ứng khi rê chuột lên nút */
+.button:hover {
+  background: radial-gradient(
+    159.85% 367.97% at 150% 123.85%,
+    #faff70 0,      /* sáng hơn #ffe147 */
+    #7ed957 38.76%, /* sáng hơn #65ae17 */
+    #55c276 59.65%, /* sáng hơn #469c4b */
+    #009b4e 100%    /* sáng hơn #00713b */
+  );
+  color: #fff;
+
+}
+
+/* ✅ Chuyển link giữa login/register */
+.switch-link {
+  font-size: 14.5px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.switch-link a {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.switch-link a:hover {
+  color: #2ee59d;
+}
+
+/* ✅ Ẩn hiện form đăng nhập/đăng ký */
+.form-box {
+  display: none;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: scaleX(0.8) translateY(30px);
+  transform-origin: center;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.form-box.active {
+  display: block;
+  max-height: 1000px;
+  opacity: 1;
+  transform: scaleX(1) translateY(0);
+  pointer-events: auto;
+}
+
+/* ✅ Dropdown chọn vai trò (role) */
+.custom-dropdown-selected {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .2);
+  padding: 10px 5px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.custom-dropdown-options {
+  display: none;
+  position: absolute;
+  width: 100%;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.custom-dropdown.dropdown-open .custom-dropdown-options {
+  display: block;
+}
+
+/* ✅ Tuỳ chọn bên trong dropdown */
+.role-option {
+  padding: 10px 15px;
+  color: white;
+  cursor: pointer;
+}
+
+.role-option:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.role-option.selected {
+  font-weight: bold;
+}
+
+/* ✅ Modal hiển thị thông báo lỗi */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content-login {
+  background-color: white;
+  margin: 15% auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 400px;
+  text-align: center;
+  border-radius: 10px;
+  position: relative;
+  color: red;
+}
+
+</style>
+
+<script>
+    // Toggle dropdown role
+    function toggleDropdown(event) {
+      event.stopPropagation();  // Ngăn click lan ra ngoài
+      const dropdown = event.currentTarget.closest('.custom-dropdown');
+
+      // Toggle trạng thái mở/đóng
+      const isOpen = dropdown.classList.contains('dropdown-open');
+
+      // Đóng tất cả dropdown khác
+      document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('dropdown-open'));
+
+      if (!isOpen) {
+        dropdown.classList.add('dropdown-open');  // Chỉ mở nếu trước đó chưa mở
+      }
+    }
+
+    // Chọn vai trò
+    function selectRole(event, role) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const dropdown = event.currentTarget.closest('.custom-dropdown');
+      const selected = dropdown.querySelector('.custom-dropdown-selected');
+      const roleInput = document.getElementById('role-input');
+
+      selected.innerText = roleLabel(role);
+      roleInput.value = role;
+
+      dropdown.classList.remove('dropdown-open');
+
+      dropdown.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+    }
+
+    // Đổi tên nhãn vai trò
+    function roleLabel(role) {
+      switch (role) {
+        case 'admin': return 'Admin';
+        case 'user': return 'Khách hàng';
+        case 'staff': return 'Nhân viên';
+        case 'manager': return 'Manager';
+        default: return 'Chọn vai trò';
+      }
+    }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const formType = "{{ active_form|default('login') }}";
+    showForm(formType);
+  });
+    // Chuyển đổi form login/register
+    function showForm(form) {
+      const loginForm = document.getElementById("login-form");
+      const registerForm = document.getElementById("register-form");
+
+      if (form === 'login') {
+        loginForm.classList.add("active");
+        registerForm.classList.remove("active");
+      } else {
+        loginForm.classList.remove("active");
+        registerForm.classList.add("active");
+      }
+    }
+
+
+    // Đóng dropdown nếu click ra ngoài
+    document.addEventListener('click', function (e) {
+      document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove('dropdown-open');
+        }
+      });
+    });
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const errText = "{{ err_msg|safe }}";
+  if (errText && errText.trim() !== "") {
+    document.getElementById("errorModal").style.display = "block";
+  }
+});
+
+// Đóng modal khi click ra ngoài modal-content
+window.addEventListener("click", function (event) {
+  const modal = document.getElementById("errorModal");
+  const content = modal.querySelector(".modal-content-login");
+  if (event.target === modal) {
+    closeErrorModal();
+  }
+});
+
+// Hàm đóng modal
+function closeErrorModal() {
+  document.getElementById("errorModal").style.display = "none";
+}
+
+
+</script>
+
+{% endblock %}
+
+
+
+
+
+
