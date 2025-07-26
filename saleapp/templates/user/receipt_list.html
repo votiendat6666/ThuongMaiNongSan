@@ -1,19 +1,15 @@
 <!-- Receipt items -->
 {% for receipt in receipts %}
-<div class="receipt-item border rounded p-3 mb-4"
-     style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+<div class="receipt-item border p-0 mb-4"
+     style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 2px;">
 
     <!-- Dòng 1: Header -->
-    <div class="d-flex justify-content-between align-items-center mb-2" style="border-bottom: 1px solid #ddd; padding-bottom: 20px;
-         padding-top: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-2"
+         style="border-bottom: 1px solid #ddd; padding-bottom: 20px;padding-top: 20px; padding:20px;">
         <div class="d-flex align-items-center gap-2">
             <span class="badge" style="background-color: #ee4d2d; color: white; padding: 5px 10px;">Yêu thích</span>
             <span style=" text-transform: uppercase;font-weight:bold;">
-        {% if receipt.receipt_details and receipt.receipt_details[0].product.category %}
-          {{ receipt.receipt_details[0].product.category.name }}
-        {% else %}
-          Không có danh mục
-        {% endif %}
+        TD FOOD
       </span>
             <a href="#" style="text-decoration: none;">Xem chi tiết</a>
         </div>
@@ -27,51 +23,98 @@
 
     <!-- Dòng 2: Chi tiết sản phẩm -->
     {% for detail in receipt.receipt_details %}
-    <div class="d-flex justify-content-between align-items-center mb-2"
-         style=" padding-bottom: 10px; padding-top: 10px;">
+    <div class="d-flex justify-content-between align-items-center mb-2" style="padding: 20px;">
         <div class="d-flex align-items-center flex-grow-1">
-            <img src="{{ detail.product.image }}" alt="Product" class="me-3"
-                 style="width: 80px; height: 80px; object-fit: cover;">
-            <div>
-                <div style="font-size: 16px;">{{ detail.product.name }}</div>
-                <div style="color: #555; font-size:13px;">Số lượng: <span
-                        style="font-size:15px;">x{{ detail.quantity }}</span></div>
-            </div>
+
+            <a href="/products/{{ detail.product.id }}"
+               style="display: inline-flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="{{ detail.product.image }}" alt="Product" class="me-3"
+                     style="width: 80px; height: 80px; object-fit: cover;">
+                <div>
+                    <div style="font-size: 16px;">{{ detail.product.name }}</div>
+                    <div style="color: #555; font-size: 13px;">Số lượng:
+                        <span style="font-size: 15px;">x{{ detail.quantity }}</span>
+                    </div>
+                </div>
+            </a>
+
         </div>
-        <div class="text-end" style="display: flex; font-size: 13px;">
-            <div style="display: flex; margin-right: 10px; position: relative;">
+
+        <div class="text-end"
+             style="display: flex; flex-direction: column; align-items: flex-end; font-size: 13px;">
+            <div style="display: flex; margin-bottom: 6px;">
                 <del style="color: #888;">
                     <span style="font-size: 10px; position: relative; top: -3px;">₫</span>{{ ((detail.product.price) /
                     (1 - detail.product.voucher / 100)) | format_vnd }}
                 </del>
             </div>
-            <div style="color: #ee4d2d; display: flex; position: relative;">
-                <span style="font-size: 10px; position: relative;">₫</span> <span>{{ '{:,.0f}'.format(detail.price).replace(',', '.') }}</span>
+            <div style="color: #ee4d2d; display: flex; position: relative; margin-bottom: 10px;">
+                <span style="font-size: 10px; position: relative;">₫</span>
+                <span>{{ '{:,.0f}'.format(detail.price).replace(',', '.') }}</span>
             </div>
+
+            {% if detail.comment %}
+            {% if detail.comment.can_edit %}
+            <button
+                    class="danh-gia-san-pham"
+                    data-receipt-detail-id="{{ detail.id }}"
+                    data-image="{{ detail.product.image }}"
+                    data-name="{{ detail.product.name }}"
+                    data-category="{{ detail.product.category.name }}"
+                    data-comment-content="{{ detail.comment.content }}"
+                    data-comment-rating="{{ detail.comment.rating }}"
+                    data-can-edit="True"
+            >
+                Sửa bình luận
+            </button>
+            {% else %}
+            <span style="color: #469c4b; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-check"></i> Đã bình luận
+            </span>
+            {% endif %}
+            {% else %}
+            <button
+                    class="danh-gia-san-pham"
+                    data-receipt-detail-id="{{ detail.id }}"
+                    data-image="{{ detail.product.image }}"
+                    data-name="{{ detail.product.name }}"
+                    data-category="{{ detail.product.category.name }}"
+                    data-comment-content=""
+                    data-comment-rating="0"
+                    data-can-edit="True"
+            >
+                Đánh giá sản phẩm
+            </button>
+            {% endif %}
+
         </div>
     </div>
     {% endfor %}
 
+
     <!-- Dòng 3: Tổng -->
-    <div class="text-end" style="border-top: 1px solid #ddd; padding-top: 20px; background-color: #fffefb;">
-        <span style="color: rgba(0,0,0,.8); margin-right: 5px;">Thành tiền: </span>
-        <span style="color: #ee4d2d; font-size: 24px;">
-      <span style="vertical-align: 6px; font-size: 17px;">₫</span>{{ '{:,.0f}'.format(receipt.final_amount).replace(',', '.') }}
-    </span>
+    <div style="background-color: #fffefb; padding:20px;border-top: 1px solid #ddd;">
+        <div class="text-end">
+            <span style="color: rgba(0,0,0,.8); margin-right: 5px;">Thành tiền: </span>
+            <span style="color: #ee4d2d; font-size: 24px;">
+              <span style="vertical-align: 6px; font-size: 17px;">₫</span>{{ '{:,.0f}'.format(receipt.final_amount).replace(',', '.') }}
+            </span>
+        </div>
+
+
+        <!-- Dòng 4: Các nút thao tác -->
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            {% set one = rebuy_by_receipt | selectattr("receipt_id", "equalto", receipt.id) | first %}
+            {% if one %}
+            <button class="mua-hang-lai"
+                    onclick='addAllToCart({{ one.details | tojson | safe }})'>
+                Mua lại
+            </button>
+            {% endif %}
+            <button class="hien-he-shop">Liên hệ shop</button>
+        </div>
     </div>
 
-    <!-- Dòng 4: Các nút thao tác -->
-    <div class="d-flex justify-content-end gap-2 mt-3" style="background-color: #fffefb;">
-        {% set one = rebuy_by_receipt | selectattr("receipt_id", "equalto", receipt.id) | first %}
-        {% if one %}
-        <button class="mua-hang-lai"
-                onclick='addAllToCart({{ one.details | tojson | safe }})'>
-            Mua lại
-        </button>
-        {% endif %}
-        <button class="hien-he-shop">Liên hệ shop</button>
-        <button class="danh-gia-san-pham">Đánh giá sản phẩm</button>
-    </div>
 
 </div>
 {% endfor %}

@@ -19,7 +19,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/qlbs?
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["PAGE_SIZE"] = 1000
 
-# ✅ Cấu hình MAIL (dùng Gmail SMTP)
+# ✅ Cấu hình gửi MAIL khi đăng kí tài khoản (dùng Gmail SMTP)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -28,7 +28,7 @@ app.config['MAIL_PASSWORD'] = 'femqmemmnjtzypwh'     # Thay bằng mật khẩu 
 app.config['MAIL_DEFAULT_SENDER'] = 'votiendat842004@gmail.com'
 
 
-# Cầu hình google OAuth
+# Cầu hình đăng nhập google OAuth
 oauth = OAuth(app)
 
 google = oauth.register(
@@ -42,7 +42,6 @@ google = oauth.register(
 )
 
 # ✅ MoMo config
-
 app.config['MOMO_PARTNER_CODE'] = 'MOMODMJ120250721_TEST'
 app.config['MOMO_ACCESS_KEY']   = 'Csil0yiSO0r7Ete4'
 app.config['MOMO_SECRET_KEY']   = 'YY3r7SE6ZjBEvf6DuZGfKQQwYFbP7W6t'
@@ -61,6 +60,12 @@ facebook = oauth.register(
     client_kwargs={'scope': 'email'},
 )
 
+#  Cấu hình Cloudinary
+cloudinary.config(
+  cloud_name = 'dyuqn2pat',
+  api_key = '219522923368281',
+  api_secret = 'PUEs5aT5iN0VsnLEuDW39uH9pYQ'
+)
 
 
 # Khởi tạo các extension

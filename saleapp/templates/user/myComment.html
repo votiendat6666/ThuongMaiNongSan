@@ -1,0 +1,74 @@
+{% extends 'user/layout.html' %}
+
+{% block title %}Ưu đãi thành viên{% endblock %}
+
+{% block content_right %}
+<div style=" background-color: #fff; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="border-bottom: 2px solid #f0f0f0;">
+        <h2 style=" text-align: center;
+                font-size: 28px;
+                font-weight: 800;
+                color: #565555;
+                margin-bottom: 30px;
+                display: inline-block;
+                padding:20px 30px;
+                padding-bottom: 6px;"> Bình luận của tôi
+        </h2>
+    </div>
+    {% if comments %}
+    {% for item in comments %}
+    <div class="receipt-item p-3 border-bottom">
+        <div style="display: flex; gap: 20px; ;padding:0 20px;">
+            <!-- Hình ảnh sản phẩm -->
+            <div>
+                <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
+            </div>
+
+            <div style="flex: 1;">
+                <!-- Tên sản phẩm + số lượng -->
+                <h5 style="margin-bottom: 5px;">
+                    {{ item.product.name }}
+                    <span style="margin: 0; font-size: 14px; color: #666;">
+                        x{{ item.receipt_detail.quantity }}{{ item.product.donvitinh }}
+                    </span>
+                </h5>
+
+                <!-- Số sao -->
+                <p style="margin: 0;">
+                    {% for i in range(1, 6) %}
+                    {% if i <= item.comment.rating %}
+                    <i class="fa-solid fa-star" style="color: #FFD700;"></i>
+                    {% else %}
+                    <i class="fa-regular fa-star" style="color: #ccc;"></i>
+                    {% endif %}
+                    {% endfor %}
+                </p>
+
+                <!-- Ngày bình luận -->
+                <p style="margin: 0; font-size: 12px; color: #666;">
+                    {{ item.comment.created_date.strftime('%d/%m/%Y %H:%M') }}
+                </p>
+
+                <!-- Nội dung bình luận -->
+                <p style="margin-top: 10px;">{{ item.comment.content }}</p>
+
+                <!-- Hình ảnh bình luận (nếu có) -->
+                {% if item.comment.images %}
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    {% for img in item.comment.images %}
+                    <img src="{{ img.image_url }}" alt="Comment Image"
+                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+
+{%endblock%}

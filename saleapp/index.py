@@ -23,6 +23,13 @@ import cloudinary.uploader
 from saleapp.models import *
 import random
 from saleapp.utils import count_cart, get_cart_stats
+import requests, hmac, hashlib
+import cloudinary
+from sqlalchemy.orm import joinedload
+
+
+
+
 
 @app.route('/')
 def index():
@@ -89,7 +96,7 @@ def index():
         selected_category_id=selected_category_id,
         selected_parent_id=selected_parent_id,
         show_related_section=True,
-        show_full_image = True
+        show_full_image=True
 
     )
 
@@ -124,7 +131,6 @@ def load_products():
     return render_template('product-items.html', products=products)
 
 
-
 # Xem thống kê toàn bộ
 @app.route('/stats')
 def stats():
@@ -132,7 +138,8 @@ def stats():
     total_quantity = utils.total_quantity()
     return render_template('stats.html', total_revenue_all=total_revenue_value, total_quantity=total_quantity)
 
-# Xem danh sách sản phẩm theo thể loại
+
+# Xem danh sách sản phẩm theo thể loại Tim Kiem
 @app.route('/category/<int:category_id>')
 def category_page(category_id):
     categories = dao.load_categories()
@@ -160,22 +167,53 @@ def category_page(category_id):
         if keyword:
             products = [p for p in products if keyword.lower() in p.name.lower()]
 
+    flash_sale_products = dao.get_flash_sale_products()
+    best_seller_products = dao.get_best_seller_products()
+    beauty_products = dao.get_category_products_by_daban(parent_id=30000)
+    favorites_books_products = dao.get_favorites_books_products()
+    pharma_products = dao.get_category_products_by_daban(parent_id=50000)
+    foods_products = dao.get_category_products_by_daban(parent_id=100000)
+    plays_products = dao.get_category_products_by_daban(parent_id=20000)
+
     return render_template(
         'category.html',
         products=products,
         categories=categories,
         selected_category_id=category_id,
-        selected_parent_id=selected_parent_id
+        selected_parent_id=selected_parent_id,
+        flash_sale_products=flash_sale_products,
+        best_seller_products=best_seller_products,
+        beauty_products=beauty_products,
+        favorites_books_products=favorites_books_products,
+        pharma_products=pharma_products,
+        foods_products=foods_products,
+        plays_products=plays_products
     )
 
 
-
-# Xem chi tiet san pham
+# Xem chi tiet san pham product details
 @app.route('/products/<int:id>')
 def details(id):
-    products = Product.query.get(id)
+    products = db.session.get(Product, id)
     if products is None:
         abort(404)
+
+    # ✅ Lấy danh sách bình luận, JOIN customer + images + receipt_detail.product.category
+    comments = Comment.query \
+        .join(ReceiptDetail) \
+        .filter(ReceiptDetail.product_id == id) \
+        .options(
+            joinedload(Comment.customer),
+            joinedload(Comment.images),
+            joinedload(Comment.receipt_detail).joinedload(ReceiptDetail.product).joinedload(Product.category)
+        ) \
+        .order_by(Comment.created_date.desc()) \
+        .all()
+    if comments:
+        total_rating = sum([c.rating for c in comments])
+        avg_rating = round(total_rating / len(comments), 1)
+    else:
+        avg_rating = 0
 
     # Kiểm tra like
     is_liked = False
@@ -201,22 +239,71 @@ def details(id):
     plays_products = dao.get_category_products_by_daban(parent_id=20000)
 
 
+    comment_stats = dao.get_comment_stats(id)
+
     return render_template(
         'product-details.html',
         flash_sale_products=flash_sale_products,
         best_seller_products=best_seller_products,
-        beauty_products =beauty_products,
+        beauty_products=beauty_products,
         favorites_books_products=favorites_books_products,
         pharma_products=pharma_products,
         foods_products=foods_products,
         plays_products=plays_products,
         products=products,
         is_liked=is_liked,
-        related_products=related_products,  # ➜ Đẩy ra template
+        related_products=related_products,
         random_pages=random_pages,
-        show_related_section=False
+        show_related_section=False,
+        comments=comments,  # ✅ Truyền bình luận ra template
+        stars_count = comment_stats,
+        total_count = comment_stats['total'],
+        average_rating=avg_rating
     )
 
+@app.route('/api/product/<int:product_id>/comments')
+def api_product_comments(product_id):
+    star = request.args.get('star', type=int)
+    with_image = request.args.get('with_image', type=int)
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
+    q = Comment.query.join(ReceiptDetail).filter(ReceiptDetail.product_id == product_id)
+
+    if star:
+        q = q.filter(Comment.rating == star)
+
+    if with_image:
+        q = q.join(CommentImage).filter(CommentImage.image_url != None)
+
+    q = q.options(
+        joinedload(Comment.customer),
+        joinedload(Comment.images),
+        joinedload(Comment.receipt_detail).joinedload(ReceiptDetail.product).joinedload(Product.category)
+    ).order_by(Comment.created_date.desc())
+
+    total = q.count()  # Tổng số bình luận theo bộ lọc
+
+    comments = q.offset((page - 1) * per_page).limit(per_page).all()
+
+    data = []
+    for c in comments:
+        data.append({
+            'name': c.customer.name if c.customer else "Khách",
+            'avatar': c.customer.avatar if c.customer and c.customer.avatar else "",
+            'rating': c.rating,
+            'content': c.content,
+            'created_date': c.created_date.strftime('%Y-%m-%d %H:%M'),
+            'category': c.receipt_detail.product.category.name if c.receipt_detail else "",
+            'images': [img.image_url for img in c.images]
+        })
+
+    return jsonify({
+        'comments': data,
+        'total': total,
+        'pages': ceil(total / per_page)
+    })
+from math import ceil
 
 
 @app.route('/api/like-product/<int:product_id>', methods=['POST'])
@@ -241,7 +328,6 @@ def like_product(product_id):
         product.like += 1
         db.session.commit()
         return jsonify({"liked": True, "like_count": product.like})
-
 
 
 # Xem danh sách sách theo thể loại
@@ -303,7 +389,6 @@ def import_bill():
         return jsonify({"message": f"Đã xảy ra lỗi: {str(e)}"}), 500
 
 
-
 # Gửi email chào mừng người dùng mới
 def send_welcome_email(to_email, username):
     msg = Message(
@@ -319,6 +404,7 @@ def send_welcome_email(to_email, username):
     Đội ngũ hỗ trợ.
     """
     mail.send(msg)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_my_user():
@@ -414,6 +500,7 @@ def login_my_user():
 
     return render_template('login.html', err_msg=err_msg, active_form=active_form)
 
+
 @app.route('/login/google')
 def login_google():
     session['next'] = request.args.get('next') or '/'
@@ -422,6 +509,7 @@ def login_google():
 
     redirect_uri = url_for('google_callback', _external=True)
     return google.authorize_redirect(redirect_uri, nonce=nonce)
+
 
 @app.route('/auth/google/callback')
 def google_callback():
@@ -457,6 +545,8 @@ def google_callback():
 def facebook_login():
     redirect_uri = url_for('facebook_callback', _external=True)
     return facebook.authorize_redirect(redirect_uri)
+
+
 @app.route('/auth/facebook/callback')
 def facebook_callback():
     token = facebook.authorize_access_token()
@@ -477,7 +567,7 @@ def facebook_callback():
             name=name,
             username=email.split('@')[0],
             email=email,
-            password= hashed_pw,  # Vì login Facebook không có password
+            password=hashed_pw,  # Vì login Facebook không có password
             user_role=Role.USER,
             is_active=True
         )
@@ -492,10 +582,9 @@ def facebook_callback():
 @app.route('/logout', methods=['POST'])
 def logout():
     logout_user()
-    session.pop('cart', None)          # Xóa giỏ hàng
-    session.pop('voucher_id', None)    # Xóa voucher đã chọn
+    session.pop('cart', None)  # Xóa giỏ hàng
+    session.pop('voucher_id', None)  # Xóa voucher đã chọn
     return redirect('/')
-
 
 
 # Thêm sản phẩm vào giỏ hàng
@@ -523,7 +612,6 @@ def add_to_cart():
         'total_quantity': total_quantity,
         'total_items': total_items  # ✅ Trả thêm
     })
-
 
 
 # Cập nhật số lượng sản phẩm trong giỏ hàng cart
@@ -605,12 +693,14 @@ def get_cart():
         'total_amount': total_amount
     })
 
+
 # Hiển thị thống kê giỏ hàng trong template
 @app.context_processor
 def inject_cart_stats():
     stats = get_cart_stats(current_user)
     print("Inject cart stats:", stats)
     return {'cart_stats': stats}
+
 
 # Xem giỏ hàng
 @app.route('/cart')
@@ -640,11 +730,11 @@ def cart():
                            stats=stats,
                            all_selected=all_selected)
 
-#Trang Thanh Toán - lấy dữu liệu từ giỏ hàng - load địa chỉ, coin, voucher
+
+# Trang Thanh Toán - lấy dữu liệu từ giỏ hàng - load địa chỉ, coin, voucher
 @app.route("/api/pay", methods=['POST', 'GET'])
 @login_required
 def pay():
-
     # 🛒 Lấy giỏ hàng đã tick
     addresses = Address.query.filter_by(customer_id=current_user.id).all()
     selected_cart_items = CartItem.query.filter_by(user_id=current_user.id, is_selected=True).all()
@@ -702,115 +792,10 @@ def pay():
         session_voucher_min_order=session_voucher_min_order,
         order_total_amount_after_discount=order_total_amount_after_discount,
         coin_balance=coin_balance,
-        payment_method= payment_method
+        payment_method=payment_method
     )
-#
-# @app.route('/api/order', methods=['POST'])
-# @login_required
-# def create_order():
-#     if session.get('order_processing'):
-#         return jsonify({"message": "Đơn hàng đang xử lý, vui lòng đợi!"}), 429
-#
-#     session['order_processing'] = True
-#
-#     try:
-#         # Lấy dữ liệu
-#         data = request.get_json() or {}
-#         note_message = data.get('note_message', session.get('note_message', '')).strip()
-#         print(f"note_message received: '{note_message}'")  # Debug
-#
-#         # Kiểm tra giỏ hàng
-#         cart_items = CartItem.query.filter_by(user_id=current_user.id, is_selected=True).all()
-#         if not cart_items:
-#             session.pop('order_processing', None)
-#             return jsonify({"message": "Giỏ hàng trống."}), 400
-#
-#         # Kiểm tra địa chỉ
-#         address = Address.query.filter_by(customer_id=current_user.id, is_default=True).first()
-#         if not address:
-#             session.pop('order_processing', None)
-#             return jsonify({"message": "Bạn chưa có địa chỉ mặc định!"}), 400
-#
-#         # Tạo chuỗi địa chỉ
-#         customer_address = f"{address.receiver_address_line}, {address.receiver_ward}, {address.receiver_district}, {address.receiver_province}"
-#
-#         # Phương thức thanh toán
-#         payment_method = "MoMo" if session.get('payment_method') == 'MoMo' else "COD"
-#         delivery_method = "Thanh toán Online" if payment_method == 'MoMo' else "Thanh toán khi nhận hàng"
-#
-#         # Tính toán tổng tiền
-#         total_amount = sum(item.quantity * item.product.price for item in cart_items)
-#         voucher_discount = 0
-#         if voucher_id := session.get('voucher_id'):
-#             if voucher := db.session.get(Voucher, voucher_id):
-#                 voucher_discount = voucher.price_voucher
-#
-#         # Kiểm tra khách hàng và coin
-#         customer = db.session.get(Customer, current_user.id)
-#         if not customer:
-#             session.pop('order_processing', None)
-#             return jsonify({"message": "Không tìm thấy thông tin khách hàng!"}), 400
-#
-#         coin_used = customer.coin if session.get('use_coin', False) else 0
-#         final_amount = max(total_amount - voucher_discount - coin_used, 0)
-#
-#         # Tạo đơn hàng
-#         new_receipt = Receipt(
-#             create_date=datetime.now(),
-#             customer_id=current_user.id,
-#             customer_phone=address.receiver_phone,
-#             customer_address=customer_address,
-#             delivery_method=delivery_method,
-#             payment_method=payment_method,
-#             total_amount=total_amount,
-#             voucher_id=voucher_id,
-#             voucher_discount=voucher_discount,
-#             coin_used=coin_used,
-#             final_amount=final_amount,
-#             note_message=note_message
-#         )
-#
-#         # Thêm chi tiết đơn hàng
-#         for item in cart_items:
-#             new_receipt.receipt_details.append(ReceiptDetail(
-#                 product_id=item.product_id,
-#                 quantity=item.quantity,
-#                 price=item.product.price
-#             ))
-#
-#         # Cập nhật coin
-#         if coin_used > 0:
-#             customer.coin = max(customer.coin - coin_used, 0)
-#         customer.coin += sum(item.quantity for item in cart_items) * 100
-#
-#         # Xóa giỏ hàng
-#         for item in cart_items:
-#             db.session.delete(item)
-#
-#         # Lưu vào CSDL
-#         db.session.add(new_receipt)
-#         db.session.commit()
-#
-#         print(f"note_message saved: '{new_receipt.note_message}'")  # Debug
-#         session.pop('order_processing', None)
-#         session.pop('voucher_id', None)
-#         session.pop('use_coin', None)
-#         session.pop('note_message', None)
-#
-#         return jsonify({
-#             "message": "Đặt hàng thành công!",
-#             "receipt_id": new_receipt.id,
-#             "bonus_coin": customer.coin
-#         }), 200
-#
-#     except Exception as e:
-#         db.session.rollback()
-#         session.pop('order_processing', None)
-#         return jsonify({"message": f"Lỗi: {str(e)}"}), 500
 
 
-
-import requests, hmac, hashlib
 
 @app.route('/api/order', methods=['POST'])
 @login_required
@@ -847,7 +832,10 @@ def create_order():
         if not customer:
             return _clear_processing({"message": "Không tìm thấy thông tin khách hàng!"}, 400)
 
+        # ✅ Xử lý coin
         coin_used = customer.coin if session.get('use_coin') else 0
+        coin_earned = sum(item.quantity for item in cart_items) * 100
+
         final_amount = max(total_amount - voucher_discount - coin_used, 0)
 
         customer_address = f"{address.receiver_address_line}, {address.receiver_ward}, {address.receiver_district}, {address.receiver_province}"
@@ -865,10 +853,12 @@ def create_order():
                 voucher_id=voucher_id,
                 voucher_discount=voucher_discount,
                 coin_used=coin_used,
+                coin_earned=coin_earned,  # ✅ Ghi số xu cộng
                 final_amount=final_amount,
                 note_message=note_message,
                 is_paid=True
             )
+
             for item in cart_items:
                 new_receipt.receipt_details.append(ReceiptDetail(
                     product_id=item.product_id,
@@ -878,7 +868,7 @@ def create_order():
 
             if coin_used > 0:
                 customer.coin = max(customer.coin - coin_used, 0)
-            customer.coin += sum(item.quantity for item in cart_items) * 100
+            customer.coin += coin_earned  # ✅ Cộng xu vừa mua
 
             for item in cart_items:
                 db.session.delete(item)
@@ -895,18 +885,18 @@ def create_order():
         # === Nếu là MoMo ===
         momo_order_id = str(uuid.uuid4())
 
-        # ✅ TẠO PendingPayment TRONG DB
         pending = PendingPayment(
-            momo_order_id = momo_order_id,
-            customer_id = current_user.id,
-            note_message = note_message,
-            customer_phone = address.receiver_phone,
-            customer_address = customer_address,
-            voucher_id = voucher_id,
-            voucher_discount = voucher_discount,
-            coin_used = coin_used,
-            final_amount = final_amount,
-            cart_items = json.dumps([
+            momo_order_id=momo_order_id,
+            customer_id=current_user.id,
+            note_message=note_message,
+            customer_phone=address.receiver_phone,
+            customer_address=customer_address,
+            voucher_id=voucher_id,
+            voucher_discount=voucher_discount,
+            coin_used=coin_used,
+            coin_earned=coin_earned,  # ✅ Ghi số xu cộng
+            final_amount=final_amount,
+            cart_items=json.dumps([
                 {"product_id": i.product_id, "quantity": i.quantity, "price": i.product.price}
                 for i in cart_items
             ])
@@ -928,16 +918,12 @@ def create_order():
 
 
 
-
-
-
 def _clear_processing(payload, status):
     session.pop('order_processing', None)
     session.pop('voucher_id', None)
     session.pop('use_coin', None)
     session.pop('note_message', None)
     return jsonify(payload), status
-
 
 
 def _create_momo_payment(momo_order_id, final_amount):
@@ -951,8 +937,8 @@ def _create_momo_payment(momo_order_id, final_amount):
     order_id = momo_order_id  # Dùng momo_order_id đồng bộ
     request_id = str(uuid.uuid4())
     order_info = f"Thanh toán đơn hàng của user #{current_user.id}"
-    redirect_url = "https://jolly-baboon-3.loca.lt/MyReceipt"
-    ipn_url = "https://jolly-baboon-3.loca.lt/api/momo_ipn"
+    redirect_url = "http://localhost:5000/MyReceipt"
+    ipn_url = "http://localhost:5000/api/momo_ipn"
     extra_data = ""
 
     raw_signature = (
@@ -998,7 +984,6 @@ def _create_momo_payment(momo_order_id, final_amount):
     return res_data.get('payUrl')
 
 
-
 @app.route('/api/check_paid')
 @login_required
 def check_paid():
@@ -1007,12 +992,6 @@ def check_paid():
     if receipt and receipt.is_paid:
         return jsonify({'is_paid': True})
     return jsonify({'is_paid': False})
-
-
-@app.route('/MOMO')
-def momo_page():
-    return render_template('MOMO.html')
-
 
 
 @app.route('/api/momo_ipn', methods=['POST'])
@@ -1038,20 +1017,20 @@ def momo_ipn():
 
         try:
             new_receipt = Receipt(
-                create_date = datetime.now(),
-                customer_id = pending.customer_id,
-                customer_phone = pending.customer_phone,
-                customer_address = pending.customer_address,
-                delivery_method = "Giao hàng tận nơi",
-                payment_method = "MoMo",
-                total_amount = pending.final_amount,
-                voucher_id = pending.voucher_id,
-                voucher_discount = pending.voucher_discount,
-                coin_used = pending.coin_used,
-                final_amount = pending.final_amount,
-                note_message = pending.note_message,
-                is_paid = True,
-                momo_order_id = order_id
+                create_date=datetime.now(),
+                customer_id=pending.customer_id,
+                customer_phone=pending.customer_phone,
+                customer_address=pending.customer_address,
+                delivery_method="Giao hàng tận nơi",
+                payment_method="MoMo",
+                total_amount=pending.final_amount,
+                voucher_id=pending.voucher_id,
+                voucher_discount=pending.voucher_discount,
+                coin_used=pending.coin_used,
+                final_amount=pending.final_amount,
+                note_message=pending.note_message,
+                is_paid=True,
+                momo_order_id=order_id
             )
 
             items = json.loads(pending.cart_items)
@@ -1082,9 +1061,6 @@ def momo_ipn():
     return jsonify({'message': 'IPN FAILED'}), 400
 
 
-
-
-
 @app.route('/api/check_payment')
 @login_required
 def check_payment():
@@ -1096,9 +1072,6 @@ def check_payment():
         return jsonify({'is_paid': False, 'message': 'Không tìm thấy đơn hàng'})
 
 
-
-
-
 @app.route('/api/set_note_message', methods=['POST'])
 @login_required
 def set_note_message():
@@ -1107,11 +1080,13 @@ def set_note_message():
     session['note_message'] = note_message
     return jsonify({'message': 'Note saved to session'}), 200
 
+
 @app.route('/api/get_note_message', methods=['GET'])
 @login_required
 def get_note_message():
     note_message = session.get('note_message', '')
     return jsonify({'note_message': note_message}), 200
+
 
 # Chọn voucher
 @app.route("/api/set_voucher", methods=['POST'])
@@ -1130,6 +1105,7 @@ def set_voucher():
 
     session['voucher_id'] = voucher.id
     return jsonify({'code': 200, 'message': 'Đã lưu voucher!'})
+
 
 # click chọn sử dụng coin
 @app.route('/api/set_use_coin', methods=['POST'])
@@ -1162,6 +1138,7 @@ def set_use_coin():
         'new_total': total_after
     })
 
+
 # Chọn phương thức thanh toán giữa tiền mặt và online
 @app.route('/api/set_payment_method', methods=['POST'])
 @login_required
@@ -1170,8 +1147,6 @@ def set_payment_method():
     payment_method = data.get('payment_method', 'COD')
     session['payment_method'] = payment_method
     return jsonify({'code': 200})
-
-
 
 
 # Hiển thị danh sách thể loại
@@ -1217,7 +1192,7 @@ def profile():
 
         gender_str = request.form.get('gender')
         if gender_str:
-            current_user.gender = Gender[gender_str]  # Gán Enum
+            current_user.gender = Gender[gender_str]
 
         birthday_str = request.form.get('birthday')
         if birthday_str:
@@ -1229,16 +1204,46 @@ def profile():
             upload_result = cloudinary.uploader.upload(avatar)
             current_user.avatar = upload_result['secure_url']
 
-        # Lưu vào database
         db.session.commit()
-
-        # ✅ Thêm flash thông báo thành công
         flash('Cập nhật hồ sơ thành công!', 'success')
-
         return redirect('/profile')
 
-    return render_template('user/profile.html', user=current_user)
 
+
+    return render_template(
+        'user/profile.html',
+        user=current_user,
+    )
+# Trang cá nhân của người dùng - hiển thị thông tin chung
+@app.context_processor
+def inject_user_stats():
+    if current_user.is_authenticated:
+        # Tính tổng đã thanh toán:
+        total_paid = db.session.query(func.sum(Receipt.final_amount)) \
+            .filter(Receipt.customer_id == current_user.id, Receipt.is_paid == True) \
+            .scalar() or 0
+
+        # Xác định hạng:
+        if total_paid >= 10_000_000:
+            member_rank = "Kim Cương"
+            next_rank = None
+            remaining = 0
+        elif total_paid >= 5_000_000:
+            member_rank = "Vàng"
+            next_rank = "Kim Cương"
+            remaining = 10_000_000 - total_paid
+        else:
+            member_rank = "Bạc"
+            next_rank = "Vàng"
+            remaining = 5_000_000 - total_paid
+
+        return dict(
+            total_paid=total_paid,
+            member_rank=member_rank,
+            next_rank=next_rank,
+            remaining=remaining
+        )
+    return dict(total_paid=0, member_rank='Bạc', next_rank='Vàng', remaining=5_000_000)
 
 
 # Upload avatar
@@ -1257,7 +1262,6 @@ def upload_avatar():
         return jsonify({'success': True, 'avatar_url': current_user.avatar})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
-
 
 
 # Đổi mật khẩu
@@ -1285,15 +1289,115 @@ def change_password():
 
     return render_template('user/changePassword.html', error=error, success=success)
 
-#Uu đãi thành viên
+from flask import render_template
+from flask_login import login_required, current_user
+from sqlalchemy import func
+
 @app.route('/uuDaiThanhVien')
 @login_required
 def uu_dai_thanh_vien():
-    return render_template('user/uuDaiThanhVien.html')
+    customer = current_user
+
+    # Tổng đơn hàng:
+    total_orders = Receipt.query.filter_by(customer_id=customer.id).count()
+
+    # Tổng đã thanh toán:
+    total_paid = db.session.query(func.sum(Receipt.final_amount))\
+        .filter(Receipt.customer_id == customer.id, Receipt.is_paid == True)\
+        .scalar() or 0
+
+    # Tổng xu đã dùng:
+    total_coin_used = db.session.query(func.sum(Receipt.coin_used))\
+        .filter(Receipt.customer_id == customer.id)\
+        .scalar() or 0
+
+    # Số xu còn lại:
+    coin_balance = customer.coin
+
+    # Tạm freeship
+    freeship_count = 0
+
+    return render_template(
+        'user/uuDaiThanhVien.html',
+        coin_balance=coin_balance,
+        freeship_count=freeship_count,
+        total_orders=total_orders,
+        total_paid=total_paid,
+        total_coin_used=total_coin_used
+    )
+
+# Tính số năm hiện taị
+@app.context_processor
+def inject_now():
+    from datetime import datetime
+    return {'now': datetime.now}
 
 @app.route('/MyReceipt')
 @login_required
 def order():
+    momo_order_id = request.args.get('orderId')
+    result_code = request.args.get('resultCode')
+
+    if momo_order_id:
+        pending = PendingPayment.query.filter_by(momo_order_id=momo_order_id).first()
+
+        if pending:
+            customer = db.session.get(Customer, pending.customer_id)
+
+            if result_code == '0':
+                # ✅ MoMo thanh toán thành công → tạo đơn + cộng coin
+                new_receipt = Receipt(
+                    create_date=datetime.now(),
+                    customer_id=pending.customer_id,
+                    customer_phone=pending.customer_phone,
+                    customer_address=pending.customer_address,
+                    delivery_method="Thanh toán online",
+                    payment_method="MoMo",
+                    total_amount=pending.final_amount + pending.voucher_discount + pending.coin_used,
+                    voucher_id=pending.voucher_id,
+                    voucher_discount=pending.voucher_discount,
+                    coin_used=pending.coin_used,
+                    coin_earned=pending.coin_earned,  # ✅ Ghi lại số xu cộng
+
+                    final_amount=pending.final_amount,
+                    note_message=pending.note_message,
+                    is_paid=True,
+                    momo_order_id=momo_order_id
+                )
+
+                items = json.loads(pending.cart_items)
+                total_coin_earned = 0
+
+                for item in items:
+                    new_receipt.receipt_details.append(ReceiptDetail(
+                        product_id=item['product_id'],
+                        quantity=item['quantity'],
+                        price=item['price']
+                    ))
+                    total_coin_earned += item['quantity'] * 100
+
+                # ✅ Trừ coin đã dùng, cộng coin thưởng
+                if pending.coin_used > 0:
+                    customer.coin = max(customer.coin - pending.coin_used, 0)
+                customer.coin += total_coin_earned
+
+                # ✅ Xoá giỏ hàng đã mua
+                CartItem.query.filter_by(user_id=pending.customer_id).delete()
+
+                # ✅ Hoàn tất
+                db.session.add(new_receipt)
+                db.session.delete(pending)
+                db.session.commit()
+
+                flash("Thanh toán MoMo thành công!", "success")
+
+            else:
+                # ✅ Hủy hoặc lỗi → xoá pending
+                db.session.delete(pending)
+                db.session.commit()
+                flash("Thanh toán MoMo không thành công hoặc đã bị hủy.", "warning")
+
+    # 🎯 Query danh sách đơn như cũ:
     status = request.args.get('status')
     if status:
         session['receipt_status'] = status
@@ -1302,16 +1406,15 @@ def order():
 
     query = Receipt.query.filter_by(customer_id=current_user.id)
     if status != 'all':
-        query = query.filter_by(status=status)  # ⚡ Bạn cần cột status trong Receipt nhé!
+        query = query.filter_by(status=status)
 
     receipts = query.order_by(Receipt.create_date.desc()).all()
 
     details_by_receipt = []
-
     for r in receipts:
-        one_receipt_details = []
+        details = []
         for d in r.receipt_details:
-            one_receipt_details.append({
+            details.append({
                 'id': d.product.id,
                 'name': d.product.name,
                 'price': d.product.price,
@@ -1319,15 +1422,82 @@ def order():
             })
         details_by_receipt.append({
             'receipt_id': r.id,
-            'details': one_receipt_details
+            'details': details
         })
 
     return render_template(
         'user/MyReceipt.html',
         status=status,
         receipts=receipts,
-        rebuy_by_receipt=details_by_receipt  # ✅ map theo receipt
+        rebuy_by_receipt=details_by_receipt
     )
+
+
+
+
+@app.route('/api/comment', methods=['POST'])
+@login_required
+def create_or_update_comment():
+    data = request.form
+    content = data.get('content')
+    rating = int(data.get('rating'))
+    receipt_detail_id = int(data.get('receipt_detail_id'))
+
+    if not content or not rating or not receipt_detail_id:
+        return jsonify({'error': 'Missing data'}), 400
+
+    # Kiểm tra đã có comment chưa
+    comment = Comment.query.filter_by(receipt_detail_id=receipt_detail_id, customer_id=current_user.id).first()
+
+    if comment:
+        if not comment.can_edit:
+            return jsonify({'error': 'Không được sửa nữa!'}), 403
+        comment.content = content
+        comment.rating = rating
+        comment.can_edit = False  # ✅ Chỉ được sửa 1 lần
+
+        # ✅ Xoá ảnh cũ
+        CommentImage.query.filter_by(comment_id=comment.id).delete()
+    else:
+        comment = Comment(
+            content=content,
+            rating=rating,
+            customer_id=current_user.id,
+            receipt_detail_id=receipt_detail_id
+        )
+        db.session.add(comment)
+        db.session.flush()  # Lấy comment.id mới
+
+    files = request.files.getlist('images')
+    for f in files:
+        result = cloudinary.uploader.upload(f)
+        url = result['secure_url']
+        img = CommentImage(image_url=url, comment_id=comment.id)
+        db.session.add(img)
+
+    db.session.commit()
+    return jsonify({'message': 'Comment saved!'})
+
+
+
+
+# Xoá PendingPayment quá hạn 10 phút
+@app.route('/api/cleanup_pending_payment', methods=['POST'])
+def cleanup_pending_payment():
+    now = datetime.utcnow()
+    expired_time = now - timedelta(minutes=10)  # 10 phút
+    expired = PendingPayment.query.filter(PendingPayment.created_at < expired_time).all()
+
+    count = len(expired)
+    for p in expired:
+        db.session.delete(p)
+    db.session.commit()
+
+    return jsonify({
+        "message": f"Đã xoá {count} PendingPayment quá hạn 10 phút!"
+    }), 200
+
+
 @app.route('/api/receipts')
 @login_required
 def api_receipts():
@@ -1339,7 +1509,6 @@ def api_receipts():
 
     receipts = query.order_by(Receipt.create_date.desc()).all()
 
-    # ✅ TẠO LẠI rebuy_by_receipt
     details_by_receipt = []
     for r in receipts:
         one_receipt_details = []
@@ -1356,12 +1525,10 @@ def api_receipts():
         })
 
     return render_template(
-        'user/receipt_list.html',
+        'user/receipt_list.html',  # ⚠️ partial HTML thôi!
         receipts=receipts,
-        rebuy_by_receipt=details_by_receipt   # ✅ Đừng quên cái này!
+        rebuy_by_receipt=details_by_receipt
     )
-
-
 
 
 @app.route('/api/set_receipt_status', methods=['POST'])
@@ -1370,6 +1537,7 @@ def set_receipt_status():
     status = request.json.get('status', 'all')
     session['receipt_status'] = status
     return jsonify({'message': 'OK'})
+
 
 # Voucher
 @app.route('/voucher')
@@ -1380,13 +1548,11 @@ def voucher():
     selected_cart_items = CartItem.query.filter_by(user_id=current_user.id, is_selected=True).all()
     order_total_amount_selected = sum(item.quantity * item.product.price for item in selected_cart_items)
 
-
     session_voucher_code = ""
     if 'voucher_id' in session:
         voucher = Voucher.query.get(session['voucher_id'])
         if voucher:
             session_voucher_code = voucher.code
-
 
     return render_template(
         'user/voucher.html',
@@ -1395,14 +1561,58 @@ def voucher():
         session_voucher_code=session_voucher_code,
     )
 
+
 @app.route('/loveProduct')
 @login_required
 def love_product():
-    liked_products = db.session.query(Product)\
-        .join(FavoriteProduct, Product.id == FavoriteProduct.product_id)\
+    liked_products = db.session.query(Product) \
+        .join(FavoriteProduct, Product.id == FavoriteProduct.product_id) \
         .filter(FavoriteProduct.customer_id == current_user.id).all()
 
     return render_template('user/loveProduct.html', products=liked_products)
+
+@app.route('/myComment')
+@login_required
+def my_comment():
+    comments = Comment.query.filter_by(customer_id=current_user.id).all()
+    comment_details = []
+
+    for comment in comments:
+        receipt_detail = db.session.get(ReceiptDetail, comment.receipt_detail_id)
+        if receipt_detail:
+            product = db.session.get(Product, receipt_detail.product_id)
+            comment_details.append({
+                'comment': comment,
+                'product': product,
+                'receipt_detail': receipt_detail
+            })
+
+    return render_template('user/myComment.html', comments=comment_details)
+
+
+@app.route('/TDXu')
+@login_required
+def td_xu():
+    customer = db.session.get(Customer, current_user.id)
+    if not customer:
+        return redirect('/login')
+
+    # Tính tổng xu đã dùng
+    total_coin_used = db.session.query(func.sum(Receipt.coin_used)) \
+        .filter(Receipt.customer_id == current_user.id) \
+        .scalar() or 0
+
+    # Số xu còn lại
+    coin_balance = customer.coin
+
+    receipts = Receipt.query.filter_by(customer_id=current_user.id).order_by(Receipt.create_date.desc()).all()
+
+    return render_template(
+        'user/TDXu.html',
+        coin_balance=coin_balance,
+        total_coin_used=total_coin_used,
+        receipts=receipts
+    )
 
 
 @app.route('/api/favorites/<int:product_id>', methods=['DELETE'])
@@ -1435,8 +1645,7 @@ def my_address():
     return render_template('user/myAddress.html', addresses=addresses, default_address=default_address)
 
 
-
-#Chọn từng sản phẩm trong giỏ hàng
+# Chọn từng sản phẩm trong giỏ hàng
 @app.route('/api/toggle-select-cart-item', methods=['PUT'])
 @login_required
 def toggle_select_cart_item():
@@ -1451,7 +1660,7 @@ def toggle_select_cart_item():
     return jsonify({'success': False}), 400
 
 
-#Chọn all sản phẩm trong giỏ hàng
+# Chọn all sản phẩm trong giỏ hàng
 @app.route('/api/toggle-select-all-cart-items', methods=['PUT'])
 @login_required
 def toggle_select_all_cart_items():
@@ -1480,15 +1689,18 @@ def toggle_select_all_cart_items():
 def api_get_provinces():
     return jsonify(dao.get_provinces())
 
+
 # API lấy Quận/Huyện theo Tỉnh
 @app.route('/api/districts/<province_code>')
 def api_get_districts(province_code):
     return jsonify(dao.get_districts_by_province(province_code))
 
+
 # API lấy Phường/Xã theo Quận/Huyện
 @app.route('/api/wards/<district_code>')
 def api_get_wards(district_code):
     return jsonify(dao.get_wards_by_district(district_code))
+
 
 # API lấy địa chỉ của người dùng mặc dịnh hiện tại
 @app.route('/api/set-default-address', methods=['POST'])
@@ -1519,6 +1731,7 @@ def set_default_address():
         db.session.rollback()
         print('Lỗi:', e)
         return jsonify(success=False, error=str(e))
+
 
 # Lưu địa chỉ mới
 @app.route('/api/save-address', methods=['POST'])
@@ -1578,6 +1791,7 @@ def update_address():
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)})
 
+
 @app.route('/api/delete-address', methods=['POST'])
 def delete_address():
     data = request.json
@@ -1612,10 +1826,11 @@ def delete_address():
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)})
 
+
 if __name__ == "__main__":
     with app.app_context():
         app.run(
             debug=True,
             port=5000,
-            host='0.0.0.0'
+            host='localhost'
         )

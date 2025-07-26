@@ -2,78 +2,89 @@
 {% block title %}Sản phẩm bạn đã thích{% endblock %}
 
 {% block content_right %}
-<div style="background-color:#fff; padding:20px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+<div style="background-color:#fff;  border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 
-<h2 class="mb-4"> Sản phẩm bạn đã thích</h2>
+    <div style="border-bottom: 2px solid #f0f0f0;">
+        <h2 style=" text-align: center;
+                font-size: 28px;
+                font-weight: 800;
+                color: #565555;
+                margin-bottom: 30px;
+                display: inline-block;
+                padding:20px 30px;
+                padding-bottom: 6px;">Sản phẩm bạn đã thích
+        </h2>
+    </div>
 
-{% for p in products %}
-<div class="list-group" id="fav-product-{{ p.id }}">
-    <div class="list-group-item d-flex align-items-center mb-3 p-3 border rounded position-relative">
-        <div class="d-flex align-items-center flex-grow-1 me-3">
-            <a href="/products/{{ p.id }}" style="display:inline-flex; align-items:center; text-decoration: none; color:inherit;">
-                <img src="{{ p.image }}" style="width: 25%; object-fit: contain; margin-right:20px;"
-                     alt="{{ p.name }}">
-                <div style="flex-grow: 1; min-width: 0;">
-                    <h5 class="mb-1 text-break" style="white-space: normal;">{{ p.name }}</h5>
-                </div>
-            </a>
 
+    {% for p in products %}
+    <div id="fav-product-{{ p.id }}">
+        <div class="d-flex align-items-center p-3 border-bottom position-relative">
+            <div class="d-flex align-items-center flex-grow-1 me-3">
+                <a href="/products/{{ p.id }}"
+                   style="display:inline-flex; align-items:center; text-decoration: none; color:inherit;">
+                    <img src="{{ p.image }}" style="width: 25%; object-fit: contain; margin-right:20px;"
+                         alt="{{ p.name }}">
+                    <div style="flex-grow: 1; min-width: 0;">
+                        <h5 class="mb-1 text-break" style="white-space: normal;">{{ p.name }}</h5>
+                    </div>
+                </a>
+            </div>
+
+            <div class="d-flex flex-column align-items-start flex-shrink-0">
+                <p class="text-danger fw-bold mb-1" style="font-size:25px;">
+                    {{ '{:,.0f}'.format(p.price).replace(',', '.') }} đ
+                </p>
+                <a href="#" class="themVaoGioHang"
+                   onclick="addToCart(event, {{ p.id }}, '{{ p.name }}', {{ p.price }}, 1)">
+                    <div style="display: flex; align-items: center;">
+                        <span> Thêm vào giỏ</span>
+                    </div>
+                </a>
+            </div>
+
+            <button type="button" class="btn-close"
+                    style="position: absolute; top: 10px; right: 10px;"
+                    aria-label="Close" onclick="removeFavorite({{ p.id }})">
+            </button>
         </div>
+    </div>
+    {% endfor %}
+    <script>
+        function removeFavorite(productId) {
+            if (!confirm("Bạn có chắc muốn xóa sản phẩm này khỏi yêu thích không?")) return;
 
-        <div class="d-flex flex-column align-items-start flex-shrink-0">
-            <p class="text-danger fw-bold mb-1" style="font-size:25px;"> {{ '{:,.0f}'.format(p.price).replace(',', '.')
-                }} đ</p>
-            <a href="#"
-               onclick="addToCart(event, {{ p.id }}, '{{ p.name }}', {{ p.price }}, 1)"
-               style="background-color: rgb(238, 77, 45); color: white; font-size: 17px; padding: 11px 45px; border-radius: 8px; text-decoration: none; display: inline-block;"
-               onmouseover="this.style.transform='scale(1.1)';"
-               onmouseout="this.style.transform='scale(1)'; this.style.fontWeight='normal';">
-                <div style="display: flex; align-items: center;">
-                    <span> Thêm vào giỏ</span>
-                </div>
-            </a>
-        </div>
+            fetch(`/api/favorites/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 1️⃣ Xoá DOM
+                    const elem = document.getElementById(`fav-product-${productId}`);
+                    if (elem) elem.remove();
 
-        <button type="button" class="btn-close" style="position: absolute; top: 10px; right: 10px;"
-                aria-label="Close" onclick="removeFavorite({{ p.id }})"></button>
-        <script>
-            function removeFavorite(productId) {
-                if (!confirm("Bạn có chắc muốn xóa sản phẩm này khỏi yêu thích không?")) return;
+                    // 2️⃣ Nếu trang chi tiết đang mở → đổi icon + số like
+                    const icon = document.getElementById("like-icon");
+                    const text = document.getElementById("like-text");
 
-                fetch(`/api/favorites/${productId}`, {
-                    method: 'DELETE'
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // 1️⃣ Xoá DOM
-                        const elem = document.getElementById(`fav-product-${productId}`);
-                        if (elem) elem.remove();
-
-                        // 2️⃣ Nếu trang chi tiết đang mở → đổi icon + số like
-                        const icon = document.getElementById("like-icon");
-                        const text = document.getElementById("like-text");
-
-                        if (icon && text) {
-                            icon.classList.remove("fa-solid");
-                            icon.classList.add("fa-regular");
-                            text.textContent = `Đã thích (${data.like_count})`;
-                        }
-
-                    } else {
-                        alert("❌ Xoá không thành công.");
+                    if (icon && text) {
+                        icon.classList.remove("fa-solid");
+                        icon.classList.add("fa-regular");
+                        text.textContent = `Đã thích (${data.like_count})`;
                     }
-                })
-                .catch(err => {
-                    console.error("Lỗi khi xoá:", err);
-                });
-            }
 
-        </script>
+                } else {
+                    alert("❌ Xoá không thành công.");
+                }
+            })
+            .catch(err => {
+                console.error("Lỗi khi xoá:", err);
+            });
+        }
 
-    </div>
+    </script>
+
+
 </div>
-{% endfor %}
-
-    </div>
 {% endblock %}

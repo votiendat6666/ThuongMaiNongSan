@@ -1,28 +1,79 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Thông tin tài khoản{% endblock %}
+{% block title %} Thông tin tài khoản {% endblock %}
 
 {% block content %}
 {% set current_path = request.path %}
 
 <div style="display: flex; gap: 20px; margin: 20px 0; align-items: flex-start; ">
 
-    <div style="flex: 0 0 25%; background-color: #fff; padding: 20px; border-radius: 10px; text-align: center; box-sizing: border-box;">
+    <div style="flex: 0 0 25%; background-color: #fff; padding: 20px; border-radius: 2px; text-align: center; box-sizing: border-box;">
 
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="width: 120px; height: 120px; border: 3px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; cursor: pointer;"
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 0;background-color:#fff;border-radius:2px;box-sizing:border-box;">
+
+            {% if member_rank == 'Bạc' %}
+            {% set rank_color = '#BBC1C7' %}
+            {% set avatar_border = '#BBC1C7' %}
+            {% elif member_rank == 'Vàng' %}
+            {% set rank_color = '#E6B800' %}
+            {% set avatar_border = '#E6B800' %}
+            {% else %}
+            {% set rank_color = 'linear-gradient(135deg, #434343, #000000)' %}
+            {% set avatar_border = '#000000' %}
+            {% endif %}
+
+            <!-- Avatar container -->
+            <div style="width:120px;height:120px;
+                        border:5px solid {{ avatar_border }};
+                        border-radius:50%;
+                        display:flex;align-items:center;justify-content:center;
+                        cursor:pointer; background-color:#f5f5f5;
+                        background-color:white;    "
                  id="avatar-container">
-                <img id="user-avatar"
-                     src="{{ current_user.avatar or url_for('static', filename='images/default-avatar.png') }}"
-                     alt="Avatar"
-                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
-            </div>
-            <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">{{ current_user.name }}</div>
-            <div style="font-size: 12px; color: gray;">Thành viên TDShop</div>
 
-            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                {% if current_user.avatar %}
+                <img id="user-avatar"
+                     src="{{ current_user.avatar }}"
+                     alt="Avatar"
+                     style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+                {% else %}
+                <i class="fa-regular fa-user" style="font-size:50px; color:#999;"></i>
+                {% endif %}
+
+            </div>
+
+            <!-- Thông tin -->
+            <div style="text-align:center;">
+                <div style="font-weight:bold;font-size:18px;margin-bottom:8px;">{{ current_user.name }}</div>
+
+                <div style="display:inline-block;
+                            font-size:13px;
+                            color:#fff;
+                            padding:4px 12px;
+                            background:{{ rank_color }};
+                            border-radius:20px;
+                            margin-bottom:14px;">
+                    Thành viên {{ member_rank }}
+                </div>
+
+                <div style="font-size:13px;color:gray;margin-bottom:10px;">
+                    Đã tích luỹ <span style="font-weight:600;">{{ "{:,.0f}".format(total_paid) }}</span>
+                </div>
+
+                {% if next_rank %}
+                <div style="font-size:13px;color:gray;">
+                    Thêm <span style="font-weight:600;">{{ "{:,.0f}".format(remaining) }}</span> để nâng hạng
+                    <span style="font-weight:600;">{{ next_rank }}</span>
+                </div>
+                {% else %}
+                <div style="font-size:13px;color:gray;">Bạn đang ở hạng cao nhất!</div>
+                {% endif %}
+
+                <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
+            </div>
         </div>
+
 
         <hr style="width: 100%; border: 1px solid #e0e0e0; margin-top: 20px; margin-bottom: 20px;">
 
@@ -35,9 +86,7 @@
                                                current_path.startswith('/uuDaiThanhVien') or
                                                 current_path.startswith('/myAddress')
                                                 %}active{% endif %}">
-                         <span class="material-symbols-outlined" style=" font-size: 24px; color: #5084C1;
-                            font-variation-settings:'FILL' 0, 'wght' 300,'GRAD' 0, 'opsz' 24;">person
-                            </span>
+                        <i class="fa-regular fa-user" style="margin-top:-5px; color:#333;"></i>
                         <span style="margin-left:10px;"></span>
 
                         Thông tin tài khoản
@@ -69,7 +118,8 @@
                         <li style="margin: 6px 0;">
                             <a href="/myAddress"
                                style="font-size: 15px; margin-left:20px;"
-                               class="submenu-link {% if current_path == '/myAddress' %}active{% endif %}">Địa chỉ của tôi
+                               class="submenu-link {% if current_path == '/myAddress' %}active{% endif %}">Địa chỉ của
+                                tôi
                             </a>
                         </li>
                     </ul>
@@ -78,7 +128,7 @@
             <li style="margin-bottom: 10px;">
                 <a href="/MyReceipt"
                    class="menu-link {% if current_path.startswith('/MyReceipt') %}active{% endif %}">
-                     <span class="material-symbols-outlined" style=" font-size: 24px; color: #5084C1;
+                     <span class="material-symbols-outlined" style=" font-size: 24px; color:#333;
                             font-variation-settings:'FILL' 0, 'wght' 300,'GRAD' 0, 'opsz' 24;">receipt_long
                             </span>
                     <span style="margin-left:10px;"></span>
@@ -88,7 +138,7 @@
             <li style="margin-bottom: 10px;">
                 <a href="/voucher"
                    class="menu-link {% if current_path.startswith('/voucher') %}active{% endif %}">
-                    <span class="material-symbols-outlined" style=" font-size: 24px; color: #f56b0f;
+                    <span class="material-symbols-outlined" style=" font-size: 24px; color:#333;
                             font-variation-settings:'FILL' 0, 'wght' 300,'GRAD' 0, 'opsz' 24;"> confirmation_number
                     </span>
 
@@ -100,11 +150,31 @@
             <li style="margin-bottom: 10px;">
                 <a href="/loveProduct"
                    class="menu-link {% if current_path.startswith('/loveProduct') %}active{% endif %}">
-                    <span class="material-symbols-outlined" style=" font-size: 24px; color: #EA3323;
+                    <span class="material-symbols-outlined" style=" font-size: 24px; color:#333;
                             font-variation-settings:'FILL' 0, 'wght' 300,'GRAD' 0, 'opsz' 24;">favorite
-                            </span>
+                    </span>
                     <span style="margin-left:10px;"></span>
                     Sản phẩm yêu thích
+                </a>
+            </li>
+
+            <li style="margin-bottom: 10px;">
+                <a href="/myComment"
+                   class="menu-link {% if current_path.startswith('/myComment') %}active{% endif %}">
+                    <i class="fa-regular fa-comment" style="font-size:18px; margin-left:2px; color:#333;"></i>
+                    <span style="margin-left:13px;"></span>
+                    Bình luận của tôi
+                </a>
+            </li>
+
+            <li style="margin-bottom: 10px;">
+                <a href="/TDXu"
+                   class="menu-link {% if current_path.startswith('/TDXu') %}active{% endif %}">
+                     <span class="material-symbols-outlined" style=" font-size: 24px; color:#333;
+                            font-variation-settings:'FILL' 0, 'wght' 300,'GRAD' 0, 'opsz' 24;">paid
+                    </span>
+                    <span style="margin-left:10px;"></span>
+                     Lịch sử Xu
                 </a>
             </li>
         </ul>
@@ -150,23 +220,25 @@
                     <div class="tab-pane fade show active" id="pills-bac" role="tabpanel"
                          aria-labelledby="pills-bac-tab">
                         <ul style="list-style: none; padding: 0; margin: 0; ">
-                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật: X</li>
-                            <li style="margin-bottom: 10px;">- Ưu đãi freeship và mã giảm giá: X</li>
-                            <li>- Tỉ lệ tích luỹ F-Point trên giá trị đơn hàng: 0,5%</li>
+                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật dành riêng cho hội viên</li>
+                            <li style="margin-bottom: 10px;">- Tích lũy Xu trên giá trị đơn hàng</li>
+                            <li>- Hưởng ưu đãi freeship và mã giảm giá theo chương trình</li>
+
                         </ul>
                     </div>
                     <div class="tab-pane fade" id="pills-vang" role="tabpanel" aria-labelledby="pills-vang-tab">
                         <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật: 100.000 F-Point</li>
-                            <li style="margin-bottom: 10px;">- Ưu đãi freeship và mã giảm giá: 2 lần</li>
-                            <li>- Tỉ lệ tích luỹ F-Point trên giá trị đơn hàng: 1%</li>
+                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật giá trị cao hơn</li>
+                            <li style="margin-bottom: 10px;">- Tích lũy Xu/Điểm theo giá trị đơn hàng</li>
+                            <li>- Nhận thêm ưu đãi freeship và voucher hấp dẫn</li>
                         </ul>
                     </div>
                     <div class="tab-pane fade" id="pills-kimcuong" role="tabpanel" aria-labelledby="pills-kimcuong-tab">
                         <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật: 300.000 F-Point</li>
-                            <li style="margin-bottom: 10px;">- Ưu đãi freeship và mã giảm giá: 5 lần</li>
-                            <li>- Tỉ lệ tích luỹ F-Point trên giá trị đơn hàng: 2%</li>
+                            <li style="margin-bottom: 10px;">- Quà tặng sinh nhật đặc biệt dành cho hội viên cao cấp
+                            </li>
+                            <li style="margin-bottom: 10px;">- Tích lũy Xu/Điểm với tỷ lệ ưu đãi hơn</li>
+                            <li>- Tận hưởng nhiều lượt freeship và ưu đãi riêng</li>
                         </ul>
                     </div>
                     <br>
@@ -184,11 +256,37 @@
 
     </div>
 </div>
+<!-- Overlay khi upload avatar -->
+<div id="avatar-upload-loading"
+     style="
+       display: none;  /* QUAN TRỌNG: ẩn sẵn */
+       position: fixed; z-index: 9999; top: 0; left: 0;
+       width: 100%; height: 100%;
+       background: rgba(255,255,255,0.7);
+       align-items: center; justify-content: center;
+     ">
+  <div class="avatar-spinner"></div>
+</div>
 
 {% endblock %}
 
+
+
 {%block css %}
 <style>
+.avatar-spinner {
+  border: 4px solid #ccc;
+  border-top: 4px solid #3498db; /* Màu xanh */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
     .menu-link {
         text-decoration: none;
         color: #333;
@@ -200,7 +298,6 @@
     .menu-link:hover,
     .menu-link.active {
         color: #459e27; !important;
-<!--        font-weight: bold;-->
     }
 
     .submenu-link {
@@ -213,7 +310,6 @@
     .submenu-link:hover,
     .submenu-link.active {
         color: #459e27; !important;
-<!--        font-weight: bold;-->
     }
 
     .membership-card-container {
@@ -301,7 +397,7 @@
     background-color: #ffffff; /* Nền trắng cho phần nội dung */
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: 2px;
     }
 
     .tab-content .tab-pane ul {
@@ -318,34 +414,43 @@
 
 {% block scripts %}
 <script>
-    document.getElementById('avatar-container').addEventListener('click', function () {
-        document.getElementById('avatar-upload').click();
-    });
-    document.getElementById('avatar-upload').addEventListener('change', function () {
-        const fileInput = this;
-        const file = fileInput.files[0];
-        if (!file) return;
+  document.getElementById('avatar-container').addEventListener('click', function () {
+    document.getElementById('avatar-upload').click();
+  });
 
-        const formData = new FormData();
-        formData.append('avatar', file);
+  document.getElementById('avatar-upload').addEventListener('change', function () {
+    const fileInput = this;
+    const file = fileInput.files[0];
+    if (!file) return;
 
-        fetch('/upload-avatar', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                // Cập nhật ảnh mới ngay trên trang
-                document.getElementById('user-avatar').src = data.avatar_url;
-            } else {
-                alert('Lỗi khi cập nhật ảnh.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Có lỗi xảy ra!');
-        });
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const loader = document.getElementById('avatar-upload-loading');
+    loader.style.display = 'flex'; // ✅ Hiện overlay spinner
+
+    fetch('/upload-avatar', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // ✅ Reload trang để cập nhật avatar mới
+        location.reload();
+      } else {
+        alert('Lỗi khi cập nhật ảnh.');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Có lỗi xảy ra!');
+    })
+    .finally(() => {
+      loader.style.display = 'none'; // ✅ Ẩn overlay khi xong
     });
+  });
 </script>
+
+
 {%endblock%}

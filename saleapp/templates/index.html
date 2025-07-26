@@ -84,7 +84,7 @@
 
         <div class="intro-box intro-box-2">
             <p>
-                <strong style="color:#00713b;">TD SHOP</strong> là nhà sản xuất và xuất khẩu chuyên nghiệp các sản phẩm
+                <strong style="color:#00713b; font-weight:bold;">TD FOOD</strong> là nhà sản xuất và xuất khẩu chuyên nghiệp các sản phẩm
                 nông sản sạch, chất
                 lượng cao từ Việt Nam.
                 <br><br>
@@ -118,7 +118,7 @@
         {%block menu%}
         <!-- MENU CỐ ĐỊNH BÊN TRÁI -->
         <div class="col-2"
-             style="height: 400px; overflow-y: auto; border-right: 1px solid #eee; scrollbar-width: none; background-color: white; border-radius: 8px;">
+             style="height: 400px; overflow-y: auto; border-right: 1px solid #eee; scrollbar-width: none; background-color: white; border-radius: 2px;">
             <div style="padding: 0 10px;">
                 <ul style="list-style: none; padding-left: 0;">
                     {% for parent in categories if parent.parent_id is none %}
@@ -151,13 +151,13 @@
 
         <!-- NỘI DUNG BÊN PHẢI -->
         <div class="col-10 d-flex flex-column"
-             style="overflow: hidden; margin-left: 10px; border-radius: 8px;height: 100%;">
+             style="overflow: hidden; margin-left: 10px; border-radius: 2px;height: 100%;">
             <!-- Hàng trên 70% -->
             <div class="d-flex" style="flex: 4; gap: 10px;">
 
                 <!-- Cột 7 bên trái -->
                 <div id="banner-wrapper"
-                     style="position: relative; flex: 6; border-radius: 4px; overflow: hidden; aspect-ratio: 655/393; width: 100%;">
+                     style="position: relative; flex: 6; border-radius: 2px; overflow: hidden; aspect-ratio: 655/393; width: 100%;">
                     <!-- Slide container -->
                     <div id="main-banner" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
                         <!-- Slide hiện tại -->
@@ -185,7 +185,7 @@
                 <!-- Cột 3 bên phải, chia 2 hàng nhỏ -->
                 <div class="d-flex flex-column" style="flex: 3; gap: 10px;">
                     <div style="flex: 1;
-                                  border-radius: 4px;
+                                  border-radius: 2px;
                                   overflow: hidden;
                                   aspect-ratio: 655 / 191;
                                   width: 100%;
@@ -196,7 +196,7 @@
                                 ">
                     </div>
                     <div style="flex: 1;
-                              border-radius: 4px;
+                              border-radius: 2px;
                               overflow: hidden;
                               aspect-ratio: 655 / 391;
                               width: 100%;
@@ -211,7 +211,7 @@
 
         </div>
     </div>
-    <div style="width: 100%; text-align: center; margin-top: 60px; background-color: #52a851; padding: 10px; ">
+    <div style="width: 100%; text-align: center; margin-top: 60px; background-color: #52a851; padding: 10px; border-radius: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
         <p style="font-size: 25px; margin-bottom: 0; color: #FFF; font-weight: 700; text-transform: uppercase;">
             Nông sản Việt - Mang sức khỏe và cuộc sống an lành đến mọi nơi
         </p>
@@ -547,85 +547,85 @@
     }
 
 
-        .submenu {
-            max-height: 400px;            /* Hiển thị tối đa 300px */
-            overflow-y: auto;             /* Cho phép cuộn */
-            transition: max-height 0.4s ease;
-            padding-left: 1em;
-            list-style: none;
-            scrollbar-width: none; /* Ẩn thanh cuộn ngang */
-        }
-        .submenu.open {
-        max-height: 400px; /* đủ lớn để hiển thị toàn bộ */
-        }
-        .submenu:not(.open) {
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .category-link {
-            text-decoration: none;
-            font-size: 13px;
-            line-height: 2.5;
-            font-weight: 500;
-            display: inline-block;
-            transition: color 0.3s;
-            color: #555;
-        }
-
-        .category-link:hover,
-        .category-link.active {
-            color: #FF6600;
-        }
-
-        .parent-item {
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 10px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #333;
-            transition: color 0.3s;
-        }
-
-        .parent-item:hover {
-            color: #FF6600;
-        }
-
-        .chevron-icon {
-            font-size: 12px;
-            color: #999;
-            transition: transform 0.3s;
-        }
-
-        .chevron-icon.rotate {
-            transform: rotate(180deg);
-        }
-        .parent-link {
-        font-weight: 700;
-        font-size: 13px;
-        color: #333;
-        text-decoration: none;
-        transition: color 0.3s;
-        flex: 1;
-        white-space: nowrap;
+    .submenu {
+        max-height: 400px;            /* Hiển thị tối đa 300px */
+        overflow-y: auto;             /* Cho phép cuộn */
+        transition: max-height 0.4s ease;
+        padding-left: 1em;
+        list-style: none;
+        scrollbar-width: none; /* Ẩn thanh cuộn ngang */
+    }
+    .submenu.open {
+    max-height: 400px;
+    }
+    .submenu:not(.open) {
+        max-height: 0;
         overflow: hidden;
-        text-overflow: ellipsis;
     }
 
-    .parent-link:hover {
+    .category-link {
+        text-decoration: none;
+        font-size: 13px;
+        line-height: 2.5;
+        font-weight: 500;
+        display: inline-block;
+        transition: color 0.3s;
+        color: #555;
+    }
+
+    .category-link:hover,
+    .category-link.active {
         color: #FF6600;
     }
 
-        .chevron-icon {
+    .parent-item {
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #333;
+        transition: color 0.3s;
+    }
+
+    .parent-item:hover {
+        color: #FF6600;
+    }
+
+    .chevron-icon {
         font-size: 12px;
         color: #999;
         transition: transform 0.3s;
-        padding: 15px; /* tăng vùng bấm */
-        cursor: pointer;
     }
+
+    .chevron-icon.rotate {
+        transform: rotate(180deg);
+    }
+    .parent-link {
+    font-weight: 700;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.parent-link:hover {
+    color: #469c4b;
+}
+
+    .chevron-icon {
+    font-size: 12px;
+    color: #999;
+    transition: transform 0.3s;
+    padding: 15px; /* tăng vùng bấm */
+    cursor: pointer;
+}
     #main-banner {
       overflow: hidden;
     }

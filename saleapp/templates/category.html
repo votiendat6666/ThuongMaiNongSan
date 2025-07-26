@@ -6,46 +6,46 @@
 
 <!-- KHUNG MENU + CONTENT ĐỘC LẬP CHIỀU CAO -->
 <div class="container-fluid" style="display: flex; margin: 10px 0;">
-  <!-- MENU BÊN TRÁI -->
-  <div class="col-2"
-       style=" height:717px;; overflow-y:auto ; border-right: 1px solid #eee; scrollbar-width: none; background-color: #f8f9fa; border-radius: 8px; margin-top:39.5px;">
-    <div style="padding: 0 10px;">
-      <ul style="list-style: none; padding-left: 0;">
-        {% for parent in categories if parent.parent_id is none %}
-        <li>
-          <div class="parent-item">
-            <a href="{{ url_for('category_page', category_id=parent.id) }}"
-               class="parent-link {% if parent.id == selected_parent_id %}active{% endif %}">
-               {{ parent.name }}
-            </a>
-            <span id="arrow-{{ parent.id }}"
-                  class="fa-solid fa-chevron-down chevron-icon {% if parent.id == selected_parent_id %}rotate{% endif %}"
-                  onclick="event.stopPropagation(); toggleSubMenu({{ parent.id }})">
+    <!-- MENU BÊN TRÁI -->
+    <div class="col-2"
+         style=" height:717px;; overflow-y:auto ; border-right: 1px solid #eee; scrollbar-width: none; background-color: #f8f9fa; border-radius: 8px; margin-top:39.5px;">
+        <div style="padding: 0 10px;">
+            <ul style="list-style: none; padding-left: 0;">
+                {% for parent in categories if parent.parent_id is none %}
+                <li>
+                    <div class="parent-item">
+                        <a href="{{ url_for('category_page', category_id=parent.id) }}"
+                           class="parent-link {% if parent.id == selected_parent_id %}active{% endif %}">
+                            {{ parent.name }}
+                        </a>
+                        <span id="arrow-{{ parent.id }}"
+                              class="fa-solid fa-chevron-down chevron-icon {% if parent.id == selected_parent_id %}rotate{% endif %}"
+                              onclick="event.stopPropagation(); toggleSubMenu({{ parent.id }})">
             </span>
-          </div>
-          <ul id="submenu-{{ parent.id }}"
-              class="submenu {% if parent.id == selected_parent_id %}open{% endif %}">
-            {% for child in categories if child.parent_id == parent.id %}
-            <li>
-              <a href="{{ url_for('category_page', category_id=child.id) }}"
-                 class="category-link {% if child.id == selected_category_id|int %}active{% endif %}">
-                {{ child.name }}
-              </a>
-            </li>
-            {% endfor %}
-          </ul>
-        </li>
-        {% endfor %}
-      </ul>
+                    </div>
+                    <ul id="submenu-{{ parent.id }}"
+                        class="submenu {% if parent.id == selected_parent_id %}open{% endif %}">
+                        {% for child in categories if child.parent_id == parent.id %}
+                        <li>
+                            <a href="{{ url_for('category_page', category_id=child.id) }}"
+                               class="category-link {% if child.id == selected_category_id|int %}active{% endif %}">
+                                {{ child.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-  </div>
 
-  <!-- KHUNG BÊN PHẢI -->
-<div class="col-10 d-flex flex-column"
-     style="padding: 10px; border-radius: 8px; ">
+    <!-- KHUNG BÊN PHẢI -->
+    <div class="col-10 d-flex flex-column"
+         style="padding: 10px; border-radius: 8px; ">
 
-  <!-- TIÊU ĐỀ + TAM GIÁC BÁM VIỀN -->
-  <div style="
+        <!-- TIÊU ĐỀ + TAM GIÁC BÁM VIỀN -->
+        <div style="
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -53,43 +53,43 @@
     z-index: 2;
     margin-bottom: -30px;
   ">
-    <!-- Tam giác trái -->
-    <div style="
+            <!-- Tam giác trái -->
+            <div style="
       width: 0; height: 0;
       border-bottom: 31px solid #00ac5b;
       border-left: 20px solid transparent;
     "></div>
 
-    <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                SẢN PHẨM CỦA BẠN
-            </h1>
-        </div>
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    SẢN PHẨM CỦA BẠN
+                </h1>
+            </div>
 
-    <!-- Tam giác phải -->
-    <div style="
+            <!-- Tam giác phải -->
+            <div style="
       width: 0; height: 0;
       border-bottom: 31px solid #00ac5b;
       border-right: 20px solid transparent;
     "></div>
-  </div>
+        </div>
 
-  <!-- KHUNG SẢN PHẨM -->
-  <div style="background-color: white;padding: 50px 15px;border-radius: 10px;border: 3px solid rgb(0 172 91);height:717px;">
-    <!-- Lưới sản phẩm -->
-    <div id="product-container" style="
+        <!-- KHUNG SẢN PHẨM -->
+        <div style="background-color: white;padding: 50px 15px;border-radius: 10px;border: 3px solid rgb(0 172 91);height:717px;">
+            <!-- Lưới sản phẩm -->
+            <div id="product-container" style="
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 5px;">
-      {% include 'product-items.html' %}
+                {% include 'product-items.html' %}
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
 
 </div>
-
+{%include 'product-section.html' %}
 
 
 <style>

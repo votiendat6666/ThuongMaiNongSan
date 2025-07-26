@@ -82,7 +82,7 @@
                 </td>
 
                 <td id="product-price-{{ c.product.id }}" style="text-align:center;">
-                    {{ c.product.price|format_vnd }}<sup style="font-size:12px;">đ</sup>
+                     <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ c.product.price|format_vnd }}
                 </td>
 
                 <td style="padding: 0; width: 80px;">
@@ -108,8 +108,7 @@
 
                 <td id="product-total-{{ c.product.id }}"
                     style="color:#ee4d2d; text-align:center; width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}<sup
-                        style="font-size:12px;">đ</sup>
+                     <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}
                 </td>
 
                 <td style="text-align:center;">

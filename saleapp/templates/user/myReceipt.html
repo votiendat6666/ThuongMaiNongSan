@@ -20,76 +20,338 @@
        data-status="cancelled">Đã hủy</a>
     <a href="#" class="myReceipt-menu-item {% if status == 'returned' %}myReceipt-active{% endif %}"
        data-status="returned">Trả hàng/Hoàn tiền</a>
+
 </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const menuItems = document.querySelectorAll('.myReceipt-menu-item');
+
+  // ✅ Hàm load AJAX receipts
+  function loadReceipts(status) {
+    fetch(`/api/receipts?status=${status}`)
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('receipt-list').innerHTML = html;
+        menuItems.forEach(i => i.classList.remove('myReceipt-active'));
+        document.querySelector(`.myReceipt-menu-item[data-status="${status}"]`).classList.add('myReceipt-active');
+              attachCommentHandlers(); // ✅ Gán lại handler cho nút mới
+
+      })
+      .catch(err => console.error(err));
+  }
+
+  // ✅ Nếu user F5 hoặc Back → đọc query & gọi lại AJAX
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get('status') || 'all';
+  loadReceipts(status);
+
+  // ✅ Gắn click menu AJAX
+  menuItems.forEach(item => {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      const status = this.getAttribute('data-status');
+      loadReceipts(status);
+
+      // ✅ Cập nhật URL query & pushState
+      window.history.pushState({ status }, '', `/MyReceipt?status=${status}`);
+    });
+  });
+
+  // ✅ Lắng nghe popstate: bấm Back hoặc Forward
+  window.addEventListener('popstate', function (e) {
+    const state = e.state;
+    const status = state?.status || 'all';
+    loadReceipts(status);
+  });
+
+});
+
+    </script>
 
 
 <!-- Receipt items -->
 <div id="receipt-list">
-  {% include 'user/receipt_list.html' %}
+    {% include 'user/receipt_list.html' %}
+</div>
+
+<!-- Modal Comment -->
+<div id="modals-comment" class="modals-comment-overlay" style="display: none;">
+    <div class="modals-comment-container">
+        <div class="modals-comment-header">
+            <h3>Đánh giá sản phẩm</h3>
+        </div>
+        <div class="modals-comment-body">
+
+            <div class="modals-comment-product"
+                 style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <img id="modals-comment-image" src="" alt="Ảnh sản phẩm"
+                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                <div>
+                    <div id="modals-comment-name" style="font-weight: bold; font-size: 19px; margin-bottom: 4px;"></div>
+                    <div id="modals-comment-category" style="color: rgba(0, 0, 0, .26); font-size: 16px;"></div>
+                </div>
+            </div>
+
+            <div class="modals-comment-rating">
+                <span class="modals-comment-rating-label">Chất lượng sản phẩm</span>
+                <div class="modals-comment-stars">
+
+                    <i class="fa-regular fa-star" data-value="1" style="color: #ffbe37;"></i>
+                    <i class="fa-regular fa-star" data-value="2" style="color: #ffbe37;"></i>
+                    <i class="fa-regular fa-star" data-value="3" style="color: #ffbe37;"></i>
+                    <i class="fa-regular fa-star" data-value="4" style="color: #ffbe37;"></i>
+                    <i class="fa-regular fa-star" data-value="5" style="color: #ffbe37;"></i>
+                </div>
+            </div>
+
+            <!-- Khung đánh giá -->
+            <div style="background-color:#f5f5f5;padding:20px;">
+                <div class="modals-comment-textarea-block">
+                    <textarea id="modals-comment-textarea"
+                              placeholder="Hãy chia sẻ những điều bạn thích về sản phẩm này với những người mua khác nhé."></textarea>
+                </div>
+
+                <!-- Nút thêm hình/video -->
+                <div class="modals-comment-actions">
+                    <!-- Input ẩn (multiple) -->
+                    <input type="file" id="modals-comment-file" accept="image/*" multiple style="display: none;">
+
+                    <!-- Nút upload -->
+                    <button id="modals-comment-upload-btn">
+                        <i class="fa fa-camera"></i> Thêm Hình ảnh
+                    </button>
+
+                    <!-- Container preview -->
+                    <div id="modals-comment-preview"
+                         style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="modals-comment-footer">
+            <button id="modals-comment-close">TRỞ LẠI</button>
+            <button id="modals-comment-submit">HOÀN THÀNH</button>
+        </div>
+    </div>
 </div>
 
 
+<!-- Spinner overlay -->
+<div id="modals-comment-loading" style="
+  display: none;
+  position: fixed; z-index: 9999; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.7);
+  align-items: center; justify-content: center;
+">
+  <div class="spinner"></div>
+</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const menuItems = document.querySelectorAll('.myReceipt-menu-item');
-
-    menuItems.forEach(item => {
-      item.addEventListener('click', function (e) {
-        e.preventDefault();
-        const status = this.getAttribute('data-status');
-
-        fetch(`/api/receipts?status=${status}`)
-          .then(res => res.text())
-          .then(html => {
-            document.getElementById('receipt-list').innerHTML = html;
-
-            // Đổi URL nếu muốn
-            window.history.pushState({ status: status }, '', `/MyReceipt?status=${status}`);
-
-            // Đổi class active
-            menuItems.forEach(i => i.classList.remove('myReceipt-active'));
-            this.classList.add('myReceipt-active');
-          })
-          .catch(err => console.error(err));
-      });
-    });
-  });
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuItems = document.querySelectorAll('.myReceipt-menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const status = this.getAttribute('data-status');
-
-                // Đổi URL trên thanh địa chỉ
-                const newUrl = `/MyReceipt?status=${status}`;
-                window.history.pushState({status: status}, '', newUrl);
-
-                // Gửi fetch để lưu session
-                fetch('/api/set_receipt_status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status: status })
-                }).then(res => res.json())
-                  .then(data => {
-                      console.log('Status saved:', data);
-                  });
-
-                // Đổi class active ngay
-                menuItems.forEach(i => i.classList.remove('myReceipt-active'));
-                this.classList.add('myReceipt-active');
-
-            });
-        });
-    });
-</script>
+<!-- ✅ Toast thông báo bình luận thành công -->
+<div id="comment-success-toast" style="
+  display: none;
+  position: fixed;  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  background:#4CAF50;  color: white;  padding: 12px 24px;
+  border-radius: 4px; font-size: 16px;  z-index: 99999;  text-align: center;">
+  <div style="font-size: 20px; ">✅ Bình luận thành công! </div>
+</div>
 
 <style>
+    .spinner {
+      border: 4px solid #ccc;
+      border-top: 4px solid #3498db; /* Màu xanh */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+
+    .modals-comment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .modals-comment-container {
+    width: 750px;
+    background: #fff;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh; /* Giới hạn tối đa để nếu nhỏ màn vẫn không tràn */
+  }
+
+  .modals-comment-header {
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .modals-comment-body {
+    padding: 16px;
+    overflow-y: auto; /* Cho cuộn nếu nội dung dài */
+    flex: 1;
+    scrollbar-width:none;
+  }
+
+.modals-comment-textarea-block {
+  background: white;;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  padding: 10px; /
+  font-size: 14px;
+
+}
+#modals-comment-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: vertical;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+  min-height: 220px; /* 👈 Thêm dòng này */
+  resize: none; /* Tắt kéo dãn nếu cần */
+}
+#modals-comment-textarea::placeholder {
+  color: rgba(0, 0, 0, .26);
+}
+
+
+.modals-comment-actions {
+  margin-top: 12px;
+}
+
+.modals-comment-actions button {
+  border: 1px solid #f05d40;
+  color: #f05d40;
+  background: transparent;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.modals-comment-actions button i {
+  margin-right: 6px;
+}
+
+.modals-comment-actions button:hover {
+  background: rgba(240, 93, 64, 0.05);
+}
+
+  .modals-comment-footer {
+    padding: 16px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+    .modals-comment-footer button {
+      padding: 8px 30px;
+      cursor: pointer;
+      border: none;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    #modals-comment-submit {
+      background: #f05d40;
+      color: #fff;
+    }
+
+    #modals-comment-submit:hover {
+      background: #d73211;
+    }
+
+    #modals-comment-close {
+      background: none;
+      color: #333; /* Hoặc màu bạn muốn */
+    }
+
+    #modals-comment-close:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+
+    .modals-comment-rating {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modals-comment-rating-label {
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 12px;
+    }
+
+    .modals-comment-stars i {
+      font-size: 22px;
+      color: #999;
+      margin-right: 5px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modals-comment-stars i.active {
+      color: #ffbe37; /* Vàng */
+    }
+
+
+
+
+    /* Thêm style cho ảnh preview + nút X */
+.modals-comment-preview-item {
+  position: relative;
+  display: inline-block;
+}
+
+.modals-comment-preview-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modals-comment-preview-item .remove-btn {
+  position: absolute;
+  top: -8px;   /* Đẩy ra ngoài 1 chút cho thoáng */
+  right: -16px;
+  background: none; /* Không nền */
+  color: white;     /* Màu trắng */
+  border: none;
+  font-size: 20px;  /* To hơn */
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+.modals-comment-preview-item .remove-btn:hover {
+  background: none;
+  color: white;
+}
+
+
+/* ------------------------------------------------------------ */
+/* ------------------------------------------------------------ */
+/* ------------------------------------------------------------ */
     .myReceipt-menu {
         display: flex;
         justify-content: space-around;
@@ -98,7 +360,7 @@
 
         border-bottom: 1px solid #ddd;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border-radius: 5px;
+        border-radius: 2px;
         margin-bottom: 10px;
     }
     .myReceipt-menu-item {
@@ -114,28 +376,230 @@
     .myReceipt-menu-item:hover {
         color: #ff0000;
     }
-    .mua-hang-lai {background-color: #ee4d2d; border:1px solid #ba2b0f; color:white; padding:8px 40px; font-size:14px; border-radius:4px; cursor:pointer;}
+    .mua-hang-lai {background-color: #ee4d2d; border:1px solid #ba2b0f; color:white; padding:8px 40px; font-size:14px; border-radius:2px; cursor:pointer;}
 
   .mua-hang-lai:hover {
     background-color: #d73211;
     border-color: #ee4d2d;
   }
     .hien-he-shop{
-     background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:4px; cursor:pointer;}
+     background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:2px; cursor:pointer;}
 
     .hien-he-shop:hover {
         background-color: rgba(0,0,0,.05);
         border-color: rgba(0,0,0,.15);
     }
-    .danh-gia-san-pham {  background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:4px; cursor:pointer;}
+    .danh-gia-san-pham {
+      background-color: rgba(0,0,0,.02);
+      border: 1px solid rgba(0,0,0,.09);
+      color: #333;
+      padding: 6px 16px;
+      font-size: 13px;
+      border-radius: 2px;
+      cursor: pointer;
+      text-align: right;
+      transition: all 0.2s ease;
+    }
 
     .danh-gia-san-pham:hover {
-         background-color: rgba(0,0,0,.05);
-         border-color: rgba(0,0,0,.15);
-        }
+      background-color: rgba(0,0,0,.05);
+      border-color: rgba(0,0,0,.15);
+    }
 
 
 </style>
+
+<script>
+let CURRENT_RECEIPT_DETAIL_ID = null;
+let selectedFiles = [];
+const fileInput = document.getElementById('modals-comment-file');
+const previewContainer = document.getElementById('modals-comment-preview');
+
+// ✅ Thêm ảnh mới
+function defaultFileInputHandler(e) {
+  let files = Array.from(e.target.files);
+  let remain = 3 - selectedFiles.length;
+
+  if (remain <= 0) {
+    alert('Tối đa 3 ảnh!');
+    fileInput.value = '';
+    return;
+  }
+
+  if (files.length > remain) {
+    alert(`Chỉ được chọn thêm tối đa ${remain} ảnh.`);
+    files = files.slice(0, remain);
+  }
+
+  files.forEach(file => addPreview(file));
+  fileInput.value = '';
+}
+
+fileInput.onchange = defaultFileInputHandler;
+
+document.getElementById('modals-comment-upload-btn').addEventListener('click', () => {
+  if (selectedFiles.length >= 3) {
+    alert('Tối đa 3 ảnh!');
+    return;
+  }
+  fileInput.onchange = defaultFileInputHandler;
+  fileInput.click();
+});
+
+// ✅ Thêm preview & sửa
+function addPreview(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const wrap = document.createElement('div');
+    wrap.className = 'modals-comment-preview-item';
+
+    const img = document.createElement('img');
+    img.src = e.target.result;
+
+    selectedFiles.push(file);
+
+    img.onclick = function() {
+      fileInput.onchange = function(ev) {
+        const newFile = ev.target.files[0];
+        if (newFile) {
+          const newReader = new FileReader();
+          newReader.onload = function(ev2) {
+            img.src = ev2.target.result;
+          };
+          newReader.readAsDataURL(newFile);
+          const idx = Array.from(previewContainer.children).indexOf(wrap);
+          selectedFiles[idx] = newFile;
+        }
+        fileInput.onchange = defaultFileInputHandler;
+        fileInput.value = '';
+      };
+      fileInput.click();
+    };
+
+    const remove = document.createElement('button');
+    remove.className = 'remove-btn';
+    remove.innerHTML = '×';
+    remove.onclick = function() {
+      const idx = Array.from(previewContainer.children).indexOf(wrap);
+      selectedFiles.splice(idx, 1);
+      wrap.remove();
+    };
+
+    wrap.appendChild(img);
+    wrap.appendChild(remove);
+    previewContainer.appendChild(wrap);
+  };
+  reader.readAsDataURL(file);
+}
+
+    function openModalsComment() {
+      document.getElementById('modals-comment').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      selectedFiles = [];
+      previewContainer.innerHTML = '';
+      fileInput.value = '';
+    }
+
+    function closeModalsComment() {
+      document.getElementById('modals-comment').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+function attachCommentHandlers() {
+  const buttons = document.querySelectorAll('.danh-gia-san-pham');
+  const stars = document.querySelectorAll('.modals-comment-stars i');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const canEdit = this.getAttribute('data-can-edit') === 'True';
+      if (!canEdit) {
+        alert('Bạn đã chỉnh sửa rồi, không thể chỉnh sửa tiếp!');
+        return;
+      }
+
+      document.getElementById('modals-comment-image').src = this.getAttribute('data-image');
+      document.getElementById('modals-comment-name').textContent = this.getAttribute('data-name');
+      document.getElementById('modals-comment-category').textContent = 'Phân loại: ' + this.getAttribute('data-category');
+
+      CURRENT_RECEIPT_DETAIL_ID = this.getAttribute('data-receipt-detail-id');
+
+      const content = this.getAttribute('data-comment-content') || '';
+      const rating = parseInt(this.getAttribute('data-comment-rating') || '0');
+      document.getElementById('modals-comment-textarea').value = content;
+
+      stars.forEach(s => {
+        const val = parseInt(s.getAttribute('data-value'));
+        if (val <= rating) {
+          s.classList.add('fa-solid', 'active');
+          s.classList.remove('fa-regular');
+        } else {
+          s.classList.remove('fa-solid', 'active');
+          s.classList.add('fa-regular');
+        }
+      });
+
+      openModalsComment();
+    });
+  });
+
+  stars.forEach(star => {
+    star.addEventListener('click', function() {
+      const value = parseInt(this.getAttribute('data-value'));
+      stars.forEach(s => {
+        const val = parseInt(s.getAttribute('data-value'));
+        if (val <= value) {
+          s.classList.add('fa-solid', 'active');
+          s.classList.remove('fa-regular');
+        } else {
+          s.classList.remove('fa-solid', 'active');
+          s.classList.add('fa-regular');
+        }
+      });
+    });
+  });
+
+  document.getElementById('modals-comment-close').addEventListener('click', closeModalsComment);
+
+  document.getElementById('modals-comment-submit').addEventListener('click', function() {
+    const content = document.getElementById('modals-comment-textarea').value.trim();
+    const rating = document.querySelectorAll('.modals-comment-stars i.active').length;
+    const spinner = document.getElementById('modals-comment-loading');
+    const toast = document.getElementById('comment-success-toast');
+
+    if (!content) {
+      alert('Vui lòng nhập nội dung!');
+      return;
+    }
+    if (rating === 0) {
+      alert('Vui lòng chọn số sao!');
+      return;
+    }
+
+    spinner.style.display = 'flex';
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('rating', rating);
+    formData.append('receipt_detail_id', CURRENT_RECEIPT_DETAIL_ID);
+    selectedFiles.forEach(file => formData.append('images', file));
+
+    fetch('/api/comment', { method: 'POST', body: formData })
+      .then(res => res.json())
+.then(data => {
+  spinner.style.display = 'none';
+  closeModalsComment();
+  toast.style.display = 'block';
+  toast.style.opacity = '1';
+
+  // 👉 RELOAD NGAY
+  location.reload();
+});
+  });
+}
+
+
+</script>
+
 
 {% endblock %}
 

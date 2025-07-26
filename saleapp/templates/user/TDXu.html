@@ -1,0 +1,74 @@
+{% extends 'user/layout.html' %}
+{% block title %}Xu TD Food{% endblock %}
+
+{% block content_right %}
+
+<div style="background: #fff; border-radius: 2px;  margin: auto;">
+
+    <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
+        <!-- Cột 1: ICON -->
+        <img src="https://cdn-icons-png.flaticon.com/128/9382/9382189.png"
+             alt="Xu Icon"
+             style="width: 60px; height: 60px;">
+
+        <!-- Cột 2: SỐ LỚN -->
+        <div style="font-size: 32px; font-weight: 500; color: #f6a700;">
+            {{ coin_balance }}
+        </div>
+
+        <!-- Cột 3: TEXT -->
+        <div style="display: flex; flex-direction: column;">
+            <div style="font-size: 16px; color: #f6a700;">Xu đang có</div>
+            <div style="font-size: 13px; color: gray; margin-top: 3px;">
+                {{ coin_balance }} TD Xu được áp dụng cho mọi đơn hàng.
+            </div>
+        </div>
+    </div>
+
+
+    {% set found = false %}
+
+    {% for r in receipts if r.coin_earned > 0 or r.coin_used > 0 %}
+    {% set found = true %}
+
+    <!-- Box nhóm đơn hàng -->
+    <div style="display: flex; justify-content: space-between;padding:0 20px; border-bottom: 1px solid #ddd;  overflow: hidden;
+                font-family:Helvetica Neue, Helvetica, Arial, 文泉驛正黑, WenQuanYi Zen Hei, Hiragino Sans GB, 儷黑 Pro, LiHei Pro, Heiti TC, 微軟正黑體,
+                Microsoft JhengHei UI, Microsoft JhengHei, SHPBurmese, sans-serif;">
+
+        <!-- Cột sản phẩm -->
+        <div style="flex: 1;">
+            {% for d in r.receipt_details %}
+            <div style="display: flex; align-items: center; gap: 15px; padding: 15px;">
+                <img src="{{ d.product.image if d.product.image else url_for('static', filename='images/default.png') }}"
+                     alt="{{ d.product.name }}"
+                     style="width: 90px; height: 90px; object-fit: cover; border-radius: 2px; border: 1px solid #ddd;">
+                <div>
+                    <div style=" font-size:16px; color:rgba(0, 0, 0, .8);">{{ d.product.name }} <span style="font-size:15px; color: rgba(0, 0, 0, .8); "> - ({{d.quantity}}{{d.product.donvitinh}})</span></div>
+                    <div style="font-size: 14px; color: rgba(0, 0, 0, .8);"> Đã dùng TD Xu để thanh toán </div>
+                    <div style="font-size: 14px; color: gray;">{{ r.create_date.strftime('%H:%M %d-%m-%Y') }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Cột cộng/trừ xu -->
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 15px; min-width: 70px; ">
+            {% if r.coin_earned > 0 %}
+            <div style="font-size:20px; color: #f6a700; margin-bottom: 15px;">
+                +{{ r.coin_earned }}
+            </div>
+            {% endif %}
+            {% if r.coin_used > 0 %}
+            <div style="font-size:20px; color: #777;">
+                -{{ r.coin_used |int }}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

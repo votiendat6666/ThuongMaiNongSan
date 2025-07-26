@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(Role), default=Role.USER)
     username = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    avatar = Column(String(255), default=False)
+    avatar = Column(String(255), default=None)
     joined_date = Column(String(255), default=func.now())
     is_active = Column(Boolean, default=True)
 
@@ -47,11 +47,11 @@ class User(db.Model, UserMixin):
     birthday = Column(Date, nullable=True)
     coin = Column(Integer, default=100)
 
+
 class Customer(User):  # Tạo bảng Customer
     __tablename__ = 'Customer'
     id = Column(Integer, Sequence('customer_id_seq', start=2000), primary_key=True, autoincrement=True)
     receipts = db.relationship('Receipt', backref='customer', lazy=True)
-
 
     def __str__(self):
         return self.name
@@ -69,20 +69,18 @@ class Address(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     customer_id = Column(Integer, ForeignKey('Customer.id'), nullable=False)
-    receiver_name = Column(String(255), nullable=False)      # Họ tên người nhận
-    receiver_phone = Column(String(50), nullable=False)      # SĐT người nhận
+    receiver_name = Column(String(255), nullable=False)  # Họ tên người nhận
+    receiver_phone = Column(String(50), nullable=False)  # SĐT người nhận
     receiver_province = Column(String(255), nullable=False)  # Tỉnh/Thành phố
     receiver_district = Column(String(255), nullable=False)  # Quận/Huyện
-    receiver_ward = Column(String(255), nullable=False)      # Phường/Xã
+    receiver_ward = Column(String(255), nullable=False)  # Phường/Xã
     receiver_address_line = Column(String(255), nullable=False)  # Địa chỉ cụ thể (số nhà, ấp, đường...)
-    is_default = Column(Boolean, default=False)              # Mặc định
+    is_default = Column(Boolean, default=False)  # Mặc định
 
     customer = db.relationship('Customer', backref='addresses')
 
     def __str__(self):
         return f"{self.receiver_name} - {self.receiver_phone} - {self.receiver_address_line}, {self.receiver_ward}, {self.receiver_district}, {self.receiver_province}"
-
-
 
 
 class Staff(User):  # Tạo bảng Staff
@@ -124,7 +122,7 @@ class Category(db.Model):
 
 
 class Product(db.Model):  # Tạo bảng Product
-    __tablename__ = 'Product'   # ✅ THÊM DÒNG NÀY
+    __tablename__ = 'Product'  # ✅ THÊM DÒNG NÀY
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
@@ -135,6 +133,7 @@ class Product(db.Model):  # Tạo bảng Product
     voucher = db.Column(db.Float, default=0)
     daban = db.Column(db.Float, default=0)
     like = db.Column(db.Integer, default=0)
+    donvitinh = db.Column(db.String(50))  # ✅ Thêm đơn vị tính
     # 🔶 Thêm cột JSON để lưu các thông tin mở rộng
     extra_info = db.Column(JSON, nullable=True)
 
@@ -144,53 +143,33 @@ class Product(db.Model):  # Tạo bảng Product
     def __str__(self):
         return self.name
 
+
+# Comment gắn với ReceiptDetail, không gắn product trực tiếp nữa
 class Comment(db.Model):
     __tablename__ = 'Comment'
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    content = db.Column(db.String(1000), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('Customer.id'), nullable=False)
+    receipt_detail_id = db.Column(db.Integer, db.ForeignKey('ReceiptDetail.id'), nullable=False)
+    can_edit = db.Column(db.Boolean, default=True)  # ✅ Chỉ được sửa 1 lần
     created_date = db.Column(db.DateTime, default=datetime.now)
 
-    # Ai bình luận?
-    customer_id = db.Column(db.Integer, db.ForeignKey('Customer.id'), nullable=False)
-
-    # Bình luận cho sản phẩm nào?
-    product_id = db.Column(db.Integer, db.ForeignKey('Product.id'), nullable=False)
-
-    # Số sao đánh giá (1 - 5)
-    rating = db.Column(db.Integer, nullable=False, default=5)
-
-    # Trạng thái duyệt
-    is_approved = db.Column(db.Boolean, default=False, nullable=False)
-
-    # Bình luận cha (nếu là trả lời)
-    parent_id = db.Column(db.Integer, db.ForeignKey('Comment.id'), nullable=True)
-
-    # Quan hệ đệ quy: trả lời bình luận
-    replies = db.relationship('Comment', backref=db.backref('parent', remote_side=[id]), lazy=True)
-
     customer = db.relationship('Customer', backref='comments')
-    product = db.relationship('Product', backref='comments')
-
-    def __str__(self):
-        return f"{self.customer.name}: {self.content[:30]}... ({self.rating} ⭐)"
 
 
 
 
-class Voucher(db.Model):
-    __tablename__ = 'Voucher'
+# Tạo bảng CommentImage để lưu trữ hình ảnh liên quan đến bình luận
+class CommentImage(db.Model):
+    __tablename__ = 'CommentImage'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)   # ID
-    name = Column(String(255), nullable=False)                   # Tên voucher
-    code = Column(String(50), unique=True, nullable=False)       # Mã code
-    description = Column(String(255), nullable=True)             # Mô tả
-    hsd = Column(String(255), nullable=False)                       # Hạn sử dụng (hsd)
-    price_voucher = Column(Float, nullable=False)                # Số tiền giảm
-    min_order_value = Column(Float, nullable=False, default=0)   # Đơn tối thiểu
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    image_url = db.Column(db.String(255), nullable=False)
 
-    def __repr__(self):
-        return f"<Voucher {self.code} - {self.price_voucher}>"
+    # Liên kết với Comment
+    comment_id = db.Column(db.Integer, db.ForeignKey('Comment.id'), nullable=False)
+    comment = db.relationship('Comment', backref='images')
 
 class Receipt(db.Model):
     __tablename__ = 'Receipt'
@@ -215,6 +194,7 @@ class Receipt(db.Model):
 
     # ✅ Coin
     coin_used = Column(Float, nullable=False, default=0)
+    coin_earned = db.Column(db.Integer, default=0)
 
     # ✅ Tổng thanh toán sau giảm
     final_amount = Column(Float, nullable=False, default=0)
@@ -223,7 +203,32 @@ class Receipt(db.Model):
 
     receipt_details = db.relationship('ReceiptDetail', backref='receipt', lazy=True)
 
+class ReceiptDetail(db.Model):  # Tạo bảng ReceiptDetail
+    __tablename__ = 'ReceiptDetail'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
+    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+    quantity = Column(Integer, default=0, nullable=False)
+    price = Column(Float, default=0, nullable=False)
 
+    comment = db.relationship('Comment', backref='receipt_detail', uselist=False)
+
+
+
+
+class Voucher(db.Model):
+    __tablename__ = 'Voucher'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)  # ID
+    name = Column(String(255), nullable=False)  # Tên voucher
+    code = Column(String(50), unique=True, nullable=False)  # Mã code
+    description = Column(String(255), nullable=True)  # Mô tả
+    hsd = Column(String(255), nullable=False)  # Hạn sử dụng (hsd)
+    price_voucher = Column(Float, nullable=False)  # Số tiền giảm
+    min_order_value = Column(Float, nullable=False, default=0)  # Đơn tối thiểu
+
+    def __repr__(self):
+        return f"<Voucher {self.code} - {self.price_voucher}>"
 
 
 class PendingPayment(db.Model):
@@ -237,20 +242,11 @@ class PendingPayment(db.Model):
     voucher_id = db.Column(db.Integer, db.ForeignKey(Voucher.id))
     voucher_discount = db.Column(db.Float, default=0)
     coin_used = db.Column(db.Float, default=0)
+    coin_earned = db.Column(db.Integer, default=0)  # ✅ THÊM CỘT NÀY
+
     final_amount = db.Column(db.Float, nullable=False)
     cart_items = db.Column(db.Text, nullable=False)  # JSON string
 
-
-
-
-
-class ReceiptDetail(db.Model):  # Tạo bảng ReceiptDetail
-    __tablename__ = 'ReceiptDetail'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
-    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
-    quantity = Column(Integer, default=0, nullable=False)
-    price = Column(Float, default=0, nullable=False)
 
 
 class ImportReceipt(db.Model):  # Tạo bảng ImportReceipt
@@ -336,6 +332,7 @@ def __tr__(self):
 if __name__ == "__main__":
     with app.app_context():
 
+
         db.drop_all()  # Drop all table
 
         db.create_all()  # Create all table
@@ -359,7 +356,7 @@ if __name__ == "__main__":
                     description=v.get('description', ''),
                     hsd=v.get('hsd', ''),
                     price_voucher=float(v['price_voucher']),
-                     min_order_value=float(v['min_order_value'])
+                    min_order_value=float(v['min_order_value'])
                 )
                 db.session.add(voucher)
             db.session.commit()
@@ -406,7 +403,8 @@ if __name__ == "__main__":
                         voucher=float(str(p.get('voucher', 0)).replace('%', '').replace('-', '').strip()),
                         daban=float(str(p.get('daban', 0)).replace('.', '').replace('đ', '').strip()),
                         like=int(p.get('like', 0)),
-                        extra_info=extra_info  # 👈 Lưu nguyên dict vào cột JSON
+                        donvitinh=(p.get('donvitinh') or '').strip(),
+                         extra_info=extra_info  # 👈 Lưu nguyên dict vào cột JSON
                     )
                     db.session.add(prod)
                 db.session.commit()

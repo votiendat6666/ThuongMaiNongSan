@@ -4,34 +4,34 @@
 
 {% block content_right %}
 <div class="membership-section-wrapper">
-    <div class="membership-info-card">
-        <div class="info-column">
-            <h3>Ưu đãi của bạn</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">F-Point hiện có</span>
-                    <span class="info-value">0</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Freeship hiện có</span>
-                    <span class="info-value">0 lần</span>
-                </div>
-            </div>
+  <div class="membership-info-card">
+    <div class="info-column">
+      <h3>Ưu đãi của bạn</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Số Xu hiện có</span>
+          <span class="info-value">{{ coin_balance }}</span>
         </div>
-        <div class="info-column">
-            <h3>Thành tích năm 2025</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">Số đơn hàng</span>
-                    <span class="info-value">0 đơn hàng</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Đã thanh toán</span>
-                    <span class="info-value">0 đ</span>
-                </div>
-            </div>
+        <div class="info-item">
+          <span class="info-label"> Số xu đã sử dụng </span>
+          <span class="info-value">{{ total_coin_used|int }}</span>
         </div>
+      </div>
     </div>
+    <div class="info-column">
+      <h3>Thành tích năm {{ now().year }}</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Số đơn hàng</span>
+          <span class="info-value">{{ total_orders }} đơn hàng</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Đã thanh toán</span>
+          <span class="info-value">{{ "{:,.0f}".format(total_paid) }}đ</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -47,7 +47,7 @@
         flex: 1;
         background-color: #fff;
         padding: 20px;
-        border-radius: 8px;
+        border-radius: 2px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 

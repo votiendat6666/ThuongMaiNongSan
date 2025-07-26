@@ -325,13 +325,13 @@
         </a>
     </td>
     <td style="width: 15%; text-align:center;">
-        ₫{{ c.product.price|format_vnd }}
+         <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ c.product.price|format_vnd }}
     </td>
     <td style="width: 15%; text-align: center;">
-        {{ c.quantity }}
+        {{ c.quantity }} {{c.product.donvitinh }}
     </td>
     <td style="width: 20%; color:#ee4d2d; text-align:center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        ₫{{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}
+        <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}
     </td>
 </tr>
 {% endfor %}
@@ -418,7 +418,7 @@
               <span style="color: #999; font-size: 14px; margin-right: 5px;">
                 [-₫{{ '{:,.0f}'.format(coin_balance).replace(',', '.') }}]
               </span>
-            <input type="checkbox" id="use-coin-checkbox" {% if session.get('use_coin') %}checked{% endif %} />
+            <input type="checkbox" id="use-coin-checkbox" {% if session.get ('use_coin') %}checked{% endif %} />
         </div>
     </div>
 
@@ -658,7 +658,7 @@
 
         <label style="display: flex; align-items: center; cursor: pointer;">
             <input type="radio" name="payment_method" value="MoMo"
-                   {% if payment_method== 'MoMo' %}checked{% endif %}
+                   {% if payment_method == 'MoMo' %}checked{% endif %}
             style="margin-right: 10px;">
             <img src="https://play-lh.googleusercontent.com/uCtnppeJ9ENYdJaSL5av-ZL1ZM1f3b35u9k8EOEjK3ZdyG509_2osbXGH5qzXVmoFv0"
                  style="width: 44px; height: 44px; margin-right: 8px; border-radius:5px; margin-left: 3px; margin-right: 14px;">

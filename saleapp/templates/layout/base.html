@@ -54,7 +54,7 @@
 
         body{
         background-color:#f0f0f0;
-  font-family: 'Nunito', Arial, sans-serif;
+          font-family: 'Nunito', Arial, sans-serif;
 
         }
             html, body {
@@ -174,32 +174,24 @@ main {
 
 
 {% block scripts %}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const toggle = document.getElementById("modeToggle");
-      const body = document.body;
 
-      // Ghi nhớ trạng thái dark mode nếu muốn
-      const savedMode = localStorage.getItem("dark-mode");
-      if (savedMode === "on") {
-        body.classList.add("dark-mode");
-        toggle.checked = true;
-      }
-
-      toggle.addEventListener("change", () => {
-        if (toggle.checked) {
-          body.classList.add("dark-mode");
-          localStorage.setItem("dark-mode", "on");
-        } else {
-          body.classList.remove("dark-mode");
-          localStorage.setItem("dark-mode", "off");
-        }
-      });
-    });
-</script>
 {% endblock %}
 
-
+    <style>
+        /*✅ CSS cho nút thêm vào giỏ hàng */
+    .themVaoGioHang {
+    background-color: rgb(238, 77, 45);
+    color: white;
+    font-size: 17px;
+    padding: 9px 45px;
+    border-radius: 4px;
+    text-decoration: none;
+    }
+  .themVaoGioHang:hover {
+    background-color: #d73211;
+    color: white;
+  }
+    </style>
 {% block css %}
 {% endblock %}
 

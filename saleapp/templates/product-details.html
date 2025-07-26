@@ -4,13 +4,92 @@
 {% block content %}
 
 <!-- Wrapper Grid -->
-<div style="display: grid; grid-template-columns: 40% 59%; gap: 10px; align-items: start; margin-top: 10px;">
+<div style="display: grid; grid-template-columns: 40% 59%; gap: 10px; align-items: start; margin-top: 10px; ">
 
     <!-- CỘT TRÁI -->
     <div id="col-left"
-         style="background: white; border-radius: 10px; display: flex; flex-direction: column; color: #212121; overflow: hidden;">
+         style="background: white; border-radius: 2px; display: flex; flex-direction: column; color: #212121; overflow: hidden; height: 100%;">
         <img src="{{ products.image }}" alt="Ảnh sản phẩm"
-             style="width: 486px; height: 486px; border-radius: 10px 10px 0 0;">
+             id="product-image"
+             style="width: 486px; height: 486px; border-radius: 10px 10px 0 0; cursor: zoom-in;">
+
+            <!-- Lightbox -->
+            <div id="image-lightbox" style="
+              display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+              background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 9999;">
+              <div id="lightbox-container" style="position: relative;">
+                <img id="lightbox-img" src="{{ products.image }}" alt="Ảnh phóng to"
+                     style="max-width: 800px; max-height: 800px; border-radius: 5px;">
+                <div id="magnifier" style="
+                  display: none; position: absolute; border: 3px solid #fff; border-radius: 50%;
+                  cursor: none; width: 200px; height: 200px; overflow: hidden;
+                  box-shadow: 0 0 5px rgba(0,0,0,0.5);">
+                  <img id="magnifier-img" src="{{ products.image }}" alt=""
+                       style="position: absolute;">
+                </div>
+              </div>
+            </div>
+
+            <script>
+            //✅ Xử lý lightbox và kính lúp
+            const productImage = document.getElementById('product-image');
+            const lightbox = document.getElementById('image-lightbox');
+            const lightboxContainer = document.getElementById('lightbox-container');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const magnifier = document.getElementById('magnifier');
+            const magnifierImg = document.getElementById('magnifier-img');
+
+            // Mở lightbox
+            productImage.addEventListener('click', () => {
+              lightbox.style.display = 'flex';
+            });
+
+            // Tắt lightbox nếu click ra ngoài
+            lightbox.addEventListener('click', (e) => {
+              if (!lightboxContainer.contains(e.target)) {
+                lightbox.style.display = 'none';
+                magnifier.style.display = 'none';
+              }
+            });
+
+            // Kích thước phóng đại
+            const zoom = 2;
+
+            // Di chuột để phóng
+            lightboxContainer.addEventListener('mousemove', function(e) {
+              magnifier.style.display = 'block';
+
+              const rect = lightboxImg.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+
+              const magnifierSize = magnifier.offsetWidth / 2;
+
+              let left = x - magnifierSize;
+              let top = y - magnifierSize;
+
+              // Giữ kính lúp không ra ngoài
+              if (left < 0) left = 0;
+              if (top < 0) top = 0;
+              if (left + magnifier.offsetWidth > rect.width) left = rect.width - magnifier.offsetWidth;
+              if (top + magnifier.offsetHeight > rect.height) top = rect.height - magnifier.offsetHeight;
+
+              magnifier.style.left = `${left}px`;
+              magnifier.style.top = `${top}px`;
+
+              magnifierImg.style.width = `${lightboxImg.width * zoom}px`;
+              magnifierImg.style.height = `${lightboxImg.height * zoom}px`;
+
+              magnifierImg.style.left = `-${x * zoom - magnifierSize}px`;
+              magnifierImg.style.top = `-${y * zoom - magnifierSize}px`;
+            });
+
+            // Khi di ra ngoài container => tắt kính lúp
+            lightboxContainer.addEventListener('mouseleave', () => {
+              magnifier.style.display = 'none';
+            });
+            </script>
+
         <div style="margin: 0 10px; padding: 20px;">
             <!-- Like -->
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding-bottom: 30px;">
@@ -28,7 +107,7 @@
             <!-- Chính sách -->
             <p style="font-weight: bold; font-size: 25px; color: #C92127; border-left: 4px solid #C92127; padding-left: 12px;">
                 Chính sách ưu đãi của TD Shop</p>
-            <ul style="padding: 0; font-size: 18px; list-style: none; line-height: 3; margin-top: 15px; word-wrap: break-word;">
+            <ul style="padding: 0; font-size: 18px; list-style: none; line-height: 3; margin-top: 15px; word-wrap: break-word; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <li><i class="fa-solid fa-truck-fast" style="color: #C92127; margin-right: 5px;"></i><strong>Thời gian
                     giao hàng:</strong> Giao nhanh và uy tín
                 </li>
@@ -57,25 +136,37 @@
     </div>
 
     <!-- CỘT PHẢI -->
-    <div id="col-right" style="display: flex; flex-direction: column; min-height: 100%;">
+    <div id="col-right" style="display: flex; flex-direction: column; height: 100%;">
         <!-- Thẻ 1 -->
-        <div style="background: white; border-radius: 10px; margin-bottom: 10px; padding: 10px;">
+        <div style="background: white; border-radius: 2px; margin-bottom: 10px; padding: 10px;">
             <img style="width: 60px; height: 60px;" src="https://cdn-icons-png.flaticon.com/128/791/791968.png" alt="">
             <span style="color: #212121; font-size:1.7rem; font-weight:600;">{{ products.name }}</span>
 
-            <div class="rating-summary">
-                <div class="average-rating">
-                    <span class="score">4.9</span>
+            <div class="rating-summary" style="display:flex; align-items:center; gap:20px;">
+                <div class="average-rating" style="display:flex; align-items:center; gap:10px;">
+                    <span class="score" style="font-size:20px; color:#f53d2d; font-weight:bold;">
+                      {{ '%.1f' % average_rating }}
+                    </span>
                     <div class="stars">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star half">★</span></div>
+                        {% for i in range(1, 6) %}
+                        {% set star_fill = 0 %}
+                        {% if average_rating >= i %}
+                        {% set star_fill = 100 %}
+                        {% elif average_rating + 1 > i %}
+                        {% set star_fill = (average_rating - (i - 1)) * 100 %}
+                        {% endif %}
+                        <span class="star" style="--fill: {{ star_fill }}%;">★</span>
+                        {% endfor %}
+                    </div>
+
                 </div>
-                <div class="rating-divider"></div>
-                <div class="total-reviews">
-                    <span class="count">19,4k</span>
+
+                <div class="rating-divider" style="width:1px; height:30px; background:#ddd;"></div>
+
+                <div class="total-reviews" style="font-size:14px; color:#333;">
+                    <span class="count" style="font-weight:bold;">
+                      {{ '{:,.0f}'.format(total_count).replace(',', '.') if total_count >= 1000 else total_count }}
+                    </span>
                     <span class="label">Đánh Giá</span>
                 </div>
             </div>
@@ -117,7 +208,7 @@
         </div>
 
         <!-- Thẻ 2 -->
-        <div style="background: white; border-radius: 10px; margin-bottom: 10px; padding: 10px;">
+        <div style="background: white; border-radius: 2px; margin-bottom: 10px; padding: 10px;">
             <div style="padding: 10px;">
                 <b style="font-size:18px;">Thông tin vận chuyển</b>
                 <table style="font-size: 16px; line-height: 2 ;padding: 10px 20px;   ">
@@ -183,7 +274,8 @@
                         </div>
 
                     </div>
-                    <span style="color:#888888;"> Đơn vị: <span style="color:#212529;">1 kg</span></span>
+                    <span style="color:#888888;"> Đơn vị: <span
+                            style="color:#212529;">{{products.donvitinh}}</span></span>
 
 
                     <!-- Nút thêm vào giỏ -->
@@ -191,14 +283,14 @@
                     {# Nếu người dùng đã đăng nhập #}
                     <a href="#" class="themVaoGioHang"
                        onclick="addToCart(event, {{ products.id }}, '{{ products.name }}', {{ products.price }}, parseInt(document.getElementById('quantity-display-{{ products.id }}').value))">
-                        <div style="display: flex; align-items: center;" >
+                        <div style="display: flex; align-items: center;">
                             <span> Thêm vào giỏ</span>
                         </div>
                     </a>
                     {% else %}
                     {# Nếu người dùng CHƯA đăng nhập #}
                     <a href="{{ url_for('login_my_user', next=request.path) }}" class="themVaoGioHang">
-                        <div style="display: flex; align-items: center;" >
+                        <div style="display: flex; align-items: center;">
                             <span>  Thêm vào giỏ</span>
                         </div>
                     </a>
@@ -211,8 +303,8 @@
         </div>
 
         <!-- Thẻ 3: Cuộn -->
-        <div style=" background: white;border-radius: 10px; padding: 10px;flex: 1 1 auto;overflow-y: auto;overflow-x:
-               hidden;max-height: 610px; scrollbar-width: none;">
+        <div style=" background: white;border-radius: 2px; padding: 10px;flex: 1 1 auto;overflow-y: auto;overflow-x:
+               hidden; max-height:595px; scrollbar-width: none; ">
             <p style="font-weight: bold;">Thông tin chi tiết</p>
             <table style="width: 100%; table-layout: fixed; font-size: 16px; line-height: 2.2; word-wrap: break-word;">
                 <tbody>
@@ -235,39 +327,207 @@
 
 
 <!-- Đánh giá sản phẩm -->
+<div id="product-comment-section" class="col-12"
+     style="padding:30px; background-color: white; border-radius: 2px; margin:10px 0px;">
+    <h5 style="font-weight:bold; color:rgba(0, 0, 0, .87);margin-bottom:20px;"> ĐÁNH GIÁ SẢN PHẨM </h5>
 
-<div class="col-12" style=" padding:20px; background-color: white; border-radius: 10px; margin:10px 0px;">
-    <h5 style="font-weight:bold; color:red;">Đánh giá sản phẩm</h5>
+    <div style="background-color:#fffbf8; width:100%; padding:30px; border: 1px solid #f9ede5;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+            <!-- Bên trái -->
+            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <!-- Điểm số -->
+                <div style="font-size: 32px; color: #f53d2d; font-weight: bold; line-height: 1;">
+                    {{ average_rating }} trên 5
+                </div>
 
-    {% if current_user.is_authenticated %}
-    <textarea class="form-control" placeholder="Nhập bình luận...." rows="5" id="comment"></textarea>
-    <input type="submit" class="btn btn-primary mt-2" value="Bình luận">
-    {% else %}
-    <a href="{{ url_for('login_my_user', next='cart') }}"
-       style="display: inline-block;
-                      padding: 10px 20px;
-                      color: #ff0000;
-                      text-decoration: none;
-                      border: 2px solid red;
-                      background-color: #ffcccc;
-                      font-size: 16px;
-                      border-radius: 5px;">
-        Login to comment
-    </a>
-    {% endif %}
+                <!-- Hình sao -->
+                <div style=" font-size: 22px;">
+                    {% set full_stars = average_rating|int %}
+                    {% set decimal = average_rating - full_stars %}
+                    {% for i in range(1, 6) %}
+                    <span class="star-wrapper">
+                      <i class="fa-regular fa-star rating-star"></i>
+                      {% if i <= full_stars %}
+                        <i class="fa-solid fa-star rating-star filled" style="width: 100%;"></i>
+                      {% elif i == full_stars + 1 and decimal > 0 %}
+                        <i class="fa-solid fa-star rating-star filled" style="width: {{ decimal * 100 }}%;"></i>
+                      {% endif %}
+                    </span>
+                    {% endfor %}
+                </div>
 
-    <!-- Hiển thị bình luận mẫu -->
-    <div class="row comment d-flex align-items-center" style="margin-top:10px;">
-        <div class="col-md-1 col-xs-4">
-            <img src="{{ url_for('static', filename='images/default.png') }}"
-                 class="img-fluid rounded-circle" alt="demo">
-        </div>
-        <div class="col-md-11 col-xs-8">
-            <p>Sản phẩm tuyệt vời</p>
-            <p><em>2021-12-07 12:12</em></p>
+            </div>
+
+            <!-- Bên phải -->
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px;">
+                <button class="filter-btn active" data-star="">Tất Cả ({{ total_count }})</button>
+                <button class="filter-btn" data-star="5">5 Sao ({{ stars_count[5] }})</button>
+                <button class="filter-btn" data-star="4">4 Sao ({{ stars_count[4] }})</button>
+                <button class="filter-btn" data-star="3">3 Sao ({{ stars_count[3] }})</button>
+                <button class="filter-btn" data-star="2">2 Sao ({{ stars_count[2] }})</button>
+                <button class="filter-btn" data-star="1">1 Sao ({{ stars_count[1] }})</button>
+                <button class="filter-btn" data-with-image="1">Có Hình Ảnh / Video ({{ stars_count['with_image'] }})
+                </button>
+            </div>
         </div>
     </div>
+
+    <!--    Scip để xử lý AJAX lọc số sao đánh giá sản phẩm-->
+    <script>
+        const productId = {{ products.id }};
+        let currentStar = ''; // Sao đang lọc
+        let currentWithImage = ''; // Có hình đang lọc
+        let currentPage = 1; // Trang đang xem
+
+        function loadComments(page = 1) {
+          fetch(`/api/product/${productId}/comments?star=${currentStar}&with_image=${currentWithImage}&page=${page}`)
+            .then(res => res.json())
+            .then(data => {
+              const container = document.getElementById('comments-container');
+              const pagination = document.getElementById('pagination-container');
+              container.innerHTML = '';
+              pagination.innerHTML = '';
+
+              if (data.comments.length === 0) {
+                container.innerHTML = '<p>Chưa có đánh giá nào.</p>';
+                return;
+              }
+
+              data.comments.forEach(cmt => {
+                container.innerHTML += `
+                  <div class="row comment d-flex align-items-start" style="margin-top:15px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+                    <div class="col-auto" style="padding-right:2px;">
+                      ${cmt.avatar ? `
+                        <img src="${cmt.avatar}" class="img-fluid rounded-circle" alt="Avatar"
+                          style="width: 50px; height: 50px; object-fit: cover;">
+                      ` : `
+                        <div style="width:50px;height:50px;border-radius:50%;background:#eee;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;">
+                          <i class="fa-regular fa-user" style="font-size:25px;color:#bbb;"></i>
+                        </div>
+                      `}
+                    </div>
+                    <div class="col-md-11 col-xs-10" style="padding-left:8px;">
+                      <p style="font-size:14px;margin:0 0 4px 0;">${cmt.name}</p>
+                      <div style="margin:2px 0; font-size:14px;">
+                        ${[1,2,3,4,5].map(i => `<i class="fa${i <= cmt.rating ? '-solid' : '-regular'} fa-star" style="color:#ffbe37;"></i>`).join('')}
+                      </div>
+                      <p style="font-size:12px;color:#888;margin:4px 0 8px 0;">
+                        ${cmt.created_date}
+                        <span style="border-right:1px solid #ddd;margin:0 10px;"></span>
+                        Phân loại: ${cmt.category}
+                      </p>
+                      <p style="margin:0 0 12px 0;font-size:16px;color:rgba(0,0,0,.87);font-weight:600;">
+                        ${cmt.content}
+                      </p>
+                      ${cmt.images.length ? `
+                        <div style="margin-top:10px;">
+                          ${cmt.images.map(img => `<img src="${img}" style="width:80px;height:80px;object-fit:cover;margin-right:10px;border-radius:4px;">`).join('')}
+                        </div>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              });
+
+              // Render nút phân trang
+              for (let i = 1; i <= data.pages; i++) {
+                pagination.innerHTML += `
+                  <button class="pagination-btn ${i === page ? 'active' : ''}" style="margin:0 5px;">${i}</button>
+                `;
+              }
+
+              // ✅ Bind click + scroll mượt
+              document.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                  currentPage = parseInt(this.innerText);
+                  loadComments(currentPage);
+
+                  // Scroll mượt lên đầu khu vực đánh giá
+                  document.getElementById('product-comment-section').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                });
+              });
+            });
+        }
+
+        // Gán sự kiện click cho filter sao + có hình
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            currentStar = this.dataset.star || '';
+            currentWithImage = this.dataset.withImage || '';
+            currentPage = 1;
+            loadComments();
+          });
+        });
+
+        // Load lần đầu
+        loadComments();
+    </script>
+
+
+    <div id="comments-container" style="padding:20px;">
+        {% for cmt in comments %}
+        <div class="row comment d-flex align-items-start"
+             style="margin-top:15px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+            <div class="col-auto" style="padding-right: 2;">
+                {% if cmt.customer and cmt.customer.avatar is not none and cmt.customer.avatar|length > 0 %}
+                <img src="{{ cmt.customer.avatar }}"
+                     alt="Avatar"
+                     class="img-fluid rounded-circle"
+                     style="width: 50px; height: 50px; object-fit: cover;">
+                {% else %}
+                <div style="width: 50px;height: 50px;border-radius: 50%; border:1px solid #ddd; background: #eee; display: flex; align-items: center;justify-content: center;">
+                    <i class="fa-regular fa-user" style="font-size: 25px; color: #bbb;"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-11 col-xs-10" style="padding-left: 8px;">
+                <p style="font-size:14px; margin: 0 0 4px 0;">{{ cmt.customer.name if cmt.customer else "Khách" }}</p>
+
+                <div style="margin: 2px 0; font-size:14px;">
+                    {% for i in range(1, 6) %}
+                    <i class="fa{% if i <= cmt.rating %} fa-solid{% else %} fa-regular{% endif %} fa-star"
+                       style="color: #ffbe37;"></i>
+                    {% endfor %}
+                </div>
+
+                <p style="font-size: 12px; color: #888; margin: 4px 0 8px 0;">
+                    {{ cmt.created_date.strftime('%Y-%m-%d %H:%M') }}
+                    <span style="border-right: 1px solid #ddd; margin: 0 10px;"></span>
+                    Phân loại: {{ cmt.receipt_detail.product.category.name }}
+                </p>
+
+                <p style="margin: 0 0 12px 0; font-size:16px;color: rgba(0, 0, 0, .87);font-weight:600;">{{ cmt.content
+                    }}</p>
+
+                {% if cmt.images %}
+                <div style="margin-top: 10px;">
+                    {% for img in cmt.images %}
+                    <img src="{{ img.image_url }}"
+                         alt="Comment Image"
+                         style="width: 80px; height: 80px; object-fit: cover; margin-right: 10px; border-radius: 4px;">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p>Chưa có đánh giá nào.</p>
+        {% endfor %}
+    </div>
+    <div id="pagination-container" style="text-align:center; margin-top:20px;">
+        <!-- Nút phân trang AJAX sẽ chèn vào đây -->
+    </div>
+
+
 </div>
+
 
 <!-- Sản phẩm liên quan -->
 <div style="margin-top: 70px; position: relative;">
@@ -299,22 +559,102 @@
 
 </div>
 
-
 {%include 'product-section.html' %}
 
 <style>
-    .themVaoGioHang {
-    background-color: rgb(238, 77, 45);
-    color: white;
-    font-size: 17px;
-    padding: 9px 45px;
-    border-radius: 4px;
-    text-decoration: none;
+    /*✅ CSS số sao Sản phẩm bên cột trái */
+    .star {
+      display: inline-block;
+      position: relative;
+      font-size: 20px;
+      color: #ddd;
     }
-  .themVaoGioHang:hover {
-    background-color: #d73211;
-    color: white;
+    .star::before {
+      content: '★';
+      position: absolute;
+      left: 0;
+      width: var(--fill);
+      overflow: hidden;
+      color: #f53d2d;
+    }
+
+
+    /*✅ CSS cho sao trong phần đánh giá */
+    .star-wrapper {
+      position: relative;
+      display: inline-block;
+      color: #f53d2d;
+      font-size: inherit;
+      line-height: 1; /* thêm nếu cần */
+      margin-right: 2px;
+    }
+
+    .star-wrapper .rating-star {
+      display: inline-block; /* fix chiều cao */
+    }
+
+    .star-wrapper .filled {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0; /* quan trọng */
+      overflow: hidden;
+      white-space: nowrap;
+      height: 100%; /* quan trọng */
+    }
+
+
+
+/*✅ CSS cho phân trang */
+    .pagination-btn {
+      border: none;
+      padding: 1px 20px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 25px;
+      color:rgba(0, 0, 0, .4);
+    }
+    .pagination-btn.active {
+      background: #ee4d2d;
+      color: #fff;
+      border-color: #f53d2d;
+      border-radius: 2px;
+            font-size: 25px;
+    }
+    .pagination-btn:hover {
+      background: #f53d2d;
+      color: #fff;
+    }
+
+
+/*✅ CSS cho nút lọc đánh giá */
+  .filter-btn {
+    display: inline-block;
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 6px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(0,0,0,.87);
+    text-decoration: none;
+    transition: all 0.2s ease;
   }
+
+  .filter-btn:hover {
+    border-color: #f53d2d;
+    color: #f53d2d;
+  }
+
+  .filter-btn.active {
+    border: 1px solid #f53d2d;
+    color: #f53d2d;
+    background: #fff;
+  }
+
+
+
 
     /*✅ Phần flash sale */
     .flash-sale-wrapper {
@@ -499,111 +839,111 @@
 
 </style>
 <script>
-    <!-- ✅JS đồng bộ chiều cao -->
-  window.addEventListener('load', () => {
-    const left = document.getElementById('col-left');
-    const right = document.getElementById('col-right');
-    right.style.height = left.offsetHeight + 'px';
-  });
-  window.addEventListener('resize', () => {
-    const left = document.getElementById('col-left');
-    const right = document.getElementById('col-right');
-    right.style.height = left.offsetHeight + 'px';
-  });
+    <!--    &lt;!&ndash; ✅JS đồng bộ chiều cao &ndash;&gt;-->
+    <!--  window.addEventListener('load', () => {-->
+    <!--    const left = document.getElementById('col-left');-->
+    <!--    const right = document.getElementById('col-right');-->
+    <!--    right.style.height = left.offsetHeight + 'px';-->
+    <!--  });-->
+    <!--  window.addEventListener('resize', () => {-->
+    <!--    const left = document.getElementById('col-left');-->
+    <!--    const right = document.getElementById('col-right');-->
+    <!--    right.style.height = left.offsetHeight + 'px';-->
+    <!--  });-->
 
 
-    // ✅Script xử lý số lượng
-    function changeQuantity(productId, delta) {
-        const input = document.getElementById("quantity-display-" + productId);
-        let value = parseInt(input.value) || 1;
-        value = Math.max(1, value + delta);
-        input.value = value;
-    }
-    function validateQuantity(input) {
-        let value = parseInt(input.value);
-        if (isNaN(value) || value < 1) {
-            input.value = 1;
+        // ✅Script xử lý số lượng
+        function changeQuantity(productId, delta) {
+            const input = document.getElementById("quantity-display-" + productId);
+            let value = parseInt(input.value) || 1;
+            value = Math.max(1, value + delta);
+            input.value = value;
         }
-    }
-
-    function updateCartPreview(productId, input) {
-    }
-
-
-    // ✅JavaScript để xử lý lượt thích
-
-    let liked = {{ 'true' if is_liked else 'false' }};
-    let likeCount = {{ products.like }};  // Số lượt thích từ server
-    function toggleLike(productId) {
-        fetch(`/api/like-product/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+        function validateQuantity(input) {
+            let value = parseInt(input.value);
+            if (isNaN(value) || value < 1) {
+                input.value = 1;
             }
-        })
-        .then(res => res.json())
-        .then(data => {
-            liked = data.liked;
-            likeCount = data.like_count;
-
-            const icon = document.getElementById("like-icon");
-            const text = document.getElementById("like-text");
-
-            if (liked) {
-                icon.classList.remove("fa-regular");
-                icon.classList.add("fa-solid");
-            } else {
-                icon.classList.remove("fa-solid");
-                icon.classList.add("fa-regular");
-            }
-
-            text.textContent = `Đã thích (${likeCount})`;
-        });
-    }
-
-    // ✅JavaScript để xử lý đếm ngược thời gian
-        function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
-        const hoursEl = document.getElementById('hours');
-        const minutesEl = document.getElementById('minutes');
-        const secondsEl = document.getElementById('seconds');
-
-        function getNextTargetTime() {
-            const now = new Date();
-            const target = new Date(now);
-            target.setHours(targetHour, targetMinute, targetSecond, 0);
-
-            if (target.getTime() <= now.getTime()) {
-                target.setDate(target.getDate() + 1);
-            }
-
-            return target.getTime();
         }
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = nextTargetTime - now;
+        function updateCartPreview(productId, input) {
+        }
 
-            if (distance <= 0) {
-                nextTargetTime = getNextTargetTime(); // Reset lại mốc 24h mới
+
+        // ✅JavaScript để xử lý lượt thích
+
+        let liked = {{ 'true' if is_liked else 'false' }};
+        let likeCount = {{ products.like }};  // Số lượt thích từ server
+        function toggleLike(productId) {
+            fetch(`/api/like-product/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                liked = data.liked;
+                likeCount = data.like_count;
+
+                const icon = document.getElementById("like-icon");
+                const text = document.getElementById("like-text");
+
+                if (liked) {
+                    icon.classList.remove("fa-regular");
+                    icon.classList.add("fa-solid");
+                } else {
+                    icon.classList.remove("fa-solid");
+                    icon.classList.add("fa-regular");
+                }
+
+                text.textContent = `Đã thích (${likeCount})`;
+            });
+        }
+
+        // ✅JavaScript để xử lý đếm ngược thời gian
+            function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            function getNextTargetTime() {
+                const now = new Date();
+                const target = new Date(now);
+                target.setHours(targetHour, targetMinute, targetSecond, 0);
+
+                if (target.getTime() <= now.getTime()) {
+                    target.setDate(target.getDate() + 1);
+                }
+
+                return target.getTime();
             }
 
-            const totalSeconds = Math.floor(distance / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = nextTargetTime - now;
 
-            hoursEl.innerText = String(hours).padStart(2, '0');
-            minutesEl.innerText = String(minutes).padStart(2, '0');
-            secondsEl.innerText = String(seconds).padStart(2, '0');
-        }
+                if (distance <= 0) {
+                    nextTargetTime = getNextTargetTime(); // Reset lại mốc 24h mới
+                }
 
-        let nextTargetTime = getNextTargetTime();
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-        }
+                const totalSeconds = Math.floor(distance / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
 
-        // Gọi đếm ngược đến 20:00 hàng ngày
-        startRecurringCountdown(20, 0, 0);
+                hoursEl.innerText = String(hours).padStart(2, '0');
+                minutesEl.innerText = String(minutes).padStart(2, '0');
+                secondsEl.innerText = String(seconds).padStart(2, '0');
+            }
+
+            let nextTargetTime = getNextTargetTime();
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+            }
+
+            // Gọi đếm ngược đến 20:00 hàng ngày
+            startRecurringCountdown(20, 0, 0);
 
 </script>
 

@@ -32,7 +32,7 @@
 
                 </a>
                 <ul class="dropdown-menu"
-                    style="width:300px; max-height: 300px; overflow-y: auto; border-radius: 10px; margin: 0px -40px;">
+                    style="width:300px; max-height: 500px; overflow-y: auto; border-radius: 3px; margin: 0px -40px;">
                     {% for cat in categories %}
                     <li style="border-bottom:1px solid #eee;">
                         <a class="dropdown-item" href="?category_id={{ cat.id }}">{{ cat.name }}</a>
@@ -59,17 +59,17 @@
 
             <!-- Thanh tìm kiếm -->
             <div class="flex-grow-1" translate="no">
-<form class="d-flex" action="/category/0" method="get" style="width: 100%;">
-    <div style="position: relative; width: 100%;">
-        <input class="form-control" name="q" type="text" placeholder="Nhập từ khóa..."
-               style="height: 40px; border-radius: 0.5rem; padding-right: 45px; box-shadow: none;">
-        <button type="submit"
-                style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: none;">
-            <img src="https://cdn-icons-png.flaticon.com/128/17949/17949015.png"
-                 style="width: 22px; height: 22px;">
-        </button>
-    </div>
-</form>
+                <form class="d-flex" action="/category/0" method="get" style="width: 100%;">
+                    <div style="position: relative; width: 100%;">
+                        <input class="form-control" name="q" type="text" placeholder="Nhập từ khóa..."
+                               style="height: 40px; border-radius: 3px; padding-right: 45px; box-shadow: none;">
+                        <button type="submit"
+                                style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/128/17949/17949015.png"
+                                 style="width: 22px; height: 22px;">
+                        </button>
+                    </div>
+                </form>
             </div>
 
         </div>
@@ -136,7 +136,7 @@
                     </div>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownToggle"
-                        style="width: 300px; list-style: none; margin-left: -100px; border-radius:10px; ">
+                        style="width: 300px; list-style: none; margin-left: -100px; border-radius:3px; ">
                         <li class="dropdown-item disabled d-flex align-items-center"
                             style=" border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
                             {% if current_user.avatar and current_user.avatar|length > 5 %}
@@ -148,69 +148,56 @@
                             {% endif %}
                             <div>
                                 <div style="color:black; font-size:24px;">{{ current_user.name }}</div>
-                                <div style="font-size: 12px; color: gray;">Thành viên TDShop</div>
+                                <div style="font-size: 12px; color: gray;">Thành viên TDFood</div>
                             </div>
                         </li>
 
 
-                        <li class="dropdown-item d-flex align-items-center justify-content-between"
-                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
-                            <a class="dropdown-item d-flex align-items-center" href="/profile">
-                                <span class="material-symbols-outlined"
-                                      style=" display:block; font-size: 25px; line-height:1; color: #5084C1;
-                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">account_circle
-                                </span>
-
-                                <span style="margin-left: 10px;">Thông tin tài khoản</span>
-                            </a>
+                        <li style="border-bottom:1px solid rgba(0,0,0,.1); color:black;">
+                          <a href="/profile"
+                             style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
+                            <span class="material-symbols-outlined"
+                                  style="font-size: 25px; color: #5084C1;font-weight:200;">
+                              account_circle
+                            </span>
+                            <span style="margin-left: 10px;">Thông tin tài khoản</span>
+                          </a>
                         </li>
 
-                        <li class="dropdown-item d-flex align-items-center justify-content-between"
-                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
-                            <a class="dropdown-item d-flex align-items-center" href="/MyReceipt">
-                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #f56b0f;
-                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">receipt_long
-                                </span>
-
-                                <span style="margin-left: 10px;">Đơn hàng của tôi</span>
-                            </a>
+                        <li style="border-bottom:1px solid rgba(0,0,0,.1); color:black; ">
+                          <a href="/MyReceipt"
+                             style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
+                            <span class="material-symbols-outlined"
+                                  style="font-size: 24px; color: #f56b0f;font-weight:200;">
+                              receipt_long
+                            </span>
+                            <span style="margin-left: 10px;">Đơn hàng của tôi</span>
+                          </a>
                         </li>
 
-                        <li class="dropdown-item d-flex align-items-center justify-content-between"
-                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
-                            <a class="dropdown-item d-flex align-items-center" href="/loveProduct">
-                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #EA3323;
-                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">favorite
-                                </span>
-                                <span style="margin-left: 10px;">Sản phẩm yêu thích</span>
-                            </a>
+                        <li style="border-bottom:1px solid rgba(0,0,0,.1);  color:black;">
+                          <a href="/loveProduct"
+                             style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
+                            <span class="material-symbols-outlined"
+                                  style="font-size: 24px; color: #EA3323; font-weight:300">
+                              favorite
+                            </span>
+                            <span style="margin-left: 10px;">Sản phẩm yêu thích</span>
+                          </a>
                         </li>
 
-                        <li class="dropdown-item d-flex align-items-center justify-content-between"
-                            style="border-bottom: 1px solid rgba(0,0,0,.1); padding:13px;">
-                            <div class="dropdown-item d-flex align-items-center">
-                                <span class="material-symbols-outlined" style=" font-size: 24px; color: #d4ac0d;
-                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">dark_mode
-                                </span>
 
-                                <span>Giao diện tối</span>
-                                <label class="switch mb-0" style="margin-left: 10px;">
-                                    <input type="checkbox" id="modeToggle">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-
-                        </li>
-
-                        <li class="dropdown-item d-flex align-items-center justify-content-between">
-                            <form action="/logout" method="post" style="margin: 0;">
-                                <button type="submit" class="dropdown-item text-danger d-flex align-items-center">
-                                    <span class="material-symbols-outlined" style=" font-size: 24px; color: #EA3323;
-                                font-variation-settings:'FILL' 0, 'wght' 200,'GRAD' 0, 'opsz' 24;">logout
-                                </span>
-                                    <span style="margin-left: 10px;">Đăng xuất</span>
-                                </button>
-                            </form>
+                        <li style="padding:13px; cursor:pointer; color:black;">
+                          <form action="/logout" method="post" style="margin:0; padding:0;">
+                            <button type="submit"
+                              style="display:flex; align-items:center; width:100%; border:none; background:none; padding:0; cursor:pointer; text-align:left;">
+                              <span class="material-symbols-outlined"
+                                style="font-size:24px; margin-left:10px; color:#EA3323; font-variation-settings:'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;">
+                                logout
+                              </span>
+                              <span style="margin-left:10px; color:#EA3323;">Đăng xuất</span>
+                            </button>
+                          </form>
                         </li>
 
                     </ul>
@@ -235,7 +222,7 @@
                     </div>
 
                     <ul class="dropdown-menu p-3 shadow"
-                        style="min-width: 370px; margin-left: -150px; border-radius: 6px;">
+                        style="min-width: 370px; margin-left: -150px; border-radius: 3px;">
                         <!-- 👋 Dòng chào -->
                         <li class="mb-3" style="font-weight: 500; font-size: 16px; padding-bottom: 7px; color: black;">
                             <img src="https://cdn-icons-png.flaticon.com/128/3898/3898671.png" style="width:6%;">
@@ -249,12 +236,12 @@
                                  style="border-bottom: 1px solid #ddd; padding-bottom: 20px; width: 100%;">
                                 <a href="{{ url_for('login_my_user', next=request.path) }}"
                                    class="btn btn-green me-2"
-                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 3px;">
                                     Đăng nhập
                                 </a>
                                 <a href="{{ url_for('login_my_user') }}?form=register"
                                    class="btn btn-outline-green"
-                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                                   style="flex: 1; font-weight: 600; font-size: 16px; border-radius: 3px;">
                                     Đăng ký
                                 </a>
                             </div>

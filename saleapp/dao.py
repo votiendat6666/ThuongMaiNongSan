@@ -5,6 +5,7 @@ from flask import jsonify, request
 from itertools import product
 
 from flask_login import current_user
+from sqlalchemy.orm import joinedload
 
 from saleapp import db
 from saleapp.models import *
@@ -220,6 +221,35 @@ def get_wards_by_district(district_code):
     return [w for w in wards.values() if w['parent_code'] == district_code]
 
 
+# Hàm này sẽ lấy danh sách bình luận của sản phẩm và thống kê các thông tin liên quan
+def get_comment_stats(product_id):
+    # Lấy bình luận thuộc sản phẩm
+    comments = Comment.query.join(ReceiptDetail).filter(
+        ReceiptDetail.product_id == product_id
+    ).options(joinedload(Comment.images)).all()
+
+    stats = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+        'with_comment': 0,
+        'with_image': 0,
+        'total': 0
+    }
+
+    for c in comments:
+        if c.rating in stats:
+            stats[c.rating] += 1
+        if c.content and c.content.strip():
+            stats['with_comment'] += 1
+        if c.images and len(c.images) > 0:
+            stats['with_image'] += 1
+
+    stats['total'] = len(comments)
+
+    return stats
 
 if __name__ == "__main__":
     print(load_products())

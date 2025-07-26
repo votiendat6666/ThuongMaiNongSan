@@ -8,6 +8,7 @@
     "voucher": "5",
     "daban": "120",
     "like": 560,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nông Sản Xanh",
@@ -29,6 +30,7 @@
     "voucher": "10",
     "daban": "95",
     "like": 480,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vườn Cao Nguyên",
@@ -50,6 +52,7 @@
     "voucher": "8",
     "daban": "85",
     "like": 410,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Rau Sạch Organic",
@@ -62,6 +65,7 @@
       "Mô tả sản phẩm": "Cà rốt hữu cơ từ thương hiệu Rau Sạch Organic được trồng và chăm sóc theo tiêu chuẩn VietGAP nghiêm ngặt, cam kết không sử dụng thuốc trừ sâu, phân bón hóa học và chất bảo quản. Củ cà rốt có màu cam tươi tự nhiên, hình dáng đẹp, vị ngọt đậm và rất giòn. Đây là nguồn cung cấp Beta-Carotene dồi dào (tiền chất Vitamin A), Vitamin K, chất xơ và các chất chống oxy hóa, cực kỳ tốt cho mắt, da, hệ miễn dịch và tiêu hóa. Sản phẩm là lựa chọn lý tưởng cho một chế độ ăn lành mạnh và dinh dưỡng cho cả gia đình."
     }
   },
+
   {
     "id": 10004,
     "name": "Khoai tây vàng thơm, bở tơi đặc sản Đà Lạt",
@@ -71,6 +75,7 @@
     "voucher": "7",
     "daban": "180",
     "like": 620,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Đà Lạt",
@@ -92,6 +97,7 @@
     "voucher": "12",
     "daban": "95",
     "like": 380,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nấm Việt",
@@ -113,6 +119,7 @@
     "voucher": "5",
     "daban": "210",
     "like": 750,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Happy Mushroom",
@@ -134,6 +141,7 @@
     "voucher": "3",
     "daban": "150",
     "like": 700,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vườn Nhà",
@@ -155,6 +163,7 @@
     "voucher": "10",
     "daban": "110",
     "like": 530,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gia Vị Xanh",
@@ -176,6 +185,7 @@
     "voucher": "8",
     "daban": "70",
     "like": 320,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Rau Sạch Hữu Cơ",
@@ -197,6 +207,7 @@
     "voucher": "15",
     "daban": "65",
     "like": 280,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Green Farm Organic",
@@ -218,6 +229,7 @@
     "voucher": "10",
     "daban": "90",
     "like": 450,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trái Cây Miền Nam",
@@ -239,6 +251,7 @@
     "voucher": "5",
     "daban": "110",
     "like": 520,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vườn Thanh Long",
@@ -260,6 +273,7 @@
     "voucher": "15",
     "daban": "150",
     "like": 780,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Fresh Fruits",
@@ -276,11 +290,12 @@
     "id": 20004,
     "name": "Cherry đỏ căng mọng (Úc) nhập khẩu",
     "price": "250.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8yECuZ5LkGr7Njvld_2_aaR4DWCYsmH7AA&s  ",
+    "image": " https://fujifruit.com.vn/wp-content/uploads/2024/12/470607310_890586669856619_5437186804938917636_n.jpg  ",
     "category_id": 20002,
     "voucher": "20",
     "daban": "70",
     "like": 920,
+    "donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Premium Cherries",
@@ -301,7 +316,7 @@
     "category_id": 20003,
     "voucher": "10",
     "daban": "100",
-    "like": 580,
+    "like": 580,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trái Cây Cao Nguyên",
@@ -322,7 +337,7 @@
     "category_id": 20003,
     "voucher": "8",
     "daban": "130",
-    "like": 650,
+    "like": 650,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vải Thiều Chuẩn",
@@ -339,11 +354,11 @@
     "id": 20007,
     "name": "Chuối sấy dẻo tự nhiên (Đồng Nai) không đường",
     "price": "38.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR_DEvSIgAhQWyIn5u962DH2vns5FuilUjfA&s  ",
+    "image": " https://thuanhuongchips.com/UserFiles/Images/Products/file%20t%C3%A1ch%20n%E1%BB%81n%20sp%20bao%20b%C3%AC-03_20230425123332.jpg  ",
     "category_id": 20004,
     "voucher": "7",
     "daban": "80",
-    "like": 400,
+    "like": 400,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nông Sản Sạch",
@@ -364,7 +379,7 @@
     "category_id": 20004,
     "voucher": "10",
     "daban": "90",
-    "like": 470,
+    "like": 470,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Tây Nguyên",
@@ -385,7 +400,7 @@
     "category_id": 20005,
     "voucher": "5",
     "daban": "75",
-    "like": 300,
+    "like": 300,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vườn Xanh Organic",
@@ -406,7 +421,7 @@
     "category_id": 20005,
     "voucher": "7",
     "daban": "60",
-    "like": 250,
+    "like": 250,"donvitinh": "kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Farm Hữu Cơ",
@@ -427,7 +442,7 @@
     "category_id": 30001,
     "voucher": "10",
     "daban": "180",
-    "like": 950,
+    "like": 950,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gạo Lúa Vàng",
@@ -448,7 +463,7 @@
     "category_id": 30001,
     "voucher": "8",
     "daban": "120",
-    "like": 700,
+    "like": 700,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hương Đồng",
@@ -469,7 +484,7 @@
     "category_id": 30002,
     "voucher": "12",
     "daban": "90",
-    "like": 600,
+    "like": 600,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Organic Farm",
@@ -490,7 +505,7 @@
     "category_id": 30002,
     "voucher": "7",
     "daban": "75",
-    "like": 450,
+    "like": 450,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Healthy Grain",
@@ -511,7 +526,7 @@
     "category_id": 30003,
     "voucher": "10",
     "daban": "150",
-    "like": 800,
+    "like": 800,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Quaker Oats",
@@ -532,7 +547,7 @@
     "category_id": 30003,
     "voucher": "15",
     "daban": "80",
-    "like": 550,
+    "like": 550,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Superfood Organic",
@@ -553,7 +568,7 @@
     "category_id": 30004,
     "voucher": "5",
     "daban": "100",
-    "like": 620,
+    "like": 620,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nông Sản Sạch",
@@ -574,7 +589,7 @@
     "category_id": 30004,
     "voucher": "8",
     "daban": "60",
-    "like": 380,
+    "like": 380,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Global Grains",
@@ -595,7 +610,7 @@
     "category_id": 30005,
     "voucher": "15",
     "daban": "110",
-    "like": 750,
+    "like": 750,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "California Walnuts",
@@ -616,7 +631,7 @@
     "category_id": 30005,
     "voucher": "10",
     "daban": "90",
-    "like": 680,
+    "like": 680,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nutty Delights",
@@ -637,7 +652,7 @@
     "category_id": 40001,
     "voucher": "10",
     "daban": "120",
-    "like": 650,
+    "like": 650,"donvitinh": "phần",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Hà Thành",
@@ -658,7 +673,7 @@
     "category_id": 40001,
     "voucher": "5",
     "daban": "150",
-    "like": 800,
+    "like": 800,"donvitinh": "hộp",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Rồng Vàng Hoàng Gia",
@@ -679,7 +694,7 @@
     "category_id": 40002,
     "voucher": "8",
     "daban": "180",
-    "like": 900,
+    "like": 900,"donvitinh": "gói",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Xứ Thanh",
@@ -700,7 +715,7 @@
     "category_id": 40002,
     "voucher": "12",
     "daban": "100",
-    "like": 580,
+    "like": 580,"donvitinh": "túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Thể tích", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Mắm Dì Cẩn",
@@ -721,7 +736,7 @@
     "category_id": 40003,
     "voucher": "10",
     "daban": "200",
-    "like": 1200,
+    "like": 1200, "donvitinh": " phần  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Tân Huê Viên",
@@ -738,11 +753,11 @@
     "id": 40006,
     "name": "Kẹo dừa Bến Tre truyền thống (300g)",
     "price": "35.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlMJiXl7Ypq4OGktiXuop1Iinq2fZdzOWUNA&s  ",
+    "image": "  https://cf.shopee.vn/file/d498c9be678afe9a990390ed507c3981  ",
     "category_id": 40003,
     "voucher": "5",
     "daban": "180",
-    "like": 950,
+    "like": 950,"donvitinh": " hộp  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Dừa Giấy",
@@ -757,13 +772,13 @@
   },
   {
     "id": 40007,
-    "name": "Cá khô lóc đồng Cà Mau, phơi 1 nắng (500g)",
+    "name": "Cá khô lóc đồng Cà Mau, phơi 1 nắng ",
     "price": "130.000",
     "image": " https://product.hstatic.net/1000300766/product/kho-ca-loc-1-nang_3_master.jpg   ",
     "category_id": 40004,
     "voucher": "15",
     "daban": "80",
-    "like": 420,
+    "like": 420,"donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hải Sản Miền Tây",
@@ -778,13 +793,13 @@
   },
   {
     "id": 40008,
-    "name": "Mực khô loại 1 (Phú Quốc) túi 250g",
+    "name": "Mực khô loại 1 (Phú Quốc) ",
     "price": "280.000",
     "image": "   https://dacsanphuquoc.com.vn/wp-content/uploads/2022/11/mu%CC%9B%CC%A3c-kho%CC%82-phu%CC%81-quo%CC%82%CC%81c_6-8-768x1024.jpg ",
     "category_id": 40004,
     "voucher": "20",
     "daban": "70",
-    "like": 550,
+    "like": 550,"donvitinh": " túi  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hải Sản Đảo Ngọc",
@@ -805,7 +820,7 @@
     "category_id": 40005,
     "voucher": "15",
     "daban": "90",
-    "like": 700,
+    "like": 700,"donvitinh": "  chai ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Thể tích", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Mật Ong Cao Nguyên",
@@ -826,7 +841,7 @@
     "category_id": 40005,
     "voucher": "10",
     "daban": "50",
-    "like": 350,
+    "like": 350,"donvitinh": "hộp   ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Ong Vàng Xứ Sở",
@@ -847,7 +862,7 @@
     "category_id": 50001,
     "voucher": "5",
     "daban": "85",
-    "like": 420,
+    "like": 420,"donvitinh": "  gói ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Cố Đô",
@@ -868,7 +883,7 @@
     "category_id": 50001,
     "voucher": "10",
     "daban": "110",
-    "like": 580,
+    "like": 580,"donvitinh": "  gói ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Dừa Miền Tây",
@@ -889,7 +904,7 @@
     "category_id": 50002,
     "voucher": "15",
     "daban": "130",
-    "like": 750,
+    "like": 750,"donvitinh": "  lon ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Cashew King",
@@ -910,7 +925,7 @@
     "category_id": 50002,
     "voucher": "10",
     "daban": "90",
-    "like": 620,
+    "like": 620,"donvitinh": "  túi ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Macca Gold",
@@ -931,7 +946,7 @@
     "category_id": 50003,
     "voucher": "8",
     "daban": "70",
-    "like": 390,
+    "like": 390,"donvitinh": "  gói ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nông Sản Vùng Cao",
@@ -952,7 +967,7 @@
     "category_id": 50003,
     "voucher": "5",
     "daban": "100",
-    "like": 500,
+    "like": 500,"donvitinh": " gói  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Rừng",
@@ -973,7 +988,7 @@
     "category_id": 50004,
     "voucher": "10",
     "daban": "90",
-    "like": 480,
+    "like": 480,"donvitinh": "  túi ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Miến Phở Xưa",
@@ -994,7 +1009,7 @@
     "category_id": 50004,
     "voucher": "8",
     "daban": "70",
-    "like": 350,
+    "like": 350,"donvitinh": "  gói ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gạo Lứt An Gia",
@@ -1015,7 +1030,7 @@
     "category_id": 50005,
     "voucher": "12",
     "daban": "110",
-    "like": 650,
+    "like": 650,"donvitinh": "  hũ ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gia Vị Xứ Nghệ",
@@ -1036,7 +1051,7 @@
     "category_id": 50005,
     "voucher": "10",
     "daban": "80",
-    "like": 520,
+    "like": 520,"donvitinh": "   hũ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hạt Tiêu Đảo Ngọc",
@@ -1057,7 +1072,7 @@
     "category_id": 60001,
     "voucher": "10",
     "daban": "150",
-    "like": 780,
+    "like": 780,"donvitinh": "   gói",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Highland Coffee",
@@ -1074,11 +1089,11 @@
     "id": 60002,
     "name": "Cà phê Arabica hạt rang mộc (Lâm Đồng) túi 250g",
     "price": "120.000",
-    "image": "  https://caphehat.vn/uploads/SP_KAFI/COMBO_2X_250G_ARABICA-_hat_moc-1.jpg  ",
+    "image": "  https://refinx.vn/wp-content/uploads/2023/10/1000-Arabica-cau-dat-ca-phe-nguyen-hat-dac-san.jpg  ",
     "category_id": 60001,
     "voucher": "15",
     "daban": "90",
-    "like": 650,
+    "like": 650,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Coffee Hills",
@@ -1099,7 +1114,7 @@
     "category_id": 60002,
     "voucher": "8",
     "daban": "110",
-    "like": 700,
+    "like": 700,"donvitinh": "  túi ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trà Việt",
@@ -1120,7 +1135,7 @@
     "category_id": 60002,
     "voucher": "7",
     "daban": "95",
-    "like": 550,
+    "like": 550,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trà Cao Nguyên",
@@ -1141,7 +1156,7 @@
     "category_id": 60003,
     "voucher": "0",
     "daban": "10",
-    "like": 50,
+    "like": 50,"donvitinh": "  khối ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "VRG (Tập đoàn Cao su Việt Nam)",
@@ -1158,11 +1173,11 @@
     "id": 60006,
     "name": "Cao su SVR 3L nguyên liệu, khối 33.33kg",
     "price": "750.000",
-    "image": "   https://lh5.googleusercontent.com/proxy/qPnvqgsArE3zqfKdB_EqJx8WxYlE-whzoiz6RhIQzyVRoNTz6oKc4jQTBjZPJPN08HkjPew5ZBlqOC8DiAc4gOJB_4kMoaoWbq4NFogll0hk7w ",
+    "image": "   https://hungthinhrubber.com/wp-content/uploads/2024/02/CV60-2.png ",
     "category_id": 60003,
     "voucher": "0",
     "daban": "8",
-    "like": 45,
+    "like": 45,"donvitinh": "  khối ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "VRG (Tập đoàn Cao su Việt Nam)",
@@ -1179,11 +1194,11 @@
     "id": 60007,
     "name": "Hạt điều rang muối vỏ lụa xuất khẩu (Bình Phước) lon 200g",
     "price": "65.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw4d-vfmG7pktfLn6Q5ClzO_UDIqzJ8nPGlg&s  ",
+    "image": " https://jraifarm.com/files/upload/images/hat%20dieu/hat%20dieu%20rang%20muoi%20vo%20lua%20(2).jpg  ",
     "category_id": 60004,
     "voucher": "10",
     "daban": "180",
-    "like": 900,
+    "like": 900,"donvitinh": "  lon ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Golden Cashew",
@@ -1204,7 +1219,7 @@
     "category_id": 60004,
     "voucher": "8",
     "daban": "120",
-    "like": 750,
+    "like": 750,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Cashew Bites",
@@ -1225,7 +1240,7 @@
     "category_id": 60005,
     "voucher": "5",
     "daban": "120",
-    "like": 680,
+    "like": 680,"donvitinh": "   hũ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Spice Master",
@@ -1246,7 +1261,7 @@
     "category_id": 60005,
     "voucher": "10",
     "daban": "70",
-    "like": 450,
+    "like": 450,"donvitinh": "   gói",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Pepper House",
@@ -1267,7 +1282,7 @@
     "category_id": 70001,
     "voucher": "10",
     "daban": "50",
-    "like": 300,
+    "like": 300,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gạo Ngon Việt",
@@ -1288,7 +1303,7 @@
     "category_id": 70001,
     "voucher": "8",
     "daban": "40",
-    "like": 250,
+    "like": 250,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gạo Hương Lúa",
@@ -1309,7 +1324,7 @@
     "category_id": 70002,
     "voucher": "15",
     "daban": "80",
-    "like": 500,
+    "like": 500,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Cashew Export",
@@ -1330,7 +1345,7 @@
     "category_id": 70002,
     "voucher": "12",
     "daban": "50",
-    "like": 350,
+    "like": 350,"donvitinh": "  túi ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Premium Cashew",
@@ -1351,7 +1366,7 @@
     "category_id": 70003,
     "voucher": "10",
     "daban": "60",
-    "like": 350,
+    "like": 350,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Phu Quoc Pepper",
@@ -1372,7 +1387,7 @@
     "category_id": 70003,
     "voucher": "8",
     "daban": "45",
-    "like": 280,
+    "like": 280,"donvitinh": "   túi",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Dak Lak Pepper",
@@ -1393,7 +1408,7 @@
     "category_id": 70004,
     "voucher": "5",
     "daban": "90",
-    "like": 400,
+    "like": 400,"donvitinh": "túi   ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "FrozFruit",
@@ -1410,11 +1425,11 @@
     "id": 70008,
     "name": "Xoài cắt miếng đông lạnh (Đồng Tháp) - túi 1kg",
     "price": "85.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2x79Dj9FJU_bofWbUB5ygdN3hldbPTi_MMQ&s  ",
+    "image": "  https://traicaydonglanh.com/wp-content/uploads/2024/06/Xoai-cat-chu-dong-lanh-100gr.webp ",
     "category_id": 70004,
     "voucher": "7",
     "daban": "75",
-    "like": 380,
+    "like": 380,"donvitinh": "  túi ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "FrozFruit Vietnam",
@@ -1435,7 +1450,7 @@
     "category_id": 70005,
     "voucher": "10",
     "daban": "60",
-    "like": 450,
+    "like": 450,"donvitinh": " bịch  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Seafood King",
@@ -1456,7 +1471,7 @@
     "category_id": 70005,
     "voucher": "8",
     "daban": "80",
-    "like": 500,
+    "like": 500,"donvitinh": " bịch  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Mekong Fish",
@@ -1477,7 +1492,7 @@
     "category_id": 80001,
     "voucher": "5",
     "daban": "150",
-    "like": 700,
+    "like": 700,"donvitinh": " túi  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Thảo Dược Việt",
@@ -1498,7 +1513,7 @@
     "category_id": 80001,
     "voucher": "10",
     "daban": "80",
-    "like": 450,
+    "like": 450,"donvitinh": "  gói ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Dược Liệu Xanh",
@@ -1519,7 +1534,7 @@
     "category_id": 80002,
     "voucher": "8",
     "daban": "200",
-    "like": 1000,
+    "like": 1000,"donvitinh": " gói  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Thảo Trà An Nhiên",
@@ -1540,7 +1555,7 @@
     "category_id": 80002,
     "voucher": "5",
     "daban": "250",
-    "like": 1200,
+    "like": 1200,"donvitinh": " hộp  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trà Xanh Nature",
@@ -1561,7 +1576,7 @@
     "category_id": 80003,
     "voucher": "10",
     "daban": "180",
-    "like": 900,
+    "like": 900,"donvitinh": "   chai",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Thiên Nhiên Xanh",
@@ -1582,7 +1597,7 @@
     "category_id": 80003,
     "voucher": "8",
     "daban": "160",
-    "like": 850,
+    "like": 850,"donvitinh": "   chai",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hương Đồng Gió Nội",
@@ -1603,7 +1618,7 @@
     "category_id": 80004,
     "voucher": "20",
     "daban": "30",
-    "like": 600,
+    "like": 600,"donvitinh": "  hộp ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vua Dược Liệu",
@@ -1624,7 +1639,7 @@
     "category_id": 80004,
     "voucher": "15",
     "daban": "25",
-    "like": 550,
+    "like": 550,"donvitinh": "  hộp ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Quốc Bảo Dược",
@@ -1645,7 +1660,7 @@
     "category_id": 80005,
     "voucher": "10",
     "daban": "70",
-    "like": 400,
+    "like": 400,"donvitinh": " gói  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Nấm Việt",
@@ -1666,7 +1681,7 @@
     "category_id": 80005,
     "voucher": "12",
     "daban": "55",
-    "like": 380,
+    "like": 380,"donvitinh": " hộp  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Dược Nấm",
@@ -1681,13 +1696,13 @@
   },
   {
     "id": 90001,
-    "name": "Thịt ba chỉ heo sạch (Gia Lai) - 500g",
+    "name": "Thịt ba chỉ heo sạch (Gia Lai) - heo loại 1",
     "price": "95.000",
     "image": " https://cdn.tgdd.vn/Products/Images/8781/228329/bhx/ba-roi-heo-khay-500g-202111262049102381.jpg   ",
     "category_id": 90001,
     "voucher": "7",
     "daban": "150",
-    "like": 800,
+    "like": 800,"donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Heo Sạch Cao Nguyên",
@@ -1702,13 +1717,13 @@
   },
   {
     "id": 90002,
-    "name": "Sườn non heo sạch (Đồng Nai) - 500g",
+    "name": "Sườn non heo sạch (Đồng Nai) ",
     "price": "120.000",
     "image": "  https://www.lottemart.vn/media/catalog/product/cache/0x0/2/2/2204280000004-2-bb.jpg.webp  ",
     "category_id": 90001,
     "voucher": "10",
     "daban": "120",
-    "like": 750,
+    "like": 750,"donvitinh": "   kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Thịt Sạch Eco",
@@ -1729,7 +1744,7 @@
     "category_id": 90002,
     "voucher": "12",
     "daban": "80",
-    "like": 600,
+    "like": 600,  "donvitinh": "   con",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gà Ta Chuẩn",
@@ -1750,7 +1765,7 @@
     "category_id": 90002,
     "voucher": "8",
     "daban": "90",
-    "like": 550,
+    "like": 550, "donvitinh": "  phần ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Vịt Sạch Farm",
@@ -1767,11 +1782,11 @@
     "id": 90005,
     "name": "Trứng gà ta tươi (Trại gà hữu cơ) - vỉ 10 quả",
     "price": "45.000",
-    "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrh2zcWMmUAhPVS9oT0wtGyIjShl1pmLX-TQ&s  ",
+    "image": "  https://product.hstatic.net/1000141988/product/trung_ga_ta_organic_gia_hung_10_55_g_32991b1371ad450b9fa98df16eef6881_master.jpg  ",
     "category_id": 90003,
     "voucher": "5",
     "daban": "200",
-    "like": 1100,
+    "like": 1100,"donvitinh": " hộp  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trứng Sạch Farm",
@@ -1792,7 +1807,7 @@
     "category_id": 90003,
     "voucher": "5",
     "daban": "180",
-    "like": 950,
+    "like": 950,"donvitinh": "hộp   ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Trứng Nông Trại",
@@ -1813,7 +1828,7 @@
     "category_id": 90004,
     "voucher": "5",
     "daban": "300",
-    "like": 1500,
+    "like": 1500,"donvitinh": "  phần ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Heo Sạch Cao Nguyên",
@@ -1834,7 +1849,7 @@
     "category_id": 90004,
     "voucher": "5",
     "daban": "350",
-    "like": 1800,
+    "like": 1800, "donvitinh": "  phần ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Gà Ta Chuẩn",
@@ -1855,7 +1870,7 @@
     "category_id": 90005,
     "voucher": "10",
     "daban": "80",
-    "like": 650,
+    "like": 650, "donvitinh": "  phần ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Bò Tươi Cao Nguyên",
@@ -1876,7 +1891,7 @@
     "category_id": 90005,
     "voucher": "8",
     "daban": "70",
-    "like": 600,
+    "like": 600, "donvitinh": "  phần ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Bò Tơ Xứ Dừa",
@@ -1891,13 +1906,13 @@
   },
   {
     "id": 100001,
-    "name": "Tôm sú tươi (size 30-40 con/kg) - 500g",
+    "name": "Tôm sú tươi (size 30-40 con/kg) ",
     "price": "180.000",
     "image": "  https://storage.googleapis.com/sc_pcm_product/prod/2023/10/26/15501-369133.jpg  ",
     "category_id": 100001,
     "voucher": "10",
     "daban": "100",
-    "like": 750,
+    "like": 750, "donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hải Sản Sạch",
@@ -1912,13 +1927,13 @@
   },
   {
     "id": 100002,
-    "name": "Tôm thẻ tươi (size 60-80 con/kg) - 500g",
+    "name": "Tôm thẻ tươi (size 60-80 con/kg) ",
     "price": "120.000",
     "image": "  https://static.megamart.w3ez.com/i/sp/tom-the-hrc-60-80-con-kg-thumb.webp  ",
     "category_id": 100001,
     "voucher": "8",
     "daban": "120",
-    "like": 700,
+    "like": 700,"donvitinh": " kg  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Tôm Biển Xanh",
@@ -1933,13 +1948,13 @@
   },
   {
     "id": 100003,
-    "name": "Cá thu tươi cắt lát - 500g",
+    "name": "Cá thu tươi cắt lát - đặc sản Phú Yên",
     "price": "160.000",
     "image": "    https://farm24h.vn/wp-content/uploads/2020/04/CATHUTUOI-1-1.jpg",
     "category_id": 100002,
     "voucher": "10",
     "daban": "80",
-    "like": 600,
+    "like": 600,"donvitinh": "kg   ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đặc Sản Biển",
@@ -1954,13 +1969,13 @@
   },
   {
     "id": 100004,
-    "name": "Cá ngừ đại dương tươi cắt lát - 500g",
+    "name": "Cá ngừ đại dương tươi cắt lát ",
     "price": "140.000",
     "image": "  https://www.cungcaphaisan.com/contents_cungcaphaisan/uploads/images/ca-ngu-dai-duong-phi-le.jpg  ",
     "category_id": 100002,
     "voucher": "8",
     "daban": "70",
-    "like": 550,
+    "like": 550,"donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Ngư Phủ Biển",
@@ -1975,13 +1990,13 @@
   },
   {
     "id": 100005,
-    "name": "Mực ống tươi (size vừa) - 500g",
+    "name": "Mực ống tươi (size vừa) - 20 con/kg",
     "price": "130.000",
     "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx9-uhB0GsgBwsiVbGENQ5wiANuoV-1XXZYQ&s  ",
     "category_id": 100003,
     "voucher": "8",
     "daban": "90",
-    "like": 680,
+    "like": 680,"donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hải Sản Biển Đông",
@@ -1996,13 +2011,13 @@
   },
   {
     "id": 100006,
-    "name": "Mực lá tươi (size lớn) - 500g",
+    "name": "Mực lá tươi (size lớn ) - 10 con/kg",
     "price": "150.000",
     "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6hJLbhBE2cfmZFM3FAEt0PH_ePyp83H0NqQ&s  ",
     "category_id": 100003,
     "voucher": "10",
     "daban": "70",
-    "like": 620,
+    "like": 620,"donvitinh": "   kg",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Đại Dương Xanh",
@@ -2017,13 +2032,13 @@
   },
   {
     "id": 100007,
-    "name": "Ngao trắng tươi (size lớn) - 1kg",
+    "name": "Ngao trắng tươi (size lớn) - 50-60 con/kg",
     "price": "45.000",
     "image": "  https://chohaisanonline.vn/wp-content/uploads/2024/05/ngheu-trang-song-size-lon-ngao-814.jpg  ",
     "category_id": 100004,
     "voucher": "5",
     "daban": "150",
-    "like": 800,
+    "like": 800,"donvitinh": " kg  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Hải Sản Vùng Vịnh",
@@ -2038,13 +2053,13 @@
   },
   {
     "id": 100008,
-    "name": "Ốc hương tươi sống (size vừa) - 500g",
+    "name": "Ốc hương tươi sống (size vừa) - 70-80 con/kg",
     "price": "250.000",
     "image": "   https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXzfsd6l_wxD-_cRQpYTv2Q_8MmrpvhuwUow&s ",
     "category_id": 100004,
     "voucher": "15",
     "daban": "60",
-    "like": 700,
+    "like": 700,"donvitinh": " kg  ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Ốc Ngon Biển",
@@ -2065,7 +2080,7 @@
     "category_id": 100005,
     "voucher": "15",
     "daban": "50",
-    "like": 900,
+    "like": 900, "donvitinh": "  con ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Cua Biển Mekong",
@@ -2080,13 +2095,13 @@
   },
   {
     "id": 100010,
-    "name": "Ghẹ xanh tươi (size 2-3 con/kg) - 500g",
+    "name": "Ghẹ xanh tươi (size 2-3 con/kg)",
     "price": "220.000",
     "image": "  https://file.hstatic.net/1000030244/article/ghe-xanh-1_3cc2a33d58584225b1d71b6c598b6325.jpeg  ",
     "category_id": 100005,
     "voucher": "12",
     "daban": "40",
-    "like": 850,
+    "like": 850, "donvitinh": "  kg ",
     "extra_info": {
       "order": ["Thương hiệu", "Xuất xứ", "Quy cách đóng gói", "Trọng lượng", "Hạn sử dụng", "Bảo quản", "Cách dùng", "Mô tả sản phẩm"],
       "Thương hiệu": "Ghẹ Biển Tuy Hòa",
