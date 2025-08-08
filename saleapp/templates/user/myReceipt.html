@@ -376,14 +376,14 @@ document.addEventListener('DOMContentLoaded', function () {
     .myReceipt-menu-item:hover {
         color: #ff0000;
     }
-    .mua-hang-lai {background-color: #ee4d2d; border:1px solid #ba2b0f; color:white; padding:8px 40px; font-size:14px; border-radius:2px; cursor:pointer;}
+    .mua-hang-lai {background-color: #ee4d2d; border:1px solid #ba2b0f; color:white; padding:6px 60px; font-size:14px; border-radius:2px; cursor:pointer;}
 
   .mua-hang-lai:hover {
     background-color: #d73211;
     border-color: #ee4d2d;
   }
     .hien-he-shop{
-     background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:8px 20px; font-size:14px; border-radius:2px; cursor:pointer;}
+     background-color:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.09); color:#333; padding:6px 50px; font-size:14px; border-radius:2px; cursor:pointer;}
 
     .hien-he-shop:hover {
         background-color: rgba(0,0,0,.05);
@@ -410,192 +410,191 @@ document.addEventListener('DOMContentLoaded', function () {
 </style>
 
 <script>
-let CURRENT_RECEIPT_DETAIL_ID = null;
-let selectedFiles = [];
-const fileInput = document.getElementById('modals-comment-file');
-const previewContainer = document.getElementById('modals-comment-preview');
+    let CURRENT_RECEIPT_DETAIL_ID = null;
+    let selectedFiles = [];
+    const fileInput = document.getElementById('modals-comment-file');
+    const previewContainer = document.getElementById('modals-comment-preview');
 
-// ✅ Thêm ảnh mới
-function defaultFileInputHandler(e) {
-  let files = Array.from(e.target.files);
-  let remain = 3 - selectedFiles.length;
+    // ✅ Thêm ảnh mới
+    function defaultFileInputHandler(e) {
+      let files = Array.from(e.target.files);
+      let remain = 3 - selectedFiles.length;
 
-  if (remain <= 0) {
-    alert('Tối đa 3 ảnh!');
-    fileInput.value = '';
-    return;
-  }
-
-  if (files.length > remain) {
-    alert(`Chỉ được chọn thêm tối đa ${remain} ảnh.`);
-    files = files.slice(0, remain);
-  }
-
-  files.forEach(file => addPreview(file));
-  fileInput.value = '';
-}
-
-fileInput.onchange = defaultFileInputHandler;
-
-document.getElementById('modals-comment-upload-btn').addEventListener('click', () => {
-  if (selectedFiles.length >= 3) {
-    alert('Tối đa 3 ảnh!');
-    return;
-  }
-  fileInput.onchange = defaultFileInputHandler;
-  fileInput.click();
-});
-
-// ✅ Thêm preview & sửa
-function addPreview(file) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const wrap = document.createElement('div');
-    wrap.className = 'modals-comment-preview-item';
-
-    const img = document.createElement('img');
-    img.src = e.target.result;
-
-    selectedFiles.push(file);
-
-    img.onclick = function() {
-      fileInput.onchange = function(ev) {
-        const newFile = ev.target.files[0];
-        if (newFile) {
-          const newReader = new FileReader();
-          newReader.onload = function(ev2) {
-            img.src = ev2.target.result;
-          };
-          newReader.readAsDataURL(newFile);
-          const idx = Array.from(previewContainer.children).indexOf(wrap);
-          selectedFiles[idx] = newFile;
-        }
-        fileInput.onchange = defaultFileInputHandler;
+      if (remain <= 0) {
+        alert('Tối đa 3 ảnh!');
         fileInput.value = '';
-      };
-      fileInput.click();
-    };
-
-    const remove = document.createElement('button');
-    remove.className = 'remove-btn';
-    remove.innerHTML = '×';
-    remove.onclick = function() {
-      const idx = Array.from(previewContainer.children).indexOf(wrap);
-      selectedFiles.splice(idx, 1);
-      wrap.remove();
-    };
-
-    wrap.appendChild(img);
-    wrap.appendChild(remove);
-    previewContainer.appendChild(wrap);
-  };
-  reader.readAsDataURL(file);
-}
-
-    function openModalsComment() {
-      document.getElementById('modals-comment').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      selectedFiles = [];
-      previewContainer.innerHTML = '';
-      fileInput.value = '';
-    }
-
-    function closeModalsComment() {
-      document.getElementById('modals-comment').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-function attachCommentHandlers() {
-  const buttons = document.querySelectorAll('.danh-gia-san-pham');
-  const stars = document.querySelectorAll('.modals-comment-stars i');
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const canEdit = this.getAttribute('data-can-edit') === 'True';
-      if (!canEdit) {
-        alert('Bạn đã chỉnh sửa rồi, không thể chỉnh sửa tiếp!');
         return;
       }
 
-      document.getElementById('modals-comment-image').src = this.getAttribute('data-image');
-      document.getElementById('modals-comment-name').textContent = this.getAttribute('data-name');
-      document.getElementById('modals-comment-category').textContent = 'Phân loại: ' + this.getAttribute('data-category');
+      if (files.length > remain) {
+        alert(`Chỉ được chọn thêm tối đa ${remain} ảnh.`);
+        files = files.slice(0, remain);
+      }
 
-      CURRENT_RECEIPT_DETAIL_ID = this.getAttribute('data-receipt-detail-id');
-
-      const content = this.getAttribute('data-comment-content') || '';
-      const rating = parseInt(this.getAttribute('data-comment-rating') || '0');
-      document.getElementById('modals-comment-textarea').value = content;
-
-      stars.forEach(s => {
-        const val = parseInt(s.getAttribute('data-value'));
-        if (val <= rating) {
-          s.classList.add('fa-solid', 'active');
-          s.classList.remove('fa-regular');
-        } else {
-          s.classList.remove('fa-solid', 'active');
-          s.classList.add('fa-regular');
-        }
-      });
-
-      openModalsComment();
-    });
-  });
-
-  stars.forEach(star => {
-    star.addEventListener('click', function() {
-      const value = parseInt(this.getAttribute('data-value'));
-      stars.forEach(s => {
-        const val = parseInt(s.getAttribute('data-value'));
-        if (val <= value) {
-          s.classList.add('fa-solid', 'active');
-          s.classList.remove('fa-regular');
-        } else {
-          s.classList.remove('fa-solid', 'active');
-          s.classList.add('fa-regular');
-        }
-      });
-    });
-  });
-
-  document.getElementById('modals-comment-close').addEventListener('click', closeModalsComment);
-
-  document.getElementById('modals-comment-submit').addEventListener('click', function() {
-    const content = document.getElementById('modals-comment-textarea').value.trim();
-    const rating = document.querySelectorAll('.modals-comment-stars i.active').length;
-    const spinner = document.getElementById('modals-comment-loading');
-    const toast = document.getElementById('comment-success-toast');
-
-    if (!content) {
-      alert('Vui lòng nhập nội dung!');
-      return;
-    }
-    if (rating === 0) {
-      alert('Vui lòng chọn số sao!');
-      return;
+      files.forEach(file => addPreview(file));
+      fileInput.value = '';
     }
 
-    spinner.style.display = 'flex';
+    fileInput.onchange = defaultFileInputHandler;
 
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('rating', rating);
-    formData.append('receipt_detail_id', CURRENT_RECEIPT_DETAIL_ID);
-    selectedFiles.forEach(file => formData.append('images', file));
+    document.getElementById('modals-comment-upload-btn').addEventListener('click', () => {
+      if (selectedFiles.length >= 3) {
+        alert('Tối đa 3 ảnh!');
+        return;
+      }
+      fileInput.onchange = defaultFileInputHandler;
+      fileInput.click();
+    });
 
-    fetch('/api/comment', { method: 'POST', body: formData })
-      .then(res => res.json())
-.then(data => {
-  spinner.style.display = 'none';
-  closeModalsComment();
-  toast.style.display = 'block';
-  toast.style.opacity = '1';
+    // ✅ Thêm preview & sửa
+    function addPreview(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const wrap = document.createElement('div');
+        wrap.className = 'modals-comment-preview-item';
 
-  // 👉 RELOAD NGAY
-  location.reload();
-});
-  });
-}
+        const img = document.createElement('img');
+        img.src = e.target.result;
+
+        selectedFiles.push(file);
+
+        img.onclick = function() {
+          fileInput.onchange = function(ev) {
+            const newFile = ev.target.files[0];
+            if (newFile) {
+              const newReader = new FileReader();
+              newReader.onload = function(ev2) {
+                img.src = ev2.target.result;
+              };
+              newReader.readAsDataURL(newFile);
+              const idx = Array.from(previewContainer.children).indexOf(wrap);
+              selectedFiles[idx] = newFile;
+            }
+            fileInput.onchange = defaultFileInputHandler;
+            fileInput.value = '';
+          };
+          fileInput.click();
+        };
+
+        const remove = document.createElement('button');
+        remove.className = 'remove-btn';
+        remove.innerHTML = '×';
+        remove.onclick = function() {
+          const idx = Array.from(previewContainer.children).indexOf(wrap);
+          selectedFiles.splice(idx, 1);
+          wrap.remove();
+        };
+
+        wrap.appendChild(img);
+        wrap.appendChild(remove);
+        previewContainer.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    }
+
+        function openModalsComment() {
+          document.getElementById('modals-comment').style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          selectedFiles = [];
+          previewContainer.innerHTML = '';
+          fileInput.value = '';
+        }
+
+        function closeModalsComment() {
+          document.getElementById('modals-comment').style.display = 'none';
+          document.body.style.overflow = '';
+        }
+
+    function attachCommentHandlers() {
+      const buttons = document.querySelectorAll('.danh-gia-san-pham');
+      const stars = document.querySelectorAll('.modals-comment-stars i');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const canEdit = this.getAttribute('data-can-edit') === 'True';
+          if (!canEdit) {
+            return;
+          }
+
+          document.getElementById('modals-comment-image').src = this.getAttribute('data-image');
+          document.getElementById('modals-comment-name').textContent = this.getAttribute('data-name');
+          document.getElementById('modals-comment-category').textContent = 'Phân loại: ' + this.getAttribute('data-category');
+
+          CURRENT_RECEIPT_DETAIL_ID = this.getAttribute('data-receipt-detail-id');
+
+          const content = this.getAttribute('data-comment-content') || '';
+          const rating = parseInt(this.getAttribute('data-comment-rating') || '0');
+          document.getElementById('modals-comment-textarea').value = content;
+
+          stars.forEach(s => {
+            const val = parseInt(s.getAttribute('data-value'));
+            if (val <= rating) {
+              s.classList.add('fa-solid', 'active');
+              s.classList.remove('fa-regular');
+            } else {
+              s.classList.remove('fa-solid', 'active');
+              s.classList.add('fa-regular');
+            }
+          });
+
+          openModalsComment();
+        });
+      });
+
+      stars.forEach(star => {
+        star.addEventListener('click', function() {
+          const value = parseInt(this.getAttribute('data-value'));
+          stars.forEach(s => {
+            const val = parseInt(s.getAttribute('data-value'));
+            if (val <= value) {
+              s.classList.add('fa-solid', 'active');
+              s.classList.remove('fa-regular');
+            } else {
+              s.classList.remove('fa-solid', 'active');
+              s.classList.add('fa-regular');
+            }
+          });
+        });
+      });
+
+      document.getElementById('modals-comment-close').addEventListener('click', closeModalsComment);
+
+      document.getElementById('modals-comment-submit').addEventListener('click', function() {
+        const content = document.getElementById('modals-comment-textarea').value.trim();
+        const rating = document.querySelectorAll('.modals-comment-stars i.active').length;
+        const spinner = document.getElementById('modals-comment-loading');
+        const toast = document.getElementById('comment-success-toast');
+
+        if (!content) {
+          alert('Vui lòng nhập nội dung!');
+          return;
+        }
+        if (rating === 0) {
+          alert('Vui lòng chọn số sao!');
+          return;
+        }
+
+        spinner.style.display = 'flex';
+
+        const formData = new FormData();
+        formData.append('content', content);
+        formData.append('rating', rating);
+        formData.append('receipt_detail_id', CURRENT_RECEIPT_DETAIL_ID);
+        selectedFiles.forEach(file => formData.append('images', file));
+
+        fetch('/api/comment', { method: 'POST', body: formData })
+          .then(res => res.json())
+        .then(data => {
+          spinner.style.display = 'none';
+          closeModalsComment();
+          toast.style.display = 'block';
+          toast.style.opacity = '1';
+
+          // 👉 RELOAD NGAY
+          location.reload();
+        });
+          });
+        }
 
 
 </script>

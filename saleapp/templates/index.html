@@ -58,8 +58,10 @@
 {% endblock %}
 
 
-{% block content %}
-<div>
+    {% block content %}
+
+<div class="container" style="width:1190px;">
+
     <img src="https://cdn-icons-png.flaticon.com/128/18080/18080046.png"
          alt="Scroll to Top"
          id="scrollToTop"
@@ -218,7 +220,16 @@
     </div>
 
 
-    {%include 'product-section.html' %}
+    <div  style="background-color:rgb(225, 241, 255);width:100%; margin: 0; padding: 0;">
+
+
+        {%include 'product-section.html' %}
+
+    </div>
+
+
+
+
 
 </div>
 
@@ -636,5 +647,7 @@
 </style>
 
 {% endblock %}
+
+
 
 

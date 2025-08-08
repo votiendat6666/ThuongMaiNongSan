@@ -30,7 +30,6 @@
 {%block content%}
 
 
-
 <!--✅ Style Địa chỉ -->
 <style>
     /* ✅ Modal overlay */
@@ -260,8 +259,41 @@
         <div class="modal-header" id="editAddressModalTitle">Sửa Địa Chỉ</div>
         <div class="modal-body">
             <div class="input-group">
-                <input type="text" id="editName" placeholder="Họ tên">
-                <input type="text" id="editPhone" placeholder="Số điện thoại">
+                <input type="text" id="editName" placeholder="Họ tên" maxlength="25" required>
+                <input type="text" id="editPhone" placeholder="Số điện thoại" maxlength="10" required>
+                <p id="errorMsg" style="color: red; font-size: 13px;"></p>
+
+                <script>
+                    // Hàm Kiểm tra name và SDT lưu địa chỉ
+                    function validateInputs() {
+                        const nameInput = document.getElementById("editName");
+                        const phoneInput = document.getElementById("editPhone");
+
+                        const name = nameInput.value.trim();
+                        const phone = phoneInput.value.trim();
+
+                        let isValid = true;
+
+                        // Reset viền trước mỗi lần kiểm tra
+                        nameInput.style.border = "";
+                        phoneInput.style.border = "";
+
+                        // Kiểm tra họ tên
+                        if (name.length < 3 || name.length > 25) {
+                            nameInput.style.border = "1px solid red";
+                            isValid = false;
+                        }
+
+                        // Kiểm tra số điện thoại
+                        const phoneRegex = /^0\d{9}$/;
+                        if (!phoneRegex.test(phone)) {
+                            phoneInput.style.border = "1px solid red";
+                            isValid = false;
+                        }
+
+                        return isValid;
+                    }
+                </script>
             </div>
             <div class="dropdown-address" id="provinceDropdown">
                 <button type="button" id="addressResult" onclick="toggleAddressTabs()">Chọn Tỉnh/Thành phố, Quận/Huyện,
@@ -276,7 +308,19 @@
                     <div id="tabList" class="tab-list"></div>
                 </div>
             </div>
-            <textarea style="height:269px;" id="editSpecificAddress" placeholder="Nhập địa chỉ cụ thể"></textarea>
+            <textarea style="height:246px;" id="editSpecificAddress"
+                      placeholder="Nhập địa chỉ cụ thể"
+                      maxlength="100"></textarea>
+            <p id="charCountMsg" style="font-size: 12px; color: gray;">0/100 ký tự</p>
+
+            <script>
+                const textarea = document.getElementById("editSpecificAddress");
+                const charCountMsg = document.getElementById("charCountMsg");
+
+                textarea.addEventListener("input", function () {
+                    charCountMsg.textContent = `${this.value.length}/100 ký tự`;
+                });
+            </script>
         </div>
 
         <button type="button" onclick="deleteAddress()"
@@ -308,33 +352,36 @@
     <div style="flex: 1; overflow-y: auto; background-color: white; scrollbar-width: none; padding: 0px 30px;">
         {% if selected_cart_items %}
         <table class="table" style="margin-top:10px; font-size:14px; width: 100%;">
-             <tr style="color:;">
-                 <th style="width: 50%; text-align: left; font-size: 22px; vertical-align: middle; font-weight:400">Sản Phẩm</th>
-                 <th style="width: 15%; text-align: center; vertical-align: middle; font-weight:400">Đơn giá</th>
-                 <th style="width: 15%; text-align: center; vertical-align: middle;font-weight:400">Số lượng</th>
-                 <th style="width: 20%; text-align: center; vertical-align: middle;font-weight:400">Thành tiền</th>
-             </tr>
+            <tr style="color:;">
+                <th style="width: 50%; text-align: left; font-size: 22px; vertical-align: middle; font-weight:400">Sản
+                    Phẩm
+                </th>
+                <th style="width: 15%; text-align: center; vertical-align: middle; font-weight:400">Đơn giá</th>
+                <th style="width: 15%; text-align: center; vertical-align: middle;font-weight:400">Số lượng</th>
+                <th style="width: 20%; text-align: center; vertical-align: middle;font-weight:400">Thành tiền</th>
+            </tr>
 
-{% for c in selected_cart_items %}
-<tr id="product{{ c.product.id }}" style="vertical-align: middle;">
-    <td style="width: 50%;">
-        <a href="/products/{{ c.product.id }}" style="text-decoration: none; color: inherit;">
-            <img src="{{ c.product.image }}" alt="{{ c.product.name }}"
-                 style="width:70px; height:70px; margin-right:10px;">
-            {{ c.product.name }}
-        </a>
-    </td>
-    <td style="width: 15%; text-align:center;">
-         <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ c.product.price|format_vnd }}
-    </td>
-    <td style="width: 15%; text-align: center;">
-        {{ c.quantity }} {{c.product.donvitinh }}
-    </td>
-    <td style="width: 20%; color:#ee4d2d; text-align:center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ '{:,.0f}'.format(c.quantity * c.product.price).replace(',', '.') }}
-    </td>
-</tr>
-{% endfor %}
+            {% for c in selected_cart_items %}
+            <tr id="product{{ c.product.id }}" style="vertical-align: middle;">
+                <td style="width: 50%;">
+                    <a href="/products/{{ c.product.id }}" style="text-decoration: none; color: inherit;">
+                        <img src="{{ c.product.image }}" alt="{{ c.product.name }}"
+                             style="width:70px; height:70px; margin-right:10px;">
+                        {{ c.product.name }}
+                    </a>
+                </td>
+                <td style="width: 15%; text-align:center;">
+                    <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ c.product.price|format_vnd }}
+                </td>
+                <td style="width: 15%; text-align: center;">
+                    {{ c.quantity }} {{c.product.donvitinh }}
+                </td>
+                <td style="width: 20%; color:#ee4d2d; text-align:center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span style="vertical-align: 3px; font-size:12px;">₫</span>{{ '{:,.0f}'.format(c.quantity *
+                    c.product.price).replace(',', '.') }}
+                </td>
+            </tr>
+            {% endfor %}
         </table>
         {% endif %}
     </div>
@@ -345,17 +392,31 @@
 <!--Khung nhap tin nhan cho nguoi ban-->
 <div style="width: 100%; background: #f9fcfd; border: 1px solid #eee; padding: 20px; box-sizing: border-box; margin-bottom: 20px;">
     <!-- Dòng Lời nhắn & Voucher -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-          <!-- Lời nhắn -->
-          <div style="flex: 1;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+        <!-- Lời nhắn -->
+        <div style="flex: 1;">
             <label style="display: block; margin-bottom: 5px; font-weight: 500;">Lời nhắn:</label>
             <textarea
-              id="note_message"
-              name="note_message"
-              placeholder="Lưu ý cho Người bán..."
-              style="width: 100%; height: 150px; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: inherit; font-size: 14px; line-height: 1.5;"></textarea>
-          </div>
+                    id="note_message"
+                    name="note_message"
+                    placeholder="Lưu ý cho Người bán..."
+                    maxlength="100"
+                    oninput="updateCharCount()"
+                    style="width: 100%; height: 150px; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: inherit; font-size: 14px; line-height: 1.5;"></textarea>
         </div>
+
+    </div>
+    <div id="charCount" style="margin-top: 4px; font-size: 13px; color: #555;">
+        0 / 100 ký tự
+    </div>
+    <script>
+        function updateCharCount() {
+            const textarea = document.getElementById('note_message');
+            const countDiv = document.getElementById('charCount');
+            const currentLength = textarea.value.length;
+            countDiv.textContent = `${currentLength} / 100 ký tự`;
+        }
+    </script>
 
 
     <!-- Phương thức vận chuyển -->
@@ -369,14 +430,14 @@
             </div>
         </div>
         <div style="text-align: right;">
-<!--            <button style="color: #0071bc; border: none; background:none; margin-right: 10px;">Thay Đổi</button>-->
+            <!--            <button style="color: #0071bc; border: none; background:none; margin-right: 10px;">Thay Đổi</button>-->
             <strong style="display: inline-block;">₫0</strong>
         </div>
     </div>
 
     <!-- Không đồng kiểm -->
     <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 15px; display: flex; align-items: center;">
-        <label  style="font-size: 14px; color: #555;">Không đồng kiểm.</label>
+        <label style="font-size: 14px; color: #555;">Không đồng kiểm.</label>
     </div>
 
     <!-- Tổng số tiền -->
@@ -385,7 +446,7 @@
       <span style="font-size: 16px; color: #555; margin-right: 10px;">
         Tổng số tiền ({{ order_total_product_selected }} sản phẩm)
       </span>
-        <span  style="color: #ee4d2d; font-size: 30px;">
+        <span style="color: #ee4d2d; font-size: 30px;">
             <span style="vertical-align: 7px; font-size:20px;">₫</span>{{ '{:,.0f}'.format(order_total_amount_selected).replace(',','.') }}
         </span>
     </div>
@@ -638,7 +699,7 @@
 </div>
 
 
-<div style="border: 1px solid #eee; background: #fff; padding: 20px; margin-top: 20px; margin-bottom: 90px;">
+<div style="border: 1px solid #eee; background: #fff; padding: 20px; margin-top: 20px; margin-bottom: 20px;">
     <!-- Phương thức thanh toán -->
 
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; background-color:#fffefb;">
@@ -651,14 +712,14 @@
             <input type="radio" name="payment_method" value="COD"
                    {% if payment_method== 'COD' %}checked{% endif %}
             style="margin-right: 10px;">
-            <img src="https://lh5.googleusercontent.com/proxy/mxZhmm5nVRXjcgS0ZWR4zxI1BANHsVKqnCncjz3rUsEyLEnrQokPdQhP_Q0Wj_2K7ycpaD5UKqxqTd5pyfnbaE1ivhqhCI18zGOKPFm_n4N_0p1we5u8sw"
-                 style="width: 54px; height: 54px; margin-right: 8px; border-radius:5px;">
+            <img src="https://i.postimg.cc/mg0F7g3K/cod.png"
+                 style="width: 50px; height: 50px; margin-right: 8px; border-radius:5px;">
             Thanh toán khi nhận hàng
         </label>
 
         <label style="display: flex; align-items: center; cursor: pointer;">
             <input type="radio" name="payment_method" value="MoMo"
-                   {% if payment_method == 'MoMo' %}checked{% endif %}
+                   {% if payment_method== 'MoMo' %}checked{% endif %}
             style="margin-right: 10px;">
             <img src="https://play-lh.googleusercontent.com/uCtnppeJ9ENYdJaSL5av-ZL1ZM1f3b35u9k8EOEjK3ZdyG509_2osbXGH5qzXVmoFv0"
                  style="width: 44px; height: 44px; margin-right: 8px; border-radius:5px; margin-left: 3px; margin-right: 14px;">
@@ -704,9 +765,10 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <span style="color: rgba(0, 0, 0, .54);">Đã dùng Xu TD Food</span>
-          <span style="color: #ee4d2d;">
-            <span style="vertical-align: 3px; font-size:12px;">-₫</span><span id="coin-used-amount" style="font-size: 16px;">{% if session.get('use_coin') %}{{'{:,.0f}'.format(coin_balance).replace(',', '.')}}{% else %}0{% endif %}
+            <span style="color: rgba(0, 0, 0, .54);">Đã dùng Xu TD Food</span>
+            <span style="color: #ee4d2d;">
+            <span style="vertical-align: 3px; font-size:12px;">-₫</span><span id="coin-used-amount"
+                                                                              style="font-size: 16px;">{% if session.get('use_coin') %}{{'{:,.0f}'.format(coin_balance).replace(',', '.')}}{% else %}0{% endif %}
             </span>
           </span>
         </div>
@@ -736,83 +798,99 @@
         </p>
 
         <!-- Nút Đặt hàng bên phải -->
-         <button id="btn-order"
+        <button id="btn-order"
                 type="button"
-                style="background: #ee4d2d; color: #fff; border: none; padding: 8px 72px; font-size: 16px; border-radius: 2px; cursor: pointer;">
+                class="datHang">
             Đặt hàng
         </button>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnOrder = document.getElementById('btn-order');
-        const noteMessageInput = document.getElementById('note_message');
-        let isOrdering = false;
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const btnOrder = document.getElementById('btn-order');
+                const noteMessageInput = document.getElementById('note_message');
+                let isOrdering = false;
 
-        // Lưu note_message vào session khi nhập
-        noteMessageInput.addEventListener('input', function() {
-            const noteMessage = this.value;
-            fetch('/api/set_note_message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ note_message: noteMessage })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data.message); // Debug
-            })
-            .catch(err => console.error('Error saving note:', err));
-        });
-btnOrder.addEventListener('click', function() {
-  if (isOrdering) return;
+                // Lưu note_message vào session khi nhập
+                noteMessageInput.addEventListener('input', function() {
+                    const noteMessage = this.value;
+                    fetch('/api/set_note_message', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ note_message: noteMessage })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data.message); // Debug
+                    })
+                    .catch(err => console.error('Error saving note:', err));
+                });
 
-  isOrdering = true;
-  btnOrder.disabled = true;
+                btnOrder.addEventListener('click', function() {
+                  if (isOrdering) return;
 
-  const noteMessage = noteMessageInput.value;
+                  isOrdering = true;
+                  btnOrder.disabled = true;
 
-  fetch('/api/order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ note_message: noteMessage })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.payUrl) {
-      // 👉 Chuyển thẳng qua link MoMo luôn
-      window.location.href = data.payUrl;
-    } else if (data.redirect_url) {
-      window.location.href = data.redirect_url;
-    } else {
-      alert(data.message);
-      btnOrder.disabled = false;
-      isOrdering = false;
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Có lỗi xảy ra!");
-    btnOrder.disabled = false;
-    isOrdering = false;
-  });
-});
+                  const noteMessage = noteMessageInput.value;
 
-        // Khôi phục note_message từ session khi tải trang
-        fetch('/api/get_note_message')
-            .then(res => res.json())
-            .then(data => {
-                if (data.note_message) {
-                    noteMessageInput.value = data.note_message;
-                }
-            })
-            .catch(err => console.error('Error loading note:', err));
-    });
-    </script>
+                  fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note_message: noteMessage })
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.payUrl) {
+                      // 👉 Chuyển thẳng qua link MoMo luôn
+                      window.location.href = data.payUrl;
+                    } else if (data.redirect_url) {
+                      window.location.href = data.redirect_url;
+                    } else {
+                      alert(data.message);
+                      btnOrder.disabled = false;
+                      isOrdering = false;
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err);
+                    alert("Có lỗi xảy ra!");
+                    btnOrder.disabled = false;
+                    isOrdering = false;
+                  });
+                });
 
+                // Khôi phục note_message từ session khi tải trang
+                fetch('/api/get_note_message')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.note_message) {
+                            noteMessageInput.value = data.note_message;
+                        }
+                    })
+                    .catch(err => console.error('Error loading note:', err));
+            });
+        </script>
 
 
     </div>
 
 </div>
 
+<!--// ✅Style cho nút Đặt hàng-->
+<style>
+    .datHang {
+            background-color: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 8px 72px;
+            font-size: 16px;
+            border-radius: 2px;
+            cursor: pointer;
+    }
+    .datHang:hover {
+            background-color: #d73211;
+            color: white;
+    }
+</style>
 
 {%endblock%}
 

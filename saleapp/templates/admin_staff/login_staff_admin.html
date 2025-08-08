@@ -1,0 +1,189 @@
+{% block content_staff %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<form method="post" action="{{ url_for('admin_staff.login_staff') }}" class="staff-login-container">
+    <div class="staff-login-shapes-top-left"></div>
+    <div class="staff-login-shapes-top-right"></div>
+
+    <div class="staff-login-box">
+        <div class="staff-login-header">
+            <h2> Staff Login </h2>
+        </div>
+        <div class="staff-login-input-group">
+            <i class="fas fa-envelope icon"></i>
+            <input type="text" name="username" placeholder="Email" required>
+        </div>
+        <div class="staff-login-input-group">
+            <i class="fas fa-lock icon"></i>
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+
+        <!-- ✅ THÊM HIDDEN FIELD -->
+
+        <button class="staff-login-button" type="submit">LOGIN</button>
+        <p class="staff-login-forgot-password">Forgot Username / Password?</p>
+    </div>
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    <div class="staff-login-shapes-bottom-right"></div>
+</form>
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1abc9c, #8e44ad);
+        overflow: hidden;
+    }
+
+    .staff-login-container {
+        position: relative;
+        width: 100%;
+        max-width: 1000px;
+        height: 600px;
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .staff-login-shapes-top-left,
+    .staff-login-shapes-top-right,
+    .staff-login-shapes-bottom-right {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.7;
+    }
+
+    .staff-login-shapes-top-left {
+        width: 200px;
+        height: 200px;
+        background-color: #2ecc71;
+        top: -50px;
+        left: -50px;
+        transform: rotate(45deg);
+    }
+
+    .staff-login-shapes-top-right {
+        width: 100px;
+        height: 100px;
+        top: 20px;
+        right: 20px;
+        border: 5px solid #1abc9c;
+        background-color: transparent;
+    }
+
+    .staff-login-shapes-bottom-right {
+        width: 150px;
+        height: 150px;
+        background-color: #9b59b6;
+        bottom: -70px;
+        right: -70px;
+        transform: rotate(-30deg);
+    }
+
+    .staff-login-box {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .staff-login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .staff-login-header h2 {
+        color: #333;
+        font-size: 2.5em;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .staff-login-input-group {
+        position: relative;
+        width: 80%;
+        margin-bottom: 25px;
+        background-color: #f2f2f2;
+        border-radius: 30px;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .staff-login-input-group .icon {
+        color: #888;
+        margin-right: 15px;
+        font-size: 1.2em;
+    }
+
+    .staff-login-input-group input {
+        flex-grow: 1;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        font-size: 1.1em;
+        color: #333;
+        padding: 5px 0;
+    }
+
+    .staff-login-input-group input::placeholder {
+        color: #aaa;
+    }
+
+    .staff-login-button {
+        width: 80%;
+        padding: 15px 0;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.3em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .staff-login-button:hover {
+        background-color: #218838;
+    }
+
+    .staff-login-forgot-password {
+        margin-top: 25px;
+        font-size: 0.9em;
+        color: #555;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .staff-login-forgot-password:hover {
+        text-decoration: underline;
+    }
+</style>
+
+{% endblock %}

@@ -1,562 +1,632 @@
-{% if show_related_section %}
-<!-- KHU SẢN PHẨM NẰM RIÊNG BÊN DƯỚI -->
-<div style="margin-top: 70px; position: relative;">
+<div style="background-color:rgb(225, 241, 255);width:100%; margin: 0; padding: 0;">
 
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+    {% if show_related_section %}
+    <!-- KHU SẢN PHẨM NẰM RIÊNG BÊN DƯỚI -->
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w480_nl 480w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w960_nl 960w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w720_nl 720w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w1440_nl 1440w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w1920_nl 1920w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7" alt="webp_image">
+    <div style="margin-top: 70px; position: relative;">
 
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
 
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                SẢN PHẨM DÀNH CHO BẠN
-            </h1>
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    SẢN PHẨM DÀNH CHO BẠN
+                </h1>
+            </div>
+
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
 
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
+        <!-- VÙNG BỌC NGOÀI -->
+        <div style="background-color:  #f0f0f0;padding: 50px 15px;border-radius: 3px;border: 3px solid rgb(0 172 91);margin-top: 40px;">
+
+            <!-- LƯỚI SẢN PHẨM -->
+            <div id="product-container"
+                 style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
+                {% include 'product-items.html' %}
+            </div>
+
+            <!-- NÚT XEM THÊM -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="toggle-products-btn"
+                        style="background-color: white;color: #00713b;border: 2px solid #00713b;width: 210px;height: 40px;border-radius: 3px;font-weight: 700;transition: all 0.3s ease;cursor: pointer;"
+                        onmouseover="this.style.backgroundColor='#00713b'; this.style.color='white';"
+                        onmouseout="this.style.backgroundColor='white'; this.style.color='#00713b';">
+                    Xem thêm
+                </button>
+            </div>
+
+        </div>
+
+
     </div>
+    {% endif %}
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w480_nl 480w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w960_nl 960w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w720_nl 720w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w1440_nl 1440w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w1920_nl 1920w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0xqvktpc37" alt="webp_image">
 
-    <!-- VÙNG BỌC NGOÀI -->
-    <div style="background-color: ;padding: 50px 15px;border-radius: 3px;border: 3px solid rgb(0 172 91);margin-top: 40px;">
+    <!--FASLE SALE-->
+    <div style="margin-top: 70px; position: relative;">
 
-        <!-- LƯỚI SẢN PHẨM -->
-        <div id="product-container"
-             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
-            {% include 'product-items.html' %}
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    GIẢM GIÁ NHIỀU NHẤT
+                </h1>
+            </div>
+
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
-
-        <!-- NÚT XEM THÊM -->
-        <div style="text-align: center; margin-top: 30px;">
-            <button id="toggle-products-btn"
-                    style="background-color: white;color: #00713b;border: 2px solid #00713b;width: 210px;height: 40px;border-radius: 3px;font-weight: 700;transition: all 0.3s ease;cursor: pointer;"
-                    onmouseover="this.style.backgroundColor='#00713b'; this.style.color='white';"
-                    onmouseout="this.style.backgroundColor='white'; this.style.color='#00713b';">
-                Xem thêm
-            </button>
-        </div>
-
-    </div>
-
-
-</div>
-{% endif %}
-
-<!--FASLE SALE-->
-<div style="margin-top: 70px; position: relative;">
-
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                GIẢM GIÁ NHIỀU NHẤT
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-image:url('https://file.hstatic.net/200000722513/file/artboard_35-1.png'); border: 3px solid rgb(0 172 91); border-radius: 3px; margin: 20px 0;">
-        <!-- HEADER -->
-        <div class="section-header"
-             style="display: flex; align-items: center; gap: 20px; padding: 20px 26px;padding-top:40px; background: linear-gradient(180deg, #003bb8 0%, #003bb8 100%);">
-            <div class="flash-sale-countdown"
-                 style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-weight: bold; color: #FFEE12;"></span>
-                <div id="flash-sale-timer" style="display: flex; gap: 5px;">
-                    <span id="hours" class="time-box">00</span>
-                    <span style="color:white; font-weight:bold;">:</span>
-                    <span id="minutes" class="time-box">00</span>
-                    <span style="color:white; font-weight:bold;">:</span>
-                    <span id="seconds" class="time-box">00</span>
+        <div class="product-section-wrapper"
+             style="background-image:url('https://file.hstatic.net/200000722513/file/artboard_35-1.png'); border: 3px solid rgb(0 172 91); border-radius: 3px; margin: 20px 0;">
+            <!-- HEADER -->
+            <div class="section-header"
+                 style="display: flex; align-items: center; gap: 20px; padding: 20px 26px;padding-top:40px; background: linear-gradient(180deg, #003bb8 0%, #003bb8 100%);">
+                <div class="flash-sale-countdown"
+                     style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: bold; color: #FFEE12;"></span>
+                    <div id="flash-sale-timer" style="display: flex; gap: 5px;">
+                        <span id="hours" class="time-box">00</span>
+                        <span style="color:white; font-weight:bold;">:</span>
+                        <span id="minutes" class="time-box">00</span>
+                        <span style="color:white; font-weight:bold;">:</span>
+                        <span id="seconds" class="time-box">00</span>
+                    </div>
                 </div>
+
+                <h2 style="margin: 0; font-size: 28px; font-style: italic; font-weight: 900; color: #FFEE12;">
+                    FLASH SALE 10H MỖI NGÀY
+                </h2>
             </div>
 
-            <h2 style="margin: 0; font-size: 28px; font-style: italic; font-weight: 900; color: #FFEE12;">
-                FLASH SALE 10H MỖI NGÀY
-            </h2>
+            <!-- NỘI DUNG BEST SELLER + SCROLL -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="flash-sale-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = flash_sale_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('flash-sale-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❮
+                </button>
+
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('flash-sale-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❯
+                </button>
+
+            </div>
         </div>
+    </div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:100%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w480_nl 480w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w960_nl 960w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w720_nl 720w,
+         https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w1440_nl 1440w,
+          https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w1920_nl 1920w,
+          https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt03lpos5j29" alt="webp_image">
+    <!-- BLOCK 2 ẢNH NẰM NGOÀI -->
+    <div style=" display: flex; gap: 10px;  max-width: 1200px; margin: 0 auto 20px auto; border-radius: 8px;overflow: hidden;"></div>
 
-        <!-- NỘI DUNG BEST SELLER + SCROLL -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
+    <!--BAN CHAY NHAT-->
+    <div style="margin-top: 70px; position: relative;">
 
-            <!-- Container scroll ngang -->
-            <div id="flash-sale-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = flash_sale_products %}
-                {% include 'product-items.html' %}
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    BÁN CHẠY NHẤT
+                </h1>
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('flash-sale-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
-
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('flash-sale-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
-
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
-    </div>
-</div>
+        <div class="product-section-wrapper"
+             style="background-image:url('https://file.hstatic.net/200000722513/file/artboard_35-1.png') ;border: 3px solid rgb(0 172 91); border-radius: 3px; border-radius: 3px; margin: 20px 0;">
 
-<!-- BLOCK 2 ẢNH NẰM NGOÀI -->
-<div style=" display: flex; gap: 10px;  max-width: 1200px; margin: 0 auto 20px auto; border-radius: 8px;overflow: hidden;"></div>
-
-<!--BAN CHAY NHAT-->
-<div style="margin-top: 70px; position: relative;">
-
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                BÁN CHẠY NHẤT
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-image:url('https://file.hstatic.net/200000722513/file/artboard_35-1.png') ;border: 3px solid rgb(0 172 91); border-radius: 3px; border-radius: 3px; margin: 20px 0;">
-
-        <!-- HEADER -->
-        <div class="section-header"
-             style="display: flex; align-items: center; gap: 20px; padding: 20px 26px; background: linear-gradient(180deg, #003bb8 0%, #003bb8 100%);">
-            <h2 style="margin: 0; font-size: 28px; font-style: italic; font-weight: 900; color: #FFEE12;">
-                BÁN CHẠY NHẤT
-            </h2>
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="best-seller-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = best_seller_products %}
-                {% include 'product-items.html' %}
+            <!-- HEADER -->
+            <div class="section-header"
+                 style="display: flex; align-items: center; gap: 20px; padding: 20px 26px; background: linear-gradient(180deg, #003bb8 0%, #003bb8 100%);">
+                <h2 style="margin: 0; font-size: 28px; font-style: italic; font-weight: 900; color: #FFEE12;">
+                    BÁN CHẠY NHẤT
+                </h2>
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('best-seller-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="best-seller-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = best_seller_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('best-seller-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
+                    ❮
+                </button>
 
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('best-seller-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('best-seller-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+                    ❯
+                </button>
 
+            </div>
         </div>
+
     </div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w480_nl 480w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w960_nl 960w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w720_nl 720w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w1440_nl 1440w,
+        https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w1920_nl 1920w,
+        https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsul9fxphgda" alt="webp_image">
+    <!--UU DAI-->
+    <div style="margin-top: 70px; position: relative;">
 
-</div>
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
 
-<!--UU DAI-->
-<div style="margin-top: 70px; position: relative;">
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
 
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                ƯU ĐÃI QUÀ TẶNG
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
-
-        <!-- HEADER -->
-        <div class="section-header" style="width: 100%; overflow: hidden;">
-            <img src="{{ url_for('static', filename='images/tieuDe_uuDaiQua.png') }}"
-                 alt="Header"
-                 style="display: block; width: 100%; height: auto; border-radius: 0px;">
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="beauty-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = beauty_products %}
-                {% include 'product-items.html' %}
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    ƯU ĐÃI QUÀ TẶNG
+                </h1>
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('beauty-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
-
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('beauty-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
-    </div>
+        <div class="product-section-wrapper"
+             style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
 
-
-</div>
-
-<!-- CAC LOAI RAU CU -->
-<div style="margin-top: 70px; position: relative;">
-
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                RAU CỦ SẠCH
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
-        <!-- HEADER -->
-        <!-- HEADER -->
-        <div class="section-header" style="width: 100%; overflow: hidden;">
-            <img src="{{ url_for('static', filename='images/tieuDe_rauCu.png') }}"
-                 alt="Header"
-                 style="display: block; width: 100%; height: auto; ">
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="favorites-books-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = favorites_books_products %}
-                {% include 'product-items.html' %}
+            <!-- HEADER -->
+            <div class="section-header" style="width: 100%; overflow: hidden;">
+                <img src="{{ url_for('static', filename='images/tieuDe_uuDaiQua.png') }}"
+                     alt="Header"
+                     style="display: block; width: 100%; height: auto; border-radius: 0px;">
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('favorites-books-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="beauty-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = beauty_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('beauty-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
+                    ❮
+                </button>
 
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('favorites-books-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('beauty-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+                    ❯
+                </button>
+            </div>
         </div>
+
+
     </div>
-</div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w480_nl 480w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w960_nl 960w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w720_nl 720w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w1440_nl 1440w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w1920_nl 1920w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt3fho8wg4b7" alt="webp_image">
+    <!-- CAC LOAI RAU CU -->
+    <div style="margin-top: 70px; position: relative;">
 
-<!-- CAC LOAI THIT -->
-<div style="margin-top: 70px; position: relative;">
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
 
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
 
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                THỰC PHẨM CÔNG NGHIỆP
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0; border: 3px solid rgb(0 172 91);">
-        <!-- HEADER -->
-        <div class="section-header" style="width: 100%; overflow: hidden;">
-            <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/5185/trang-cate-pc_202507100907170211.jpg"
-                 alt="Header"
-                 style="display: block; width: 100%; height: auto; ">
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="pharma-products-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = pharma_products %}
-                {% include 'product-items.html' %}
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    RAU CỦ SẠCH
+                </h1>
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('pharma-products-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
-
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('pharma-products-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
-    </div>
-
-
-</div>
-
-<!-- THUY HAI SAN -->
-<div style="margin-top: 70px; position: relative;">
-
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                THUỶ HẢI SẢN TƯƠI SỐNG
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
-        <!-- HEADER -->
-        <div class="section-header" style="width: 100%; overflow: hidden;">
-            <img src="{{ url_for('static', filename='images/tieuDe_haiSan.png') }}"
-                 alt="Header"
-                 style="display: block; width: 100%; height: auto; ">
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="foods-products-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = foods_products %}
-                {% include 'product-items.html' %}
+        <div class="product-section-wrapper"
+             style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
+            <!-- HEADER -->
+            <!-- HEADER -->
+            <div class="section-header" style="width: 100%; overflow: hidden;">
+                <img src="{{ url_for('static', filename='images/tieuDe_rauCu.png') }}"
+                     alt="Header"
+                     style="display: block; width: 100%; height: auto; ">
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('foods-products-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="favorites-books-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = favorites_books_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('favorites-books-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
+                    ❮
+                </button>
 
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('foods-products-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('favorites-books-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
                    background: #C92127; color: white; border: none; border-radius: 50%;
                    width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+                    ❯
+                </button>
+            </div>
         </div>
     </div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w480_nl 480w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w960_nl 960w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w720_nl 720w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w1440_nl 1440w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w1920_nl 1920w,
+       https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt5tp43fq8df" alt="webp_image">
+    <!-- CAC LOAI THIT -->
+    <div style="margin-top: 70px; position: relative;">
 
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
 
-</div>
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
 
-<!--TRAI CAY-->
-<div style="margin-top: 70px; position: relative;">
-
-    <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
-    <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
-
-        <!-- Tam giác bên trái -->
-        <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
-
-        <!-- Tiêu đề -->
-        <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
-            <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
-                TRÁI CÂY TƯƠI - KHÔ
-            </h1>
-        </div>
-
-        <!-- Tam giác bên phải -->
-        <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
-    </div>
-    <div class="product-section-wrapper"
-         style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
-        <!-- HEADER -->
-        <div class="section-header" style="width: 100%; overflow: hidden;">
-            <img src="{{ url_for('static', filename='images/tieuDe_TraiCay.png') }}"
-                 alt="Header"
-                 style="display: block; width: 100%; height: auto; ">
-        </div>
-
-        <!-- NỘI DUNG BEST bán chạy -->
-        <div class="product-section-body"
-             style="position: relative; padding: 50px 20px; ">
-
-            <!-- Container scroll ngang -->
-            <div id="plays-products-container"
-                 style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
-                {% set products = plays_products %}
-                {% include 'product-items.html' %}
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    THỰC PHẨM CÔNG NGHIỆP
+                </h1>
             </div>
 
-            <!-- Nút trái -->
-            <button onclick="scrollContainer('plays-products-container', -1)"
-                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❮
-            </button>
-
-            <!-- Nút phải -->
-            <button onclick="scrollContainer('plays-products-container', 1)"
-                    style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
-                   background: #C92127; color: white; border: none; border-radius: 50%;
-                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
-                ❯
-            </button>
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
         </div>
+        <div class="product-section-wrapper"
+             style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0; border: 3px solid rgb(0 172 91);">
+            <!-- HEADER -->
+            <div class="section-header" style="width: 100%; overflow: hidden;">
+                <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/5185/trang-cate-pc_202507100907170211.jpg"
+                     alt="Header"
+                     style="display: block; width: 100%; height: auto; ">
+            </div>
+
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="pharma-products-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = pharma_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('pharma-products-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❮
+                </button>
+
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('pharma-products-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❯
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w480_nl 480w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w960_nl 960w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w720_nl 720w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w1440_nl 1440w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w1920_nl 1920w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblt0gc320jo39" alt="webp_image">
+
+    <!-- THUY HAI SAN -->
+    <div style="margin-top: 70px; position: relative;">
+
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    THUỶ HẢI SẢN TƯƠI SỐNG
+                </h1>
+            </div>
+
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
+        </div>
+        <div class="product-section-wrapper"
+             style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
+            <!-- HEADER -->
+            <div class="section-header" style="width: 100%; overflow: hidden;">
+                <img src="{{ url_for('static', filename='images/tieuDe_haiSan.png') }}"
+                     alt="Header"
+                     style="display: block; width: 100%; height: auto; ">
+            </div>
+
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="foods-products-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = foods_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('foods-products-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❮
+                </button>
+
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('foods-products-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❯
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+    <img sizes="480px 720px 960px 1440px" loading="lazy"
+         style="height: auto;object-fit: fill !important; width:80%; height: auto; display: block;  border-radius: 50px; align-items: center; margin: 0 auto; "
+         srcset="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w480_nl 480w,
+     https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w960_nl 960w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w720_nl 720w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w1440_nl 1440w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w1920_nl 1920w,
+      https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23@resize_w2880_nl 2880w"
+         src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-mblsgxyqw1ms23" alt="webp_image">
+    <!--TRAI CAY-->
+    <div style="margin-top: 70px; position: relative;">
+
+        <!--THANH TIÊU ĐỀ SẢN PHẨM LIÊN QUAN-->
+        <div style="position: absolute;top: 0;left: 50%;transform: translate(-50%, -50%);display: inline-flex;align-items: flex-start;">
+
+            <!-- Tam giác bên trái -->
+            <div style=" width: 0;height: 0;border-bottom: 31px solid #00ac5b; border-left: 20px solid transparent;"></div>
+
+            <!-- Tiêu đề -->
+            <div style=" background-color: rgb(216 236 212);border-radius: 0 0 8px 8px; padding: 10px 20px;border: 2px solid rgb(0 172 91);">
+                <h1 style="margin: 0;font-size: 30px; font-weight: 700;padding: 0 10px;color: rgb(0 172 91);">
+                    TRÁI CÂY TƯƠI - KHÔ
+                </h1>
+            </div>
+
+            <!-- Tam giác bên phải -->
+            <div style="width: 0;height: 0;border-bottom: 31px solid #00ac5b;border-right: 20px solid transparent;"></div>
+        </div>
+        <div class="product-section-wrapper"
+             style="background-color:rgb(216 236 212); border-radius: 3px; margin: 20px 0;border: 3px solid rgb(0 172 91);">
+            <!-- HEADER -->
+            <div class="section-header" style="width: 100%; overflow: hidden;">
+                <img src="{{ url_for('static', filename='images/tieuDe_TraiCay.png') }}"
+                     alt="Header"
+                     style="display: block; width: 100%; height: auto; ">
+            </div>
+
+            <!-- NỘI DUNG BEST bán chạy -->
+            <div class="product-section-body"
+                 style="position: relative; padding: 50px 20px; ">
+
+                <!-- Container scroll ngang -->
+                <div id="plays-products-container"
+                     style="display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 1rem; padding: 10px; scrollbar-width: none;">
+                    {% set products = plays_products %}
+                    {% include 'product-items.html' %}
+                </div>
+
+                <!-- Nút trái -->
+                <button onclick="scrollContainer('plays-products-container', -1)"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❮
+                </button>
+
+                <!-- Nút phải -->
+                <button onclick="scrollContainer('plays-products-container', 1)"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+                   background: #C92127; color: white; border: none; border-radius: 50%;
+                   width: 40px; height: 40px; cursor: pointer; font-size: 20px; z-index: 10;">
+                    ❯
+                </button>
+            </div>
+        </div>
+
+
     </div>
 
 
-</div>
+    <script>
+        //✅ Hàm bấm < > các container
+          function scrollContainer(id, direction) {
+          const container = document.getElementById(id);
+          const scrollAmount = 220;
+          container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
 
+        //Flash Sale Countdown
+        function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
+          const hoursEl = document.getElementById('hours');
+          const minutesEl = document.getElementById('minutes');
+          const secondsEl = document.getElementById('seconds');
 
-<script>
-    //✅ Hàm bấm < > các container
-      function scrollContainer(id, direction) {
-      const container = document.getElementById(id);
-      const scrollAmount = 220;
-      container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+          function getNextTargetTime() {
+            const now = new Date();
+            const target = new Date(now);
+            target.setHours(targetHour, targetMinute, targetSecond, 0);
+
+            if (target.getTime() <= now.getTime()) {
+              target.setDate(target.getDate() + 1);
+            }
+
+            return target.getTime();
+          }
+
+          let nextTargetTime = localStorage.getItem('flashSaleTargetTime');
+          if (!nextTargetTime) {
+            nextTargetTime = getNextTargetTime();
+            localStorage.setItem('flashSaleTargetTime', nextTargetTime);
+          } else {
+            nextTargetTime = parseInt(nextTargetTime);
+            const now = new Date().getTime();
+            if (nextTargetTime <= now) {
+              nextTargetTime = getNextTargetTime();
+              localStorage.setItem('flashSaleTargetTime', nextTargetTime);
+            }
+          }
+
+          function updateCountdown() {
+            const now = new Date().getTime();
+            let distance = nextTargetTime - now;
+
+            if (distance <= 0) {
+              nextTargetTime = getNextTargetTime();
+              localStorage.setItem('flashSaleTargetTime', nextTargetTime);
+              distance = nextTargetTime - now;
+            }
+
+            const totalSeconds = Math.floor(distance / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+          }
+
+          setInterval(updateCountdown, 1000);
+          updateCountdown();
+        }
+
+        startRecurringCountdown(20, 0, 0);
+
+    </script>
+    <style>
+        .time-box {
+    display: inline-block;
+    background: white;
+    color: black;
+    padding: 5px 8px;
+    border-radius: 4px;
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
     }
-
-    //Flash Sale Countdown
-    function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
-      const hoursEl = document.getElementById('hours');
-      const minutesEl = document.getElementById('minutes');
-      const secondsEl = document.getElementById('seconds');
-
-      function getNextTargetTime() {
-        const now = new Date();
-        const target = new Date(now);
-        target.setHours(targetHour, targetMinute, targetSecond, 0);
-
-        if (target.getTime() <= now.getTime()) {
-          target.setDate(target.getDate() + 1);
-        }
-
-        return target.getTime();
-      }
-
-      let nextTargetTime = localStorage.getItem('flashSaleTargetTime');
-      if (!nextTargetTime) {
-        nextTargetTime = getNextTargetTime();
-        localStorage.setItem('flashSaleTargetTime', nextTargetTime);
-      } else {
-        nextTargetTime = parseInt(nextTargetTime);
-        const now = new Date().getTime();
-        if (nextTargetTime <= now) {
-          nextTargetTime = getNextTargetTime();
-          localStorage.setItem('flashSaleTargetTime', nextTargetTime);
-        }
-      }
-
-      function updateCountdown() {
-        const now = new Date().getTime();
-        let distance = nextTargetTime - now;
-
-        if (distance <= 0) {
-          nextTargetTime = getNextTargetTime();
-          localStorage.setItem('flashSaleTargetTime', nextTargetTime);
-          distance = nextTargetTime - now;
-        }
-
-        const totalSeconds = Math.floor(distance / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        hoursEl.innerText = String(hours).padStart(2, '0');
-        minutesEl.innerText = String(minutes).padStart(2, '0');
-        secondsEl.innerText = String(seconds).padStart(2, '0');
-      }
-
-      setInterval(updateCountdown, 1000);
-      updateCountdown();
-    }
-
-    startRecurringCountdown(20, 0, 0);
-
-</script>
-<style>
-    .time-box {
-display: inline-block;
-background: white;
-color: black;
-padding: 5px 8px;
-border-radius: 4px;
-min-width: 30px;
-text-align: center;
-font-weight: bold;
-}
-</style>
+    </style>
+</div>

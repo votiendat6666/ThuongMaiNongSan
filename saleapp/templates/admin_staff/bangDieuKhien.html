@@ -1,0 +1,257 @@
+{%extends "admin_staff/quantri.html" %}
+
+{% block content_right %}
+<div class="staff-page-heading" style="margin-bottom: 20px; box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+    <h1>Bảng điều khiển</h1>
+    <div class="staff-page-datetime" id="current-datetime-layout-all">
+    </div>
+</div>
+
+
+<style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      min-height: 300px;
+      box-sizing: border-box;
+    }
+
+    .column {
+      flex: 1 1 50%;
+      min-height: 900px;
+      box-sizing: border-box;
+    }
+
+    .left-column {
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+  .grid-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start; /* ✅ THÊM DÒNG NÀY */
+  }
+
+    .box {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      /* Chia 2 cột: chiếm khoảng 50% trừ đi khoảng cách gap */
+      width: calc(50% - 5px);
+      box-sizing: border-box;
+    }
+
+    /* Dành riêng cho Box 1 với icon và nội dung */
+    .box .box-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap; /* Nếu nội dung quá dài sẽ xuống dòng */
+    }
+
+    .box .box-content > div {
+      min-width: 0;
+    }
+
+    .text-content {
+      flex: 1;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .right-column {
+      background-color: #ccffcc;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      .column {
+        flex: 1 1 100%;
+      }
+    }
+</style>
+
+<div class="container">
+    <div class="column left-column">
+
+        <!-- ✅ Phan 1: Các box thông tin thống kê-->
+        <div class="grid-boxes">
+            <!-- Box 1 với 2 cột: icon và nội dung -->
+            <div class="box" style=" box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+                <div class="box-content">
+                    <!-- Nền icon hình chữ nhật đứng -->
+                    <div style="flex-shrink: 0;">
+                        <div style="background-color: #affed5;padding: 12px; border-radius: 8px;display: flex; align-items: center; justify-content: center;width: 50px;height: 70px;margin-right: 10px;">
+                            <i class='bx bxs-user-account' style="font-size: 40px; color: #00ac5c;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Nội dung -->
+                    <div class="text-content">
+                        <h5 style="margin: 0; color: #00ac5c; font-size: 16px;">TỔNG KHÁCH HÀNG</h5>
+                        <p style="margin: 6px 0;"><b>{{ total_customers }} khách hàng</b></p>
+                        <hr style="margin: 4px 0;">
+                        <small style="color: #555;">Tổng số khách hàng được quản lý.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" style=" box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+                <div class="box-content">
+                    <!-- Nền icon hình chữ nhật đứng -->
+                    <div style="flex-shrink: 0;">
+                        <div style="background-color: #adcbf3;padding: 12px; border-radius: 8px;display: flex; align-items: center; justify-content: center;width: 50px;height: 70px;margin-right: 10px;">
+                            <i class='bx bxs-data' style="font-size: 40px; color: #1d5aab;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Nội dung -->
+                    <div class="text-content">
+                        <h5 style="margin: 0; color: #1d5aab;; font-size: 16px;">TỔNG SẢN PHẨM</h5>
+                        <p style="margin: 6px 0;"><b>{{ total_products }} sản phẩm</b></p>
+                        <hr style="margin: 4px 0;">
+                        <small style="color: #555;">Tổng số sản phẩm được quản lý.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" style=" box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+                <div class="box-content">
+                    <!-- Nền icon hình chữ nhật đứng -->
+                    <div style="flex-shrink: 0;">
+                        <div style="background-color: #fde1c3;padding: 12px; border-radius: 8px;display: flex; align-items: center; justify-content: center;width: 50px;height: 70px;margin-right: 10px;">
+                            <i class='bx bxs-shopping-bags' style="font-size: 40px; color: #ff8b07;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Nội dung -->
+                    <div class="text-content">
+                        <h5 style="margin: 0; color: #ff8b07; font-size: 16px;"> TỔNG ĐƠN HÀNG </h5>
+                        <p style="margin: 6px 0;"><b>{{ total_receipts }} đơn hàng</b></p>
+                        <hr style="margin: 4px 0;">
+                        <small style="color: #555;">Tổng số hóa đơn bán hàng trong tháng.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" style=" box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+                <div class="box-content">
+                    <!-- Nền icon hình chữ nhật đứng -->
+                    <div style="flex-shrink: 0;">
+                        <div style="background-color: #f9baba;padding: 12px; border-radius: 8px;display: flex; align-items: center; justify-content: center;width: 50px;height: 70px;margin-right: 10px;">
+                            <i class='bx bxs-error-alt' style="font-size: 40px; color: #de2222;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Nội dung -->
+                    <div class="text-content">
+                        <h5 style="margin: 0; color: #d20000;; font-size: 16px;">SẮP HẾT HÀNG</h5>
+                        <p style="margin: 6px 0;"><b>{{ total_low_stock_products }} sản phẩm</b></p>
+                        <hr style="margin: 4px 0;">
+                        <small style="color: #555;">Số sản phẩm cảnh báo hết cần nhập thêm.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  ✅Phần 2: thong tin khách hàng-->
+        <div style="background: #fff; border-radius: 8px; padding: 20px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3),0 0 4px rgba(0, 0, 0, 0.1),0 8px 12px rgba(0, 0, 0, 0.4); margin-top: 40px;">
+            <h3 style="margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #FFD43B;">
+                Khách hàng mới
+            </h3>
+
+            <!-- Bảng -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                    <tr style="background-color: #f9f9f9;">
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">ID</th>
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">Tài khoản</th>
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">Tên khách hàng</th>
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;text-align: center;">
+                            Email
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in recent_users %}
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ccc;">{{ c.id }}</td>
+                        <td style="padding: 10px; border: 1px solid #ccc;">{{ c.username }}</td>
+                        <td style="padding: 10px; border: 1px solid #ccc;">{{ c.name }}</td>
+                        <td style="padding: 10px; border: 1px solid #ccc; ">{{ c.email }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ✅ Phần 3: Tình trạng đơn hàng -->
+        <div style="background: #fff; border-radius: 8px; padding: 20px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) 0 0 4px rgba(0, 0, 0, 0.1),0 8px 12px rgba(0, 0, 0, 0.4);margin-top: 40px;">
+            <h3 style="margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #FFD43B;">
+                Tình trạng đơn hàng
+            </h3>
+
+            <!-- Bảng -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                    <tr style="background-color: #f9f9f9;">
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">ID đơn hàng</th>
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">Tên người nhận</th>
+                        <th style="text-align: left; padding: 12px 10px; border: 1px solid #ccc;">Tổng tiền</th>
+                        <th style="text-align: center; padding: 12px 10px; border: 1px solid #ccc;">Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in recent_receipts %}
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ccc; white-space: nowrap;">
+                            {{ r.id }}
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #ccc;">
+                            {{ r.receiver_name if r.receiver_name else '---' }}
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #ccc;">
+                            {{ "{:,.0f}".format(r.final_amount) }}₫
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #ccc; text-align: center; color:
+                            {% if r.status == 'Đang xử lý' %}
+                                orange
+                            {% elif r.status == 'Đã huỷ' %}
+                                red
+                            {% elif r.status == 'Hoàn thành' %}
+                                green
+                            {% else %}
+                                red
+                            {% endif %}
+                            ;">
+                            {{ r.status }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="column right-column">
+        Cột phải
+    </div>
+
+</div>
+
+
+{% endblock %}

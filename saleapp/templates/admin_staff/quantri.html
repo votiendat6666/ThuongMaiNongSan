@@ -1,0 +1,301 @@
+{% extends "admin_staff/base_admin_staff.html" %}
+
+{% block content_staff %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+    @import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
+    body {
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+
+        background-color: #f0f2f5;
+        overflow: hidden;
+    }
+
+    .staff-layout-wrapper {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .staff-layout-sidebar {
+        width: 250px;
+        background: #00713b;
+        padding: 20px 0;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .staff-layout-sidebar-user-info {
+        display: flex;
+        align-items: center;
+        padding: 0 20px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .staff-layout-user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid #3498db;
+    }
+
+    .staff-layout-user-name {
+        font-weight: 600;
+        font-size: 1.1em;
+        color: #ffffff;
+    }
+
+    .staff-layout-user-status {
+        font-size: 0.85em;
+        color: #bdc3c7;
+    }
+
+    .app-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .app-menu__item {
+        display: flex;
+        align-items: center;
+        padding: 20px 20px;
+        margin: 0 12px; /* cách đều 2 bên */
+        color: #ecf0f1;
+        text-decoration: none;
+        border-radius: 8px; /* bo góc */
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app-menu__item:hover,
+    .app-menu__item.active {
+        background-color: #E5F5E4;
+        color: #161648;
+    }
+
+    .app-menu__icon {
+        margin-right: 15px;
+        font-size: 1.2em;
+    }
+
+    .app-menu__label {
+        font-weight: 500;
+    }
+    .app-menu li {
+    margin-bottom: 8px; /* hoặc 10px tùy ý */
+    }
+
+    .staff-layout-main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8f9fa;
+        overflow-y: auto;
+    }
+
+    .staff-layout-navbar {
+        height: 48px;
+        background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 24px;
+        color: white;
+        font-weight: 500;
+    }
+
+    .staff-layout-icon {
+        font-size: 1.2em;
+        color: #fff;
+        margin-left: 20px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .staff-layout-icon:hover {
+        color: #007bff;
+    }
+
+
+    .staff-page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        padding: 12px 20px;
+        border-left: 16px solid gold;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+.staff-page-heading h1 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 600;
+    background: linear-gradient(to right,#00713b,#469c4b );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+    .staff-page-datetime {
+        font-size: 14px;
+        color: #000;
+        white-space: nowrap;
+        margin-left: 20px;
+        font-weight: 600;
+    }
+
+    .staff-layout-content-area {
+        padding: 10px;
+        flex: 1;
+        background-color:#E8E8E8;
+    }
+
+.staff-layout-user-profile {
+    width: 50px; /* hoặc 100% nếu bạn muốn full chiều ngang thanh navbar */
+    height: 50px;
+}
+
+.logout-icon {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 212, 59);
+    color: rgb(0, 28, 64);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+    font-size: 24px; /* to icon */
+}
+
+.logout-icon:hover {
+    background-color: transparent;
+    color: white;
+}
+</style>
+
+<script>
+    function updateDateTime() {
+        const now = new Date();
+
+        const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+        const day = days[now.getDay()];
+        const date = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const year = now.getFullYear();
+
+        const hour = now.getHours().toString().padStart(2, '0');
+        const minute = now.getMinutes().toString().padStart(2, '0');
+        const second = now.getSeconds().toString().padStart(2, '0');
+
+        const fullDateTime = `${day}, ${date}/${month}/${year} - ${hour} giờ ${minute} phút ${second} giây`;
+
+        const datetimeEl = document.getElementById("current-datetime-layout-all");
+        if (datetimeEl) {
+            datetimeEl.textContent = fullDateTime;
+        }
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+</script>
+
+<div class="staff-layout-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="staff-layout-sidebar">
+        <div class="staff-layout-sidebar-user-info">
+            {% if current_user.avatar %}
+            <img src="{{ current_user.avatar }}" alt="Avatar" class="staff-layout-user-avatar">
+            {% else %}
+            <i class="fas fa-user staff-layout-user-avatar" style="font-size: 40px; color: #888;"></i>
+            {% endif %}
+            <div>
+                <div class="staff-layout-user-name"> {{ current_user.name }}</div>
+                <div class="staff-layout-user-status">Đã chấm công</div>
+            </div>
+        </div>
+
+        {% set path = request.path %}
+        <ul class="app-menu">
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/posBanHang' else '' }}" href="/admin_staff/posBanHang">
+                    <i class='app-menu__icon bx bx-cart-alt'></i>
+                    <span class="app-menu__label">POS Bán Hàng</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/bangDieuKhien' else '' }}" href="/admin_staff/bangDieuKhien">
+                    <i class='app-menu__icon bx bx-tachometer'></i>
+                    <span class="app-menu__label">Bảng điều khiển</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/quanLyKhachHang' else '' }}" href="/admin_staff/quanLyKhachHang">
+                    <i class='app-menu__icon bx bx-user-voice'></i>
+                    <span class="app-menu__label">Quản lý khách hàng</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/quanLySanPham' else '' }}" href="/admin_staff/quanLySanPham">
+                    <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+                    <span class="app-menu__label">Quản lý sản phẩm</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/quanLyDonHang' else '' }}" href="/admin_staff/quanLyDonHang">
+                    <i class='app-menu__icon bx bx-task'></i>
+                    <span class="app-menu__label">Quản lý đơn hàng</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/quanLyNhapKho' else '' }}" href="/admin_staff/quanLyNhapKho">
+                    <i class='app-menu__icon bx bx-task'></i>
+                    <span class="app-menu__label">Quản lý nhập kho</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item {{ 'active' if path == '/admin_staff/baoCaoDoanhThu' else '' }}" href="/admin_staff/baoCaoDoanhThu">
+                    <i class='app-menu__icon bx bx-pie-chart-alt-2'></i>
+                    <span class="app-menu__label">Báo cáo doanh thu</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Nội dung bên phải -->
+    <div class="staff-layout-main-content">
+        <!-- Navbar -->
+        <nav class="staff-layout-navbar">
+            <div class="staff-layout-user-profile">
+                <a class="logout-icon" href="/">
+                    <i class='bx bx-log-out bx-rotate-180'></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="staff-layout-content-area">
+            {% block content_right %}
+
+
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

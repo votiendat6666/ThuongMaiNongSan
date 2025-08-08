@@ -1,0 +1,631 @@
+{%extends "admin_staff/quantri.html" %}
+
+{% block content_right %}
+<div class="staff-page-heading" style="margin-bottom: 20px; box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+    <h1> Quản lý nhập kho</h1>
+    <div class="staff-page-datetime" id="current-datetime-layout-all">
+    </div>
+</div>
+
+<script>
+    // ✅Hàm xóa dấu tiếng Việt
+    function removeVietnameseTones(str) {
+        return str.normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .replace(/đ/g, "d").replace(/Đ/g, "D")
+                  .toLowerCase();
+    }
+
+    //✅ Hàm tính khoảng cách Levenshtein
+    function levenshteinDistance(a, b) {
+        const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+        for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+        for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                if (a[i - 1] === b[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                }
+            }
+        }
+
+        return dp[a.length][b.length];
+    }
+
+    // ✅ Hàm hiển thị modal thông báo lỗi
+    function showErrorModalStaffImportReceipt(message) {
+        const modal = document.getElementById("error-modals-staff-import-receipt");
+        const messageEl = document.getElementById("error-message-staff-import-receipt");
+        messageEl.textContent = message;
+        modal.style.display = "flex";
+    }
+
+    function closeErrorModalStaffImportReceipt() {
+        document.getElementById("error-modals-staff-import-receipt").style.display = "none";
+    }
+
+    // ✅ Hàm tìm kiếm
+    function searchImportProduct() {
+        const keyword = document.getElementById("searchImportProduct").value.trim().toLowerCase();
+        if (!keyword) {
+            showErrorModalStaffImportReceipt("Vui lòng nhập từ khóa tìm kiếm!");
+            return;
+        }
+
+        const keywordNoAccent = removeVietnameseTones(keyword);
+        const rows = document.querySelectorAll("#import-product-table tbody tr");
+        const isReceiptId = /^\d+$/.test(keyword);
+        let found = false;
+
+        // Reset màu các dòng
+        rows.forEach(row => {
+            row.querySelectorAll("td").forEach(td => {
+                td.style.backgroundColor = "";
+            });
+        });
+
+        if (isReceiptId) {
+            rows.forEach(row => {
+                if (row.dataset.receiptId === keyword) {
+                    row.querySelectorAll("td").forEach(td => {
+                        td.style.backgroundColor = "#ffff66";
+                    });
+                    found = true;
+                }
+            });
+        } else {
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                if (cells.length === 0) return;
+
+                const hasRowspan = row.querySelector("td[rowspan]");
+                const productCellIndex = hasRowspan ? 3 : 0;
+                const productText = cells[productCellIndex].textContent.trim();
+                const productName = removeVietnameseTones(productText);
+                const distance = levenshteinDistance(keywordNoAccent, productName);
+
+                if (productName.includes(keywordNoAccent) || distance <= 2) {
+                    cells[productCellIndex].style.backgroundColor = "#ffff66";  // ✅ Chỉ tô ô sản phẩm
+                    found = true;
+                }
+            });
+        }
+
+        if (!found) {
+            showErrorModalStaffImportReceipt("Không tìm thấy phiếu nhập hoặc sản phẩm phù hợp!");
+        }
+    }
+
+
+    // ✅ Bấm Enter để tìm
+    document.getElementById("searchImportProduct").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            searchImportProduct();
+        }
+    });
+</script>
+
+
+<div style="background: #fff; border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-top: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #FFD43B; padding-bottom: 8px;">
+        <!-- Nút mở Modal -->
+        <div onclick="openModalReceipt()"
+             style="background-color: #E5F5E4; padding: 8px 14px; border-radius: 2px; display: inline-block; color: green; cursor: pointer;border: 1px solid green;">
+            <i class="fas fa-plus"></i> NHẬP KHO
+        </div>
+        <!-- Thanh tìm kiếm bên phải -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input id="searchImportProduct" type="text" placeholder="Nhập ID đơn hàng cần tìm..."
+                   style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 2px; width: 200px;">
+            <button onclick="searchImportProduct()"
+                    style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 2px;">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ✅Modal Phiếu Nhập -->
+    <div id="modal-receipt"
+         style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div style="background:#fff; margin: 5% auto; width: 100%; max-width: 1200px; border-radius: 8px; overflow-y: auto; max-height: 80%;">
+            <div style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%); color: white; padding: 16px; text-align: center; margin-bottom: 30px; font-size: 22px; font-weight: bold;">
+                PHIẾU NHẬP KHO
+            </div>
+            <div style="padding: 20px;">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <strong>Ngày lập:</strong> <span id="receipt-date">{{ receipt_date }}</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <strong>Số phiếu:</strong> <span id="receipt-number">{{ receipt_number }}</span>
+                </div>
+
+                <div style="text-align:left; margin-bottom:20px;">
+                    <strong>Nhân viên:</strong> <span id="staff-name">{{ staff_name }}</span>
+                </div>
+
+                <!-- BẢNG SẢN PHẨM -->
+                <div class="table-scroll-box"
+                     style="max-height: 1000px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                        <thead style="position: sticky; top: 0; background-color: #f8f8f8;">
+                        <tr style="text-align: center;">
+                            <th style="padding: 10px; border: 1px solid #ccc;">STT</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Sản phẩm</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Thể loại</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Số lượng</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Giá mua vào</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Ngày hết hạn</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;"> Thành tiền</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Ghi chú</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Xóa</th>
+                        </tr>
+                        </thead>
+                        <tbody id="product-table-body" style="text-align: center;"></tbody>
+                    </table>
+                </div>
+
+                <div class="mb-4 text-start">
+                    <button type="button" id="add-product-row" class="btn btn-outline-primary"
+                            style="background-color: rgba(0, 0, 0, .02); border: 1px solid green;color:green;  padding: 10px 14px; border-radius: 2px; display: inline-block; cursor: pointer;    ">
+                        <i class="fas fa-plus" style="color:green;"></i> Thêm Sản Phẩm
+                    </button>
+                </div>
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <strong>Tổng hoá đơn:</strong> <span id="total-amount-receipt-staff">0</span> VNĐ
+                </div>
+
+                <div style="text-align:right;">
+                    <button onclick="closeModalReceipt()" class="btn btn-secondary"
+                            style="background-color: rgba(0, 0, 0, .02);  padding: 8px 25px; border-radius: 2px; display: inline-block; color: #333; cursor: pointer; width:150px;   border: 1px solid rgba(0, 0, 0, .09);">
+                        Đóng
+                    </button>
+                    <button id="save-receipt-btn"
+                            style="background-color: #28a745; color: white; border: 1px solid #28a745 ; padding: 8px 25px; border-radius: 2px; cursor: pointer;width:150px;">
+                        Lưu Phiếu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--✅ Modal thông báo lỗi khi nhập phiếu -->
+    <div id="error-modals-staff-import-receipt"
+         style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+     background: rgba(0,0,0,0.4);  justify-content: center; align-items: center;">
+
+        <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+            <!-- 🔴 Header nền đỏ đậm -->
+            <div style="background-color: #c0392b; padding: 12px 16px;">
+                <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+            </div>
+
+            <!-- Nội dung thông báo -->
+            <div style="padding: 20px 30px; text-align: center;">
+                <p id="error-message-staff-import-receipt" style="margin-bottom: 20px; color: #333;"></p>
+                <button onclick="closeErrorModalStaffImportReceipt()"
+                        style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 2px; cursor: pointer;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ✅ Modal Thành Công -->
+    <div id="success-modals-staff-import-receipt"
+         style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+ background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+        <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+            <!-- 🟢 Header nền xanh đậm -->
+            <div style="background-color: #2e7d32; padding: 12px 16px;">
+                <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+            </div>
+
+            <!-- Nội dung thông báo -->
+            <div style="padding: 20px 30px; text-align: center;">
+                <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                    ✔ Lưu phiếu thành công!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let productList = [];
+        let productRowIndex = 0;
+
+        // ✅ Mở modal phiếu nhập
+        function openModalReceipt() {
+            document.getElementById("modal-receipt").style.display = "block";
+            const today = new Date();
+            document.getElementById('receipt-date').innerText = today.toLocaleDateString('vi-VN');
+
+            if (productList.length === 0) {
+                fetch('/api/products')
+                    .then(res => res.json())
+                    .then(data => {
+                    productList = data.filter(p => !p.is_deleted);
+                        addProductRow();
+                    });
+            } else {
+                addProductRow();
+            }
+        }
+
+        // ✅ Đóng modal
+        function closeModalReceipt() {
+            document.getElementById("modal-receipt").style.display = "none";
+        }
+
+        // ✅ Show modal thành công
+        function showSuccessModal() {
+        const modal = document.getElementById("success-modals-staff-import-receipt");
+        modal.style.display = "flex";
+        setTimeout(() => {
+            modal.style.display = "none";
+            location.reload(); // hoặc bạn có thể redirect sang trang danh sách phiếu nhập
+        }, 1000); // 2 giây
+         }
+
+        // ✅ Thêm dòng sản phẩm
+        function addProductRow() {
+            const tbody = document.getElementById("product-table-body");
+            const tr = document.createElement("tr");
+
+            const selectedIds = Array.from(document.querySelectorAll("select"))
+                .map(s => s.value)
+                .filter(Boolean);
+
+            const productOptions = productList.map(p => {
+                const disabled = selectedIds.includes(p.id.toString()) ? 'disabled' : '';
+                return `<option value="${p.id}" data-category="${p.category}" ${disabled}>${p.name}</option>`;
+            }).join("");
+
+            tr.innerHTML = `
+                <td>${++productRowIndex}</td>
+                <td style="max-width: 250px;">
+                    <select  class="form-select" onchange="updateCategory(this)" >
+                        <option disabled selected>Chọn</option>
+                        <span style="text-align:left;">  ${productOptions} </span>
+                    </select>
+                </td>
+                <td class="category-cell" style="min-width:180px;"></td>
+                <td style="text-align:center;">
+                    <input type="number" class="form-control quantity-input" min="1" max="100" value="1" oninput="updateTotalImportReceipt(this)" />
+                </td>
+                <td>
+                    <input type="number" class="form-control price-input" min="1000" max="1000000" step="1000" value="1000" oninput="updateTotalImportReceipt(this)" />
+                </td>
+                <td><input type="date" class="form-control" /></td>
+                <td class="total-cell">0</td>
+                <td><input type="text" class="form-control" placeholder="Ghi chú..." maxlength="100" /></td>
+                <td>
+                    <button onclick="this.closest('tr').remove(); reindexRows()" class="btn btn-sm" style="background-color: #f7c3c2; border: none; color: #de0400; cursor: pointer; padding: 4px 8px; border-radius: 3px;">
+                        <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+            updateTotalAmountStaffReceipt(); // ✅ cập nhật tổng khi thêm
+
+        }
+
+        // ✅ Cập nhật loại sản phẩm
+        function updateCategory(selectEl) {
+            const category = selectEl.selectedOptions[0]?.dataset.category || '';
+            const tr = selectEl.closest('tr');
+            tr.querySelector('.category-cell').innerText = category;
+        }
+
+        // ✅ Cập nhật thành tiền
+        function updateTotalImportReceipt(inputEl) {
+            const tr = inputEl.closest("tr");
+            const quantity = parseFloat(tr.querySelector(".quantity-input").value) || 0;
+            const price = parseFloat(tr.querySelector(".price-input").value) || 0;
+            const total = quantity * price;
+            tr.querySelector(".total-cell").innerText = total.toLocaleString("vi-VN");
+            updateTotalAmountStaffReceipt();
+        }
+
+        // ✅ Đánh lại số thứ tự sau khi xoá
+        function reindexRows() {
+            const rows = document.querySelectorAll('#product-table-body tr');
+            productRowIndex = 0;
+            rows.forEach(tr => {
+                tr.cells[0].innerText = ++productRowIndex;
+            });
+             updateTotalAmountStaffReceipt();
+        }
+
+
+        // ✅ Hiển thị modal lỗi
+        function showErrorModalStaffImportReceipt(message) {
+            document.getElementById("error-message-staff-import-receipt").innerText = message;
+            document.getElementById("error-modals-staff-import-receipt").style.display = "flex";
+        }
+
+        // ✅ Đóng modal lỗi
+        function closeErrorModalStaffImportReceipt() {
+            document.getElementById("error-modals-staff-import-receipt").style.display = "none";
+        }
+
+        // ✅ Bắt sự kiện Lưu phiếu
+document.getElementById("save-receipt-btn").addEventListener("click", async () => {
+    const rows = document.querySelectorAll("#product-table-body tr");
+    const products = [];
+    const productMap = new Map();
+    let totalQuantityAll = 0;
+    let isValid = true;
+
+    // Lấy dữ liệu tồn kho và setting từ server
+    const [inventories, settings] = await Promise.all([
+        fetch("/api/product_inventories").then(res => res.json()),
+        fetch("/api/settings").then(res => res.json())
+    ]);
+
+    // Đọc các giá trị cấu hình
+    const maxQuantityPerItem = parseInt(settings['max_quantity_per_item']);           // 100
+    const maxInventoryAllowed = parseInt(settings['max_inventory_allowed']);           // 10
+    const minQuantityPerItem = parseInt(settings['min_quantity_per_item']);            // 50
+    const minTotalQuantity = parseInt(settings['min_total_quantity']);                 // 300
+    const maxTotalQuantity = parseInt(settings['max_total_quantity']);                 // 1000
+
+    rows.forEach((row, index) => {
+        const select = row.querySelector("select");
+        const quantityInput = row.querySelector(".quantity-input");
+        const priceInput = row.querySelector(".price-input");
+        const expiryInput = row.querySelector("input[type='date']");
+        const noteInput = row.querySelector("input[type='text']");
+
+        const product_id = parseInt(select.value);
+        const quantity = parseFloat(quantityInput.value);
+        const price = parseFloat(priceInput.value);
+        const expiry_date = expiryInput.value;
+        const note = noteInput.value.trim();
+
+        if (!product_id || isNaN(product_id)) {
+            showErrorModalStaffImportReceipt(`Vui lòng chọn sản phẩm.`);
+            isValid = false;
+            return;
+        }
+
+        if (isNaN(quantity) || quantity < minQuantityPerItem || quantity > maxQuantityPerItem) {
+            showErrorModalStaffImportReceipt(` Số lượng nhập phải ${minQuantityPerItem} - ${maxQuantityPerItem}.`);
+            isValid = false;
+            return;
+        }
+
+        if (isNaN(price) || price < 1000 || price > 1000000) {
+            showErrorModalStaffImportReceipt(` Giá phải từ 1.000 đến 1.000.000.`);
+            isValid = false;
+            return;
+        }
+
+        if (!expiry_date || isNaN(new Date(expiry_date).getTime())) {
+            showErrorModalStaffImportReceipt(` Ngày hết hạn không hợp lệ.`);
+            isValid = false;
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const expiry = new Date(expiry_date);
+        if (expiry <= today) {
+            showErrorModalStaffImportReceipt(` Ngày hết hạn phải lớn hơn hôm nay.`);
+            isValid = false;
+            return;
+        }
+
+        if (note.length < 1 || note.length > 100) {
+            showErrorModalStaffImportReceipt(` Ghi chú bắt buộc, tối đa 100 ký tự.`);
+            isValid = false;
+            return;
+        }
+
+        if (!productMap.has(product_id)) productMap.set(product_id, 0);
+        productMap.set(product_id, productMap.get(product_id) + quantity);
+        totalQuantityAll += quantity;
+
+        products.push({
+            product_id,
+            quantity,
+            price_import: price,
+            expiry_date,
+            supplier: note
+        });
+    });
+
+    if (!isValid) return;
+
+    // Kiểm tra điều kiện tồn kho hiện tại và tổng sau nhập
+    for (const [product_id, addedQty] of productMap.entries()) {
+        const currentQty = parseFloat(inventories[product_id] || 0);
+        const newTotalQty = currentQty + addedQty;
+
+        if (currentQty > maxInventoryAllowed) {
+            showErrorModalStaffImportReceipt(`Sản phẩm ID ${product_id}: Tồn kho hiện tại (${currentQty}) vượt quá ${maxInventoryAllowed}, không được nhập thêm.`);
+            isValid = false;
+            break;
+        }
+
+        if (newTotalQty > maxQuantityPerItem) {
+            showErrorModalStaffImportReceipt(`Sản phẩm ID ${product_id}: Sau khi nhập sẽ vượt quá ${maxQuantityPerItem}.`);
+            isValid = false;
+            break;
+        }
+    }
+
+    // Kiểm tra tổng số lượng toàn phiếu
+    if (totalQuantityAll < minTotalQuantity || totalQuantityAll > maxTotalQuantity) {
+        showErrorModalStaffImportReceipt(`Tổng số lượng phiếu phải từ ${minTotalQuantity} đến ${maxTotalQuantity}.`);
+        isValid = false;
+    }
+
+        if (!isValid) return;
+
+        // Gửi dữ liệu
+        fetch("/admin_staff/receipts/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ products, note: "" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                closeModalReceipt();
+                showSuccessModal();
+            } else {
+                showErrorModalStaffImportReceipt(data.message);
+            }
+        })
+        .catch(() => alert("Lỗi không xác định khi lưu phiếu."));
+    });
+
+
+        function updateTotalAmountStaffReceipt() {
+            const totalCells = document.querySelectorAll('.total-cell');
+            let sum = 0;
+
+            totalCells.forEach(cell => {
+                const text = cell.innerText.replace(/\./g, '').replace(',', ''); // loại bỏ định dạng
+                const value = parseFloat(text) || 0;
+                sum += value;
+            });
+
+            document.getElementById('total-amount-receipt-staff').innerText = sum.toLocaleString('vi-VN');
+        }
+
+
+        // ✅ Nút thêm dòng
+        document.getElementById("add-product-row").addEventListener("click", addProductRow);
+    </script>
+
+    <!-- ✅ Khung show sản phẩm -->
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px;" id="import-product-table">
+            <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="padding: 10px; border: 1px solid #ccc;">Mã phiếu</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Ngày nhập</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Người nhập</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Sản phẩm</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Số lượng</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Giá nhập</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Ngày hết hạn</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Tổng tiền</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Ghi chú</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for receipt in receipts %}
+            {% for detail in receipt.details %}
+            <tr data-receipt-id="{{ receipt.id }}">
+                {% if loop.index == 1 %}
+                <td rowspan="{{ receipt.details|length }}"
+                    style="padding: 10px; border: 1px solid #ccc; vertical-align: middle; text-align:center;">{{
+                    receipt.id }}
+                </td>
+                <td rowspan="{{ receipt.details|length }}"
+                    style="padding: 10px; border: 1px solid #ccc; vertical-align: middle;text-align:center;">{{
+                    receipt.created_date.strftime('%d/%m/%Y') }}
+                </td>
+                <td rowspan="{{ receipt.details|length }}"
+                    style="padding: 10px; border: 1px solid #ccc; vertical-align: middle;text-align:center;">{{
+                    receipt.user.name if receipt.user else "N/A" }}
+                </td>
+                {% endif %}
+
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ detail.product.name }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;text-align:center;">{{ detail.quantity|int }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ "{:,.0f}".format(detail.price_import) }} đ</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ detail.expiry_date.strftime('%d/%m/%Y') if
+                    detail.expiry_date else '' }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ "{:,.0f}".format(detail.quantity *
+                    detail.price_import) }} đ
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ detail.supplier or '' }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+            </tbody>
+
+
+        </table>
+
+    </div>
+
+
+</div>
+
+<style>
+    /* Giao diện khung bảng đẹp, căn ô vừa đủ */
+    .table-scroll-box {
+        border-radius: 6px;
+        overflow-x: auto;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .table-scroll-box input,
+    .table-scroll-box select {
+        width: 100%;
+        padding: 6px 8px;
+        box-sizing: border-box;
+        border: none !important;
+        outline: none !important;
+        background: transparent;
+        font-size: 14px;
+        text-align:center;
+    }
+    /* Hover nhẹ không viền */
+    .table-scroll-box input:hover,
+    .table-scroll-box select:hover {
+        border: none !important;
+        outline: none !important;
+    }
+    .table-scroll-box input:focus,
+    .table-scroll-box select:focus {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* TD có max-width, nếu dài sẽ ẩn ... */
+    .table-scroll-box td {
+        border: 1px solid #ccc;
+        padding: 4px 6px;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+    /* Thêm responsive table-header nếu cần */
+    .table-scroll-box th {
+        border: 1px solid #ccc;
+        padding: 8px;
+        background-color: #f9f9f9;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .table-scroll-box td:last-child {
+        text-align: center;
+    }
+</style>
+{%endblock%}

@@ -1,18 +1,25 @@
 import json
+import threading
 
 from Demos.mmapfile_demo import page_size
 from flask import jsonify, request
 from itertools import product
 
 from flask_login import current_user
-from sqlalchemy.orm import joinedload
+from sqlalchemy import and_
+from sqlalchemy.orm import joinedload, scoped_session, sessionmaker
 
 from saleapp import db
+
 from saleapp.models import *
 from fuzzywuzzy import process
 from unidecode import unidecode
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
+from threading import Thread
+import time
+from saleapp import app
+
 
 # Các hàm này sẽ được sử dụng để thao tác với cơ sở dữ liệu
 def load_categories():
@@ -63,10 +70,10 @@ def load_products(q=None, cate_id=None, page=1):
 def add_user(name, username, password, avatar, email, address, phone):
     password = generate_password_hash(password.strip())  # an toàn hơn MD5
     if avatar:
-        u = Customer(name=name, username=username, password=password, avatar=avatar, email=email, address=address,
+        u = User(name=name, username=username, password=password, avatar=avatar, email=email, address=address,
                      phone=phone)
     else:
-        u = Customer(name=name, username=username, password=password, email=email, address=address, phone=phone)
+        u = User(name=name, username=username, password=password, email=email, address=address, phone=phone)
     db.session.add(u)
     db.session.commit()
 
@@ -75,17 +82,17 @@ def add_staff(name, username, password, avatar, email, address, phone, role):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     u = None
     if avatar:
-        u = Staff(name=name, username=username, password=password, avatar=avatar, email=email, address=address,
+        u = User(name=name, username=username, password=password, avatar=avatar, email=email, address=address,
                   phone=phone, user_role=role)
     else:
-        u = Staff(name=name, username=username, password=password, email=email, address=address, phone=phone,
+        u = User(name=name, username=username, password=password, email=email, address=address, phone=phone,
                   user_role=role)
     db.session.add(u)
     db.session.commit()
 
 
 def auth_user(username, password, role):
-    user = Customer.query.filter_by(username=username, user_role=role).first()
+    user = User.query.filter_by(username=username, user_role=role).first()
     if user and check_password_hash(user.password, password):
         return user
     return None
@@ -94,9 +101,9 @@ def auth_user(username, password, role):
 def auth_staff(username, password, role):
     password = str(hashlib.md5(password.encode('utf-8')).hexdigest())
 
-    return Staff.query.filter(Staff.username.__eq__(username),
-                              Staff.password.__eq__(password),
-                              Staff.user_role.__eq__(role)).first()
+    return User.query.filter(User.username.__eq__(username),
+                              User.password.__eq__(password),
+                              User.user_role.__eq__(role)).first()
 
 # Hàm này sẽ load sản phẩm theo ID
 def load_product_by_id(id):
@@ -126,13 +133,13 @@ def load_products_by_category(category_id):
 
 # Hàm này sẽ load sản phẩm theo tên
 def get_user_by_id(user_id):
-    user = Customer.query.get(user_id) or Staff.query.get(user_id)
+    user = User.query.get(user_id) or User.query.get(user_id)
     return user
 
 
 # Update password
 def update_password(user_id, raw_password):
-    user = Customer.query.get(user_id)
+    user = User.query.get(user_id)
     if user:
         user.password = generate_password_hash(raw_password.strip())
         db.session.commit()
@@ -251,5 +258,115 @@ def get_comment_stats(product_id):
 
     return stats
 
+# Hàm đếm số lượng đơn nhập kho đang có
+def get_next_receipt_number():
+    last = db.session.query(func.max(ImportReceipt.id)).scalar()
+    return (last or 0) + 1
+
+# Hàm set time out để xoá PendingPayment sau 10 phút
+def set_timeout_to_delete_pending(momo_order_id):
+    def delete_if_expired():
+        time.sleep(600)
+        with app.app_context():  # 👈 Gói trong context để dùng db được
+            pending = PendingPayment.query.filter_by(momo_order_id=momo_order_id).first()
+            if pending:
+                db.session.delete(pending)
+                db.session.commit()
+                print(f"🗑 Đã xoá PendingPayment {momo_order_id} sau 10 giây.")
+
+    Thread(target=delete_if_expired).start()
+
+# Hàm cập nhật hoặc tạo mới trong ProductInventory
+def update_or_create_product_inventory(product_id, quantity):
+    inventory = ProductInventory.query.filter_by(product_id=product_id).first()
+    if inventory:
+        # ✅ Nếu đã tồn tại, cộng dồn số lượng và cập nhật trạng thái
+        inventory.quantity += quantity
+        inventory.status = 2  # Cập nhật thành hàng cũ
+    else:
+        # ✅ Nếu chưa có, tạo mới với trạng thái hàng mới (1)
+        inventory = ProductInventory(
+            product_id=product_id,
+            quantity=quantity,
+            status=1
+        )
+        db.session.add(inventory)
+
+    db.session.commit()
+
+def insert_default_settings():
+    default_settings = {
+        'min_quantity_per_item': ('10', 'Số lượng tối thiểu cho mỗi sản phẩm'),
+        'max_quantity_per_item': ('100', 'Số lượng tối đa cho mỗi sản phẩm'),
+        'min_total_quantity': ('50', 'Tổng số lượng tối thiểu mỗi phiếu nhập'),
+        'max_total_quantity': ('300', 'Tổng số lượng tối đa mỗi phiếu nhập')
+    }
+
+    for key, (value, description) in default_settings.items():
+        if not Setting.query.get(key):
+            db.session.add(Setting(key=key, value=value, description=description))
+
+    db.session.commit()
+
+
+# Hàm này sẽ hủy đơn hàng chưa thanh toán sau một khoảng thời gian nhất định
+def schedule_cancel_unpaid_momo(receipt_id, delay_seconds=600):
+    def cancel_after_delay():
+        time.sleep(delay_seconds)
+
+        with app.app_context():  # ✅ Rất quan trọng khi dùng thread
+            Session = scoped_session(sessionmaker(bind=db.engine))
+            session = Session()
+
+            try:
+                receipt = session.get(Receipt, receipt_id)
+                if receipt and receipt.status == 'Chờ thanh toán' and receipt.payment_method == 'MoMo':
+                    receipt.status = 'Đã hủy'
+
+                    # ✅ Hoàn lại xu nếu có
+                    user = session.get(User, receipt.user_id)
+                    if user:
+                        user.coin = (user.coin or 0) - (receipt.coin_earned or 0) + (receipt.coin_used or 0)
+
+                    # ✅ Hoàn tồn kho theo dòng đã trừ trong ReceiptInventoryDetail
+                    restore_details = session.query(ReceiptInventoryDetail).filter_by(receipt_id=receipt.id).all()
+
+                    for detail in restore_details:
+                        inventory = session.get(ProductInventory, detail.inventory_id)
+                        if inventory:
+                            inventory.quantity += detail.quantity
+                        else:
+                            # Nếu inventory không còn, tìm fallback theo product_id và status = 2 (có thể là "Còn hàng")
+                            fallback = session.query(ProductInventory).filter_by(
+                                product_id=detail.product_id, status=2
+                            ).first()
+                            if fallback:
+                                fallback.quantity += detail.quantity
+                            else:
+                                fallback = ProductInventory(
+                                    product_id=detail.product_id,
+                                    quantity=detail.quantity,
+                                    status=2
+                                )
+                                session.add(fallback)
+
+                    session.commit()
+                    print(f"[HUỶ] Đơn #{receipt_id} đã bị huỷ sau {delay_seconds} giây.")
+                else:
+                    print(f"[BỎ QUA] Đơn #{receipt_id} không đủ điều kiện huỷ.")
+            except Exception as e:
+                print(f"[LỖI huỷ đơn]: {e}")
+                session.rollback()
+            finally:
+                session.close()
+                Session.remove()
+
+    Thread(target=cancel_after_delay).start()
+
+
+
+
+
 if __name__ == "__main__":
     print(load_products())
+

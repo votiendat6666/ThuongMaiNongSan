@@ -1,0 +1,742 @@
+{%extends "admin_staff/quantri.html" %}
+
+{% block content_right %}
+<div class="staff-page-heading" style="margin-bottom: 20px; box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+    <h1>Quản lý đơn hàng</h1>
+    <div class="staff-page-datetime" id="current-datetime-layout-all"></div>
+</div>
+
+<script>
+    function searchOrderById() {
+        const input = document.getElementById("searchOrderInput").value.trim();
+        if (!input) {
+            showErrorModalStaffImportReceipt("Vui lòng nhập mã đơn hàng để tìm kiếm!");
+            return;
+        }
+
+        const row = document.getElementById("receipt-" + input);
+        if (!row) {
+            showErrorModalStaffImportReceipt("Không tìm thấy đơn hàng có ID: " + input);
+            return;
+        }
+
+        // Xóa highlight cũ nếu có
+        document.querySelectorAll("tr.highlighted-row").forEach(r => {
+            r.classList.remove("highlighted-row");
+            r.style.backgroundColor = "";
+            r.style.fontWeight = "";
+        });
+
+        // Scroll tới dòng
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        // Gán class để đánh dấu
+        row.classList.add("highlighted-row");
+        row.style.backgroundColor = "#ffff99";
+    }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("searchOrderInput").addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    searchOrderById();
+                }
+            });
+        });
+            function showErrorModalStaffImportReceipt(message) {
+            // Gán nội dung lỗi
+            document.getElementById("error-message-staff-import-receipt").textContent = message;
+
+            // Hiển thị modal
+            document.getElementById("error-modals-search-receipt").style.display = "flex";
+        }
+
+        function closeErrorModalStaffImportReceipt() {
+            document.getElementById("error-modals-search-receipt").style.display = "none";
+        }
+</script>
+
+<!--Modal thông báo tiìm kiếm ko có-->
+<div id="error-modals-search-receipt"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+         background: rgba(0,0,0,0.4);  justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🔴 Header nền đỏ đậm -->
+        <div style="background-color: #c0392b; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="error-message-staff-import-receipt" style="margin-bottom: 20px; color: #333;"></p>
+            <button onclick="closeErrorModalStaffImportReceipt()"
+                    style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal Tạo Đơn Hàng -->
+<div id="modal-order"
+     style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div style="background:#fff; margin: 5% auto;  width: 100%; max-width: 1200px; border-radius: 8px; overflow-y: auto; max-height: 80%; scrollbar-width:none;">
+        <div style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%); color: white; padding: 16px; text-align: center; margin-bottom: 30px; font-size: 22px; font-weight: bold;">
+            ĐƠN BÁN HÀNG
+        </div>
+        <div style="padding: 20px;">
+            <div class="table-scroll-box"
+                 style="max-height: 700px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                    <thead style="position: sticky; top: 0; background-color: #f8f8f8;">
+                    <tr style="text-align: center;">
+                        <th style="padding: 10px; border: 1px solid #ccc;">STT</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;">Tên sản phẩm</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;">Số lượng</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;"> Đơn vị</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;">Giá</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;">Thành tiền</th>
+                        <th style="padding: 10px; border: 1px solid #ccc;">Tính năng</th>
+                    </tr>
+                    </thead>
+                    <tbody id="order-product-body" style="text-align: center;"></tbody>
+                </table>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <button id="add-order-product-row" class="btn btn-outline-primary"
+                        style="background-color: rgba(0, 0, 0, .02); border: 1px solid green;color:green; padding: 10px 14px; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-plus" style="color:green;"></i> Thêm Sản Phẩm
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div style="flex: 2;">
+                    <label><strong>Họ tên người nhận:</strong></label>
+                    <input type="text" id="receiver-name" class="form-control" placeholder="Nhập họ tên người nhận"
+                           required>
+                </div>
+                <div style="flex: 2;">
+                    <label><strong>Số điện thoại:</strong></label>
+                    <input type="text" id="receiver-phone" class="form-control" placeholder="Nhập số điện thoại"
+                           maxlength="15" required>
+                </div>
+                <div style="flex: 5;">
+                    <label><strong>Địa chỉ:</strong></label>
+                    <input type="text" id="receiver-address" class="form-control" placeholder="Nhập địa chỉ giao hàng"
+                           maxlength="255" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+
+                <div style="flex: 4;">
+                    <label><strong>Phương thức thanh toán:</strong></label>
+                    <select id="payment-method" class="form-control" required>
+                        <option value="">-- Chọn phương thức --</option>
+                        <option value="COD">COD</option>
+                        <option value="MOMO">MoMo</option>
+                    </select>
+                </div>
+                <div style="flex: 6;">
+                    <label><strong>Ghi chú:</strong></label>
+                    <input type="text" id="note-message" class="form-control" placeholder="Ghi chú thêm (nếu có)">
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-bottom: 20px;">
+                <strong>Tổng tiền đơn hàng:</strong> <span id="total-order-amount">0</span> VNĐ
+            </div>
+
+            <div style="text-align:right;">
+                <button onclick="closeModalOrder()" class="btn btn-secondary"
+                        style="padding: 8px 25px; border-radius: 2px; cursor: pointer; border: 1px solid #ccc; background-color: #f2f2f2; color: #333;">
+                    Đóng
+                </button>
+                <button id="save-order-btn"
+                        style="background-color: #28a745; color: white; border: 1px solid #28a745 ; padding: 8px 25px; border-radius: 2px; cursor: pointer;">
+                    Lưu Đơn Hàng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let orderProductList = [];
+    let orderProductRowIndex = 0;
+
+    function openModalOrder() {
+        document.getElementById("modal-order").style.display = "block";
+
+        if (orderProductList.length === 0) {
+            fetch('/api/staff/products')
+                .then(res => res.json())
+                .then(data => {
+                    orderProductList = data.filter(p => !p.is_deleted);
+                    addOrderProductRow();
+                });
+        } else {
+            addOrderProductRow();
+        }
+    }
+
+    function closeModalOrder() {
+        document.getElementById("modal-order").style.display = "none";
+    }
+
+    function addOrderProductRow() {
+        const tbody = document.getElementById("order-product-body");
+        const tr = document.createElement("tr");
+
+        const productOptions = orderProductList.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+
+        tr.innerHTML = `
+            <td>${++orderProductRowIndex}</td>
+            <td>
+                <select class="form-select order-product-select" onchange="handleProductChange(this)">
+                    <option disabled selected value="">Chọn sản phẩm</option>
+                    <span style="text-align:left">                    ${orderProductList.map(p => `<option value="${p.id}">${p.name}</option>`).join("")} </span>
+                </select>
+            </td>
+            <td>
+                <input type="number" class="form-control order-quantity" min="1" value="1" oninput="updateOrderTotal(this)">
+            </td>
+            <td>
+                <input type="text" class="form-control order-unit" readonly>
+            </td>
+            <td>
+                <input type="text" class="form-control order-price" value="0" readonly>
+            </td>
+            <td class="order-line-total">0</td>
+            <td>
+                <button onclick="removeOrderProductRow(this)" class="btn btn-sm" style="background-color: #f7c3c2; border: none; color: #de0400; cursor: pointer; padding: 4px 8px; border-radius: 3px;">
+                    <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+        updateProductSelectOptions();
+        updateTotalOrderAmount();
+    }
+
+    function handleProductChange(selectElement) {
+        const selectedId = parseInt(selectElement.value);
+        const row = selectElement.closest("tr");
+        const selectedProduct = orderProductList.find(p => p.id === selectedId);
+
+        if (selectedProduct && row) {
+            const priceInput = row.querySelector('.order-price');
+            const unitInput = row.querySelector('.order-unit');
+
+            priceInput.value = selectedProduct.price || 0;
+            unitInput.value = selectedProduct.donvitinh || '';
+
+            updateOrderTotal(priceInput);  // cập nhật thành tiền
+        }
+
+        updateProductSelectOptions(); // để disable các option đã chọn
+    }
+
+    function updateProductSelectOptions() {
+        const selects = document.querySelectorAll('.order-product-select');
+        const selectedValues = Array.from(selects)
+            .map(select => select.value)
+            .filter(val => val !== "");
+
+        selects.forEach(select => {
+            const currentValue = select.value;
+
+            Array.from(select.options).forEach(option => {
+                if (option.value === "" || option.value === currentValue) {
+                    option.disabled = false;
+                } else if (selectedValues.includes(option.value)) {
+                    option.disabled = true;
+                } else {
+                    option.disabled = false;
+                }
+            });
+        });
+    }
+
+    function removeOrderProductRow(btn) {
+        const row = btn.closest("tr");
+        row.remove();
+        reindexRows();
+        updateProductSelectOptions();
+        updateTotalOrderAmount();
+    }
+
+    function reindexRows() {
+        const rows = document.querySelectorAll("#order-product-body tr");
+        orderProductRowIndex = 0;
+
+        rows.forEach(row => {
+            const sttCell = row.querySelector("td:first-child");
+            sttCell.textContent = ++orderProductRowIndex;
+        });
+    }
+
+    function updateOrderTotal(inputEl) {
+        const tr = inputEl.closest("tr");
+        const quantity = parseFloat(tr.querySelector(".order-quantity").value) || 0;
+        const price = parseFloat(tr.querySelector(".order-price").value) || 0;
+        const total = quantity * price;
+        tr.querySelector(".order-line-total").innerText = total.toLocaleString("vi-VN");
+        updateTotalOrderAmount();
+    }
+
+    function updateTotalOrderAmount() {
+        const totalCells = document.querySelectorAll('.order-line-total');
+        let sum = 0;
+
+        totalCells.forEach(cell => {
+            const raw = cell.innerText.replace(/\./g, '');
+            sum += parseFloat(raw) || 0;
+        });
+
+        document.getElementById('total-order-amount').innerText = sum.toLocaleString("vi-VN");
+    }
+
+    document.getElementById("add-order-product-row").addEventListener("click", addOrderProductRow);
+
+   document.getElementById("save-order-btn").addEventListener("click", () => {
+    const rows = document.querySelectorAll("#order-product-body tr");
+    const items = [];
+    let isValid = true;
+
+    for (let row of rows) {
+        const product_id = parseInt(row.querySelector("select").value);
+        const quantity = parseFloat(row.querySelector(".order-quantity").value);
+        const price = parseFloat(row.querySelector(".order-price").value);
+
+        if (!product_id || quantity <= 0 || price <= 0) {
+            showErrorModalStaffOrder("Vui lòng nhập đầy đủ thông tin sản phẩm!");
+            return; // ❌ Dừng luôn nếu có lỗi
+        }
+
+        items.push({ product_id, quantity, price });
+    }
+
+    let total_amount = 0;
+    items.forEach(item => {
+        total_amount += item.quantity * item.price;
+    });
+
+    let final_amount = total_amount;
+
+    const receiver_name = document.getElementById("receiver-name").value.trim();
+    const receiver_phone = document.getElementById("receiver-phone").value.trim();
+    const receiver_address = document.getElementById("receiver-address").value.trim();
+    const payment_method = document.getElementById("payment-method").value;
+
+    let delivery_method;
+
+    if (payment_method === "COD") {
+        delivery_method = "Thanh toán khi nhận hàng";
+    } else if (payment_method === "MoMo") {
+        delivery_method = "Thanh toán qua MoMo";
+    } else {
+        showErrorModalStaffOrder("Phương thức thanh toán không hợp lệ!");
+        return; // ❌ Dừng nếu không hợp lệ
+    }
+
+    if (!receiver_name || !receiver_phone || !payment_method) {
+        showErrorModalStaffOrder("Vui lòng nhập đầy đủ thông tin người nhận và phương thức thanh toán!");
+        return; // ❌ Dừng nếu thiếu thông tin
+    }
+
+    const note_message = document.getElementById("note-message").value.trim();
+
+    // ✅ Gửi API
+    fetch('/api/staff/ordersReceipt/create', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            receiver_name,
+            receiver_phone,
+            receiver_address,
+            payment_method,
+            delivery_method,
+            note_message,
+            total_amount,
+            final_amount,
+            items
+        })
+    })
+    .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                closeModalOrder();
+                showSuccessModalOrder();
+            } else {
+                showErrorModalStaffOrder(data.message || "Đã có lỗi xảy ra!");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Đã xảy ra lỗi khi gửi đơn hàng!");
+        });
+    });
+
+
+    function showSuccessModalOrder() {
+        const modal = document.getElementById("success-modals-staff-oder-receipt");
+        modal.style.display = "flex";
+
+        setTimeout(() => {
+            modal.style.display = "none";
+            location.reload(); // Reload sau khi ẩn modal
+        }, 300); // 0.3 giây
+    }
+
+    function showErrorModalStaffOrder(message) {
+        const modal = document.getElementById("error-modals-staff-import-receipt");
+        const messageEl = document.getElementById("error-message-staff-order-receipt");
+        messageEl.innerText = message;
+        modal.style.display = "flex";
+    }
+
+    function closeErrorModalStaffImportReceipt() {
+        document.getElementById("error-modals-staff-import-receipt").style.display = "none";
+    }
+</script>
+
+<!--✅ Modal thông báo lỗi khi nhập phiếu -->
+<div id="error-modals-staff-import-receipt"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+         background: rgba(0,0,0,0.4);  justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🔴 Header nền đỏ đậm -->
+        <div style="background-color: #c0392b; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="error-message-staff-order-receipt" style="margin-bottom: 20px; color: #333;"></p>
+            <button onclick="closeErrorModalStaffImportReceipt()"
+                    style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ✅ Modal Thành Công -->
+<div id="success-modals-staff-oder-receipt"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+     background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🟢 Header nền xanh đậm -->
+        <div style="background-color: #2e7d32; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                ✔ Lưu phiếu thành công!
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<div style="background: #fff; border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-top: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #FFD43B; padding-bottom: 8px;">
+        <!-- Nút mở Modal -->
+        <div onclick="openModalOrder()"
+             style="background-color: #E5F5E4; padding: 8px 14px; border-radius: 2px; display: inline-block; color: green; cursor: pointer;border: 1px solid green;">
+            <i class="fas fa-plus"></i> BÁN HÀNG
+        </div>
+
+        <!-- Thanh tìm kiếm bên phải -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input id="searchOrderInput" type="text" placeholder="Nhập ID đơn hàng cần tìm..."
+                   style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+            <button onclick="searchOrderById()"
+                    style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+            <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">ID</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Khách hàng</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Sản phẩm</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Tiền hàng</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Voucher</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Xu giảm</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Hình thức</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Thanh toán</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Liên lạc</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Ghi chú</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Ngày tạo</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Trạng thái</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;">Tính năng</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for r, username, voucher_name in receipts %}
+            <tr style="text-align: center; vertical-align: middle;" id="receipt-{{ r.id }}">
+                <td style="padding: 10px; border: 1px solid #ccc; white-space: nowrap;">{{ r.id }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc; text-align:center;">{{ r.receiver_name }}</td>
+
+                <td style="padding: 10px; border: 1px solid #ccc; text-align:left; max-width:120px;">
+                    {% for detail in receipt_details_map[r.id] %}
+                    {{ detail.product.name }} <span style="font-weight:bold">  x{{ detail.quantity }}</span><br>
+                    {% endfor %}
+                </td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ "{:,.0f}".format(r.total_amount) }}₫</td>
+
+                <td style="padding: 10px; border: 1px solid #ccc; max-width:50px;">
+                    {% if voucher_name %}
+                    -{{ "{:,.0f}".format(r.voucher_discount) }}₫
+                    {% else %}
+                    -0₫
+                    {% endif %}
+                </td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    -{{ "{:,.0f}".format(r.coin_used) }}₫
+                </td>
+
+                <td style="padding: 10px; border: 1px solid #ccc; text-align:center;">{{ r.payment_method }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ "{:,.0f}".format(r.final_amount) }}₫</td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;max-width:100px; text-align:left;">
+                    {{ r.receiver_phone }}<br>{{ r.receiver_address }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc; max-width: 100px; text-align: left; word-break: break-word; white-space: pre-wrap;">
+                    {{ r.note_message if r.note_message else '' }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc; white-space: nowrap; max-width:80px;">
+                    {{ r.create_date.strftime('%H:%M - %d/%m/%Y ') }}
+
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                <span style="padding: 4px 8px; border-radius: 4px; color: white; font-weight:bold;
+                    color:
+                        {% if r.status == 'Đang xử lý' %}orange
+                        {% elif r.status == 'Hoàn thành' %}green
+                        {% elif r.status == 'Chờ thanh toán' %}blue
+                        {% elif r.status == 'Đã hủy' %}red
+                        {% else %}gray{% endif %};">
+                    {% if r.status == 'Đang xử lý' %}
+                        Chờ xác nhận
+                    {% else %}
+                        {{ r.status }}
+                    {% endif %}
+                </span>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <button class="btn btn-primary btn-sm deleteOrderStaff"
+                            style=" cursor:pointer; background-color: #f7c3c2; margin-right:3px;border: 1px solid #de0400;color: #de0400; padding:4px 8px; border-radius: 3px;"
+                            type="button" title="Xóa">
+                        <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                    </button>
+
+                    <button class="btn btn-primary btn-sm submitOrderStaff"
+                            style="cursor:pointer; background-color: #a5e8af; border:1px solid green; padding:4px 8px; border-radius: 3px;"
+                            type="button" title="Sửa">
+                        <i class="fa-solid fa-square-check" style="font-size:12px; color:green;"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<!-- Modal xác nhận -->
+<div id="confirmModal"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background-color: rgba(0, 0, 0, 0.5); z-index:9999; justify-content:center; align-items:center; font-family: Arial, sans-serif;">
+
+    <div style="background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2); width: 400px; overflow: hidden;">
+
+        <!-- Header màu xanh -->
+        <div id="confirmHeader"
+             style="background-color: #28a745; color: white; font-weight: bold; font-size: 16px; padding: 12px 20px; text-align: center;">
+            THÔNG BÁO
+        </div>
+
+        <!-- Nội dung -->
+        <div style="padding:20px 40px; text-align:center;">
+
+            <!-- Tiêu đề chính -->
+            <h3 id="confirmTitle" style="margin: 10px 0; font-size: 20px; font-weight: bold; color: #333;">
+                Xác nhận hành động
+            </h3>
+
+            <!-- Mô tả phụ -->
+            <p id="confirmMessage" style="margin-bottom: 24px; font-size: 14px; color: #666;">
+                Bạn có chắc chắn muốn thực hiện hành động này không?
+            </p>
+
+            <!-- Nút hành động -->
+            <div style="display: flex; justify-content: center; gap: 16px; margin-top: 20px;">
+                <button onclick="cancelConfirm()"
+                        style="padding:8px 20px; background:white; color:red; border:1px solid #ddd;cursor:pointer; border-radius:3px; width: 150px;">
+                    Huỷ
+                </button>
+                <button onclick="submitConfirm()"
+                        style="padding:8px 20px; background: green; color:white; border:none;cursor:pointer; border-radius:3px;width: 150px;">
+                    Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let selectedReceiptId = null;
+    let selectedAction = null;
+
+    function showConfirmModal(receiptId, action) {
+        selectedReceiptId = receiptId;
+        selectedAction = action;
+
+        // Cập nhật tiêu đề và nội dung mô tả
+        const title = action === 'complete'
+            ? 'Hoàn thành đơn hàng'
+            : 'Huỷ đơn hàng';
+
+        const message = action === 'complete'
+            ? 'Bạn có chắc chắn muốn hoàn thành đơn hàng này?'
+            : 'Bạn có chắc chắn muốn huỷ đơn hàng này?';
+
+        document.getElementById("confirmTitle").innerText = title;
+        document.getElementById("confirmMessage").innerText = message;
+        document.getElementById("confirmModal").style.display = "flex";
+    }
+
+    function cancelConfirm() {
+        document.getElementById("confirmModal").style.display = "none";
+        selectedReceiptId = null;
+        selectedAction = null;
+    }
+
+    function submitConfirm() {
+        if (!selectedReceiptId || !selectedAction) return;
+
+        fetch(`/api/receipt/${selectedReceiptId}/${selectedAction}`, { method: "POST" })
+            .then(res => {
+                document.getElementById("confirmModal").style.display = "none";
+                if (res.ok) location.reload();
+                else res.json().then(data => alert(data.error || "Có lỗi xảy ra"));
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Gán sự kiện cho nút Hoàn thành
+        document.querySelectorAll(".submitOrderStaff").forEach(button => {
+            button.addEventListener("click", function () {
+                const row = this.closest("tr");
+                const receiptId = row.querySelector("td").innerText.trim();
+                showConfirmModal(receiptId, "complete");
+            });
+        });
+
+        // Gán sự kiện cho nút Huỷ
+        document.querySelectorAll(".deleteOrderStaff").forEach(button => {
+            button.addEventListener("click", function () {
+                const row = this.closest("tr");
+                const receiptId = row.querySelector("td").innerText.trim();
+                showConfirmModal(receiptId, "cancel");
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Giao diện khung bảng đẹp, căn ô vừa đủ */
+    .table-scroll-box {
+        border-radius: 6px;
+        overflow-x: auto;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .table-scroll-box input,
+    .table-scroll-box select {
+        width: 100%;
+        padding: 6px 8px;
+        box-sizing: border-box;
+        border: none !important;
+        outline: none !important;
+        background: transparent;
+        font-size: 14px;
+        text-align:center;
+    }
+    /* Hover nhẹ không viền */
+    .table-scroll-box input:hover,
+    .table-scroll-box select:hover {
+        border: none !important;
+        outline: none !important;
+    }
+    .table-scroll-box input:focus,
+    .table-scroll-box select:focus {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* TD có max-width, nếu dài sẽ ẩn ... */
+    .table-scroll-box td {
+        border: 1px solid #ccc;
+        padding: 4px 6px;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+    /* Thêm responsive table-header nếu cần */
+    .table-scroll-box th {
+        border: 1px solid #ccc;
+        padding: 8px;
+        background-color: #f9f9f9;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .table-scroll-box td:last-child {
+        text-align: center;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+</style>
+
+
+{%endblock%}

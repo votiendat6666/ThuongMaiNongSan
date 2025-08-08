@@ -485,6 +485,9 @@ function setDefaultAddress() {
       nameInput.style.border = phoneInput.style.border = lineInput.style.border = '1px solid #ccc';
 
       let hasError = false;
+       if (!validateInputs()) {
+        return; // Dừng nếu không hợp lệ
+    }
 
       if (!name) {
         nameInput.style.border = '1px solid red';

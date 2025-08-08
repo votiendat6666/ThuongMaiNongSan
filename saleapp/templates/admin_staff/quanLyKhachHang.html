@@ -1,0 +1,815 @@
+{%extends "admin_staff/quantri.html" %}
+
+{% block content_right %}
+<!-- Heading -->
+<style>
+    #modal-import-user input,
+    #modal-import-user select {
+        border: none !important;
+        outline: none !important;
+        background-color: transparent;
+    }
+
+    #modal-import-user input:focus,
+    #modal-import-user select:focus {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+</style>
+
+
+<div class="staff-page-heading" style="margin-bottom: 20px; box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+    <h1>Quản lý khách hàng</h1>
+    <div class="staff-page-datetime" id="current-datetime-layout-all">
+    </div>
+</div>
+
+
+<div style="background: #fff; border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-top: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #FFD43B; padding-bottom: 8px;">
+        <!-- nut them khach hang -->
+        <div onclick="openModalImportUser()"
+             style="background-color: #E5F5E4; padding: 8px 14px; border-radius: 2px; display: inline-block; color: green; cursor: pointer;border: 1px solid green;">
+            <i class="fas fa-plus"></i> THÊM KHÁCH HÀNG
+        </div>
+        <!-- Thanh tìm kiếm bên phải -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input id="searchCustomerInput" type="text" placeholder="Nhập ID, tên hoặc username..."
+                   style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; width: 300px;">
+            <button onclick="searchCustomer()"
+                    style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+
+    <div id="modal-import-user"
+         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 8px; width: 1400px; max-height: 90%; overflow-y: auto;">
+            <div style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%);
+            color: white; padding: 16px; text-align: center; margin-bottom: 30px; font-size: 30px; font-weight: bold;">
+                THÊM KHÁCH HÀNG
+            </div>
+            <div style="padding: 20px;">
+                <form id="form-add-user">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ccc;">
+                        <thead>
+                        <tr style="background-color: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ccc;">STT</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Tên</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Tài khoản</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Mật khẩu</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Email</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Giới tính</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">SĐT</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Ngày sinh</th>
+                            <th style="padding: 10px; border: 1px solid #ccc;">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="text" name="name[]" required style="width: 100%;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="text" name="username[]" required style="width: 100%;">
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="password" name="password[]" required style="width: 100%;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="email" name="email[]" required style="width: 100%;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <select name="gender[]" style="width: 100%;">
+                                    <option value="">--</option>
+                                    <option value="MALE">Nam</option>
+                                    <option value="FEMALE">Nữ</option>
+                                    <option value="OTHER">Khác</option>
+                                </select>
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="text" name="phone[]" style="width: 100%;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <input type="date" name="birthday[]" style="width: 100%;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">
+                                <button type="button" onclick="this.closest('tr').remove(); reindexRows()"
+                                        style="background-color: #f7c3c2; border: none; color: #de0400; cursor: pointer; padding: 4px 8px; border-radius: 3px;">
+                                    <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between;">
+                        <button type="button" onclick="addRowUser()"
+                                style="background-color: rgba(0, 0, 0, .02); border: 1px solid green;color:green;  padding: 10px 14px; border-radius: 2px; display: inline-block; cursor: pointer; ">
+                            + Thêm dòng
+                        </button>
+                        <div>
+                            <button type="button" onclick="closeModalImportUser()"
+                                    style="background-color: rgba(0, 0, 0, .02);  padding: 8px 25px; border-radius: 2px; display: inline-block; color: #333; cursor: pointer; width:150px;   border: 1px solid rgba(0, 0, 0, .09);">
+                                Hủy
+                            </button>
+
+                            <button type="submit"
+                                    style="background-color: #28a745; color: white; border: 1px solid #28a745 ; padding: 8px 25px; border-radius: 2px; cursor: pointer;width:150px;">
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ JS theme khach hang -->
+    <script>
+        function openModalImportUser() {
+            document.getElementById("modal-import-user").style.display = "flex";
+        }
+
+        function closeModalImportUser() {
+            document.getElementById("modal-import-user").style.display = "none";
+        }
+
+        function addRowUser() {
+            const tbody = document.getElementById("user-table-body");
+            const rowCount = tbody.rows.length + 1;
+
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td style="padding: 10px; border: 1px solid #ccc;">${rowCount}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="text" name="name[]" required style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="text" name="username[]" required style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="password" name="password[]" required style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="email" name="email[]" required style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <select name="gender[]" style="width: 100%; border: none; outline: none;">
+                        <option value="">--</option>
+                        <option value="MALE">Nam</option>
+                        <option value="FEMALE">Nữ</option>
+                        <option value="OTHER">Khác</option>
+                    </select>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="text" name="phone[]" style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <input type="date" name="birthday[]" style="width: 100%; border: none; outline: none;">
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">
+                    <button type="button" onclick="this.closest('tr').remove(); reindexRows()"
+                            style="background-color: #f7c3c2; border: none; color: #de0400; cursor: pointer; padding: 4px 8px; border-radius: 3px;">
+                        <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function reindexRows() {
+            const rows = document.querySelectorAll("#user-table-body tr");
+            rows.forEach((row, index) => {
+                row.querySelector("td").textContent = index + 1;
+            });
+        }
+
+    function isValidRow(row, index) {
+        const username = row.querySelector('input[name="username[]"]').value.trim();
+        const name = row.querySelector('input[name="name[]"]').value.trim();
+        const password = row.querySelector('input[name="password[]"]').value.trim();
+        const email = row.querySelector('input[name="email[]"]').value.trim();
+        const gender = row.querySelector('select[name="gender[]"]').value.trim();
+        const phone = row.querySelector('input[name="phone[]"]').value.trim();
+        const birthday = row.querySelector('input[name="birthday[]"]').value;
+
+        if (!username || !name || !password || !email || !gender || !phone || !birthday) {
+            throw ` Không được để trống bất kỳ trường nào.`;
+        }
+
+        // ✅ Kiểm tra tên: Cho phép dấu, khoảng trắng, từ 2 đến 40 ký tự
+        if (name.length < 2 || name.length > 40) {
+            throw ` Tên phải từ 2 đến 40 ký tự.`;
+        }
+
+        // ✅ Kiểm tra username: không dấu, không khoảng trắng, không ký tự đặc biệt
+        if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+            throw ` Tài khoản chỉ gồm chữ, số, dấu _ (không dấu, không khoảng trắng), từ 3-20 ký tự.`;
+        }
+
+        if (!/^[a-zA-Z0-9_]{3,20}$/.test(password)) {
+            throw ` Mật khẩu chỉ gồm chữ, số, dấu _ (không dấu, không khoảng trắng), từ 3-20 ký tự.`;
+        }
+
+        if (!email.includes("@")) {
+            throw ` Email không hợp lệ (thiếu @).`;
+        }
+
+        if (!/^0\d{9}$/.test(phone)) {
+            throw ` Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0.`;
+        }
+
+        const birthDate = new Date(birthday);
+            const now = new Date();
+            const age = now.getFullYear() - birthDate.getFullYear();
+            if (age < 5 || birthDate > now) {
+                throw ` Ngày sinh không hợp lệ hoặc tuổi dưới 5.`;
+            }
+
+            return true;
+        }
+
+
+       document.getElementById("form-add-user").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const rows = document.querySelectorAll("#user-table-body tr");
+        let allValid = true;
+        let errorMessage = "";
+
+        for (let i = 0; i < rows.length; i++) {
+            try {
+                isValidRow(rows[i], i);
+            } catch (err) {
+                allValid = false;
+                errorMessage = err;
+                break;
+            }
+        }
+
+        if (!allValid) {
+            document.getElementById("error-modals-import-user").style.display = "flex";
+            document.getElementById("error-message-staff-import-receipt").textContent = "❌ " + errorMessage;
+            return;
+        }
+
+        // Submit nếu hợp lệ
+        const formData = new FormData(this);
+        fetch("/api/add-users", {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    if (data.errors && data.errors.length > 0) {
+                        const msg = data.errors.join("\n");
+                        document.getElementById("error-modals-import-user").style.display = "flex";
+                        document.getElementById("error-message-staff-import-receipt").textContent = msg;
+                        return; // dừng không xử lý tiếp
+                    }
+
+                    // ✅ Không lỗi: xử lý thành công
+                    document.getElementById("success-modals-import-user").style.display = "flex";
+                    setTimeout(() => {
+                        document.getElementById("success-modals-import-user").style.display = "none";
+                        closeModalImportUser();
+                        document.getElementById("form-add-user").reset();
+                        document.querySelector("#user-table-body").innerHTML = "";
+                        addRowUser(); // reset về 1 dòng
+                         location.reload();
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || "Có lỗi xảy ra khi lưu dữ liệu!");
+                }
+            })
+            .catch(err => {
+                // Hiển thị lỗi trong modal
+                document.getElementById("error-modals-import-user").style.display = "flex";
+                document.getElementById("error-message-staff-import-receipt").textContent = "❌ " + (err.message || err);
+            });
+
+        });
+
+
+        function closeErrorModalStaffImportReceipt() {
+            document.getElementById("error-modals-import-user").style.display = "none";
+        }
+    </script>
+
+
+    <div id="error-modals-import-user"
+         style="display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.4);  justify-content: center; align-items: center;">
+
+        <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+            <!-- 🔴 Header nền đỏ đậm -->
+            <div style="background-color: #c0392b; padding: 12px 16px;">
+                <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+            </div>
+
+            <!-- Nội dung thông báo -->
+            <div style="padding: 20px 30px; text-align: center;">
+                <p id="error-message-staff-import-receipt" style="margin-bottom: 20px; color: #333;"></p>
+                <button onclick="closeErrorModalStaffImportReceipt()"
+                        style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-modals-import-user"
+         style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+        <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+            <!-- 🟢 Header nền xanh đậm -->
+            <div style="background-color: #2e7d32; padding: 12px 16px;">
+                <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+            </div>
+
+            <!-- Nội dung thông báo -->
+            <div style="padding: 20px 30px; text-align: center;">
+                <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                    ✔ Lưu khách hàng thành công!
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ✅ JS tìm kiếm -->
+    <script>
+        // ✅ Hàm loại bỏ dấu tiếng Việt
+        function removeVietnameseTones(str) {
+            return str.normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '')
+                      .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                      .toLowerCase();
+        }
+
+        // ✅ Tìm kiếm khách hàng theo ID, tên, username
+        function searchCustomer() {
+            const keyword = document.getElementById("searchCustomerInput").value.trim().toLowerCase();
+            if (!keyword) {
+                showErrorModalCustomer("Vui lòng nhập từ khóa để tìm kiếm!");
+                return;
+            }
+
+            const keywordNoAccent = removeVietnameseTones(keyword);
+            const keywordWords = keywordNoAccent.split(/\s+/);
+
+            const rows = document.querySelectorAll("#customer-table tbody tr");
+            let found = false;
+
+            rows.forEach(row => {
+                row.style.backgroundColor = ""; // Reset
+                const cells = row.querySelectorAll("td");
+                if (cells.length === 0) return;
+
+                const customerId = cells[0].textContent.trim().toLowerCase();
+                const customerName = removeVietnameseTones(cells[1].textContent.trim());
+                const customerUsername = removeVietnameseTones(cells[2].textContent.trim());
+
+                // Khớp từng từ trong keyword
+                const matchedName = keywordWords.every(word => customerName.includes(word));
+                const matchedUsername = keywordWords.every(word => customerUsername.includes(word));
+
+                if (customerId.includes(keyword) || matchedName || matchedUsername) {
+                    row.style.transition = "background-color 0.5s";
+                    row.style.backgroundColor = "#ffff66";
+                    row.scrollIntoView({ behavior: "smooth", block: "center" });
+                    found = true;
+                }
+            });
+
+            if (!found) {
+                showErrorModalCustomer("Không tìm thấy khách hàng!");
+            }
+        }
+
+        function showErrorModalCustomer(message) {
+            document.getElementById("error-message-customer").innerText = message;
+            document.getElementById("error-modal-customer").style.display = "flex";
+        }
+
+        function closeErrorModalCustomer() {
+            document.getElementById("error-modal-customer").style.display = "none";
+        }
+
+        // ✅ Bấm Enter để tìm
+        document.getElementById("searchCustomerInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                searchCustomer();
+            }
+        });
+    </script>
+
+    <!-- ✅ Modal thông báo tìm kiếm không có -->
+    <div id="error-modal-customer"
+         style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+         background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+        <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+            <div style="background-color: #c0392b; padding: 12px 16px;">
+                <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+            </div>
+            <div style="padding: 20px 30px; text-align: center;">
+                <p id="error-message-customer" style="margin-bottom: 20px; color: #333;"></p>
+                <button onclick="closeErrorModalCustomer()"
+                        style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;" id="customer-table">
+            <thead style="background: #f2f2f2;">
+            <tr>
+                <th style="padding: 10px; border: 1px solid #ccc;">#</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Tài khoản</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Họ tên</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Email</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">SĐT</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Giới tính</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Ngày sinh</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Số đơn</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Xu</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Hạng</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr style="text-align: center;">
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ loop.index }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.username }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.name }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.email }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.phone or '' }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {{ 'Nam' if user.gender and user.gender.name == 'MALE' else 'Nữ' if user.gender and user.gender.name
+                    == 'FEMALE' else '' }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {{ user.birthday.strftime('%d/%m/%Y') if user.birthday else '' }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.receipts | length }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ user.coin }}</td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {% if user.total_spent >= 10000000 %}
+                    <span style="font-size: 13px; color: #fff; padding: 4px 12px; background: linear-gradient(135deg, #434343, #000000); border-radius: 8px; display: inline-block;">
+                        Kim cương
+                    </span>
+                    {% elif user.total_spent >= 5000000 %}
+                    <span style="font-size: 13px; color: #fff; padding: 4px 12px; background: #E6B800; border-radius: 8px; display: inline-block;">
+                        Vàng
+                    </span>
+                    {% else %}
+                    <span style="font-size: 13px; color: #fff; padding: 4px 12px; background: #BBC1C7; border-radius: 8px; display: inline-block;">
+                        Bạc
+                    </span>
+                    {% endif %}
+                </td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <button class="btn btn-primary btn-sm btn-delete-user"
+                            data-user-id="{{ user.id }}"
+                            style="cursor:pointer; background-color: #f7c3c2; margin-right:3px; border: 1px solid #de0400; color: #de0400; padding:4px 8px; border-radius: 3px;"
+                            type="button" title="Xóa người dùng">
+                        <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                    </button>
+
+                    <button class="btn btn-primary btn-sm btn-view-user"
+                            data-user-id="{{ user.id }}"
+                            title="Xem chi tiết khách hàng"
+                            style="cursor:pointer; color: rgb(245, 157, 57); background-color:rgb(251, 226, 197); border:1px solid rgb(245, 157, 57); padding:4px 8px; border-radius: 3px;">
+                        <i class="fa-solid fa-eye" style="font-size:12px; color:rgb(245, 157, 57);"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ✅ Modal Xem lỊCH Sử Khách Hàng -->
+<div id="modal-view-user"
+     style="display: none; position: fixed; z-index: 3000; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 8px; max-width: 1200px; width: 90%;
+                max-height: 90vh; overflow-y: auto; scrollbar-width:none;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- ✅ Header -->
+        <div style="background-color: #28a745; padding: 16px;">
+            <h3 style="margin: 0; text-align: center; color: white;">LỊCH SỬ CỦA KHÁCH HÀNG </h3>
+        </div>
+
+        <!-- ✅ Nội dung bảng -->
+        <div style="padding: 20px;">
+            <h2 style="text-align:center;"> ĐƠN MUA</h2>
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 10px; border: 1px solid #ccc;">Mã Đơn</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Người nhận</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Liên hệ</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Sử dụng xu</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Voucher</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Ngày mua</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Hình thức</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Tổng tiền</th>
+                </tr>
+                </thead>
+                <tbody id="user-purchase-table-receipt">
+                <!-- JavaScript sẽ render dữ liệu ở đây -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding: 20px;">
+            <h2 style="text-align:center;"> BÌNH LUẬN </h2>
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Ảnh</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Tên sản phẩm</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Nội dung</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Ảnh</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Số sao</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Ngày</th>
+                </tr>
+                </thead>
+                <tbody id="user-purchase-table-comment">
+                <!-- JavaScript sẽ render dữ liệu ở đây -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding: 20px;">
+            <h2 style="text-align:center;"> SẢN PHẨM YÊU THÍCH </h2>
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 10px; border: 1px solid #ccc;"> ID Sản phẩm</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Ảnh</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;"> Tên sản phẩm</th>
+                </tr>
+                </thead>
+                <tbody id="user-purchase-table-loveProduct">
+                <!-- JavaScript sẽ render dữ liệu ở đây -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ✅ Nút đóng -->
+        <div style="text-align: right; padding: 10px 20px;">
+            <button onclick="closeModalUserPurchase()"
+                    style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ✅ JS Xem Đơn Hàng Khách Hàng -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".btn-view-user").forEach(button => {
+            button.addEventListener("click", () => {
+                const userId = button.getAttribute("data-user-id");
+                fetchUserPurchases(userId);
+                fetchUserComments(userId);
+                fetchUserLoveProducts(userId);
+
+            });
+        });
+    });
+
+    function fetchUserPurchases(userId) {
+        fetch(`/api/users/${userId}/purchases`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const tbody = document.getElementById("user-purchase-table-receipt");
+                tbody.innerHTML = "";
+
+                data.forEach(receipt => {
+                    const row = `
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.receipt_id}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.receiver_name}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.receiver_phone}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.coin_used || 0}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.voucher_discount > 0 ? receipt.voucher_discount + "₫" : "Không"}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.created_date}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.delivery_method}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${receipt.final_amount.toLocaleString()}đ</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+
+                document.getElementById("modal-view-user").style.display = "flex";
+            })
+            .catch(error => {
+                console.error("❌ Lỗi khi gọi API:", error);
+            });
+    }
+
+    function fetchUserComments(userId) {
+        fetch(`/api/users/${userId}/comments`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const tbody = document.getElementById("user-purchase-table-comment");
+                tbody.innerHTML = "";
+
+                data.forEach(comment => {
+                    const row = `
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <img src="${comment.product_image}" width="60">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;max-width:100px;text-align:left;">${comment.product_name}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc; max-width:150px; word-wrap:break-word; white-space:pre-wrap; text-align:left;">${comment.content}
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc; max-width:150px; ">
+                                 ${comment.images.map(img => `<img src="${img}" width="70" height="70" style="object-fit: cover; margin-right: 4px;">`).join("")}
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc; color:#FF8C00">${comment.star} ★</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;max-width:60px;">${comment.created_date}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => {
+                console.error("❌ Lỗi khi gọi API comments:", error);
+            });
+    }
+
+    function fetchUserLoveProducts(userId) {
+        fetch(`/api/users/${userId}/love-products`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const tbody = document.getElementById("user-purchase-table-loveProduct");
+                tbody.innerHTML = "";
+
+                data.forEach(product => {
+                    const row = `
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${product.product_id}</td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">
+                                <img src="${product.product_image}" width="60" height="60" style="object-fit: cover;">
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ccc;">${product.product_name}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => {
+                console.error("❌ Lỗi khi gọi API commented-products:", error);
+        });
+    }
+
+    function closeModalUserPurchase() {
+        document.getElementById("modal-view-user").style.display = "none";
+    }
+</script>
+
+<!--✅ Xoá người dùng-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let userIdToDelete = null;
+
+        document.querySelectorAll(".btn-delete-user").forEach(button => {
+            button.addEventListener("click", function () {
+                userIdToDelete = this.getAttribute("data-user-id");
+                document.getElementById("user-delete-confirm-modal").style.display = "flex";
+            });
+        });
+
+        document.getElementById("user-delete-cancel-btn").addEventListener("click", function () {
+            document.getElementById("user-delete-confirm-modal").style.display = "none";
+            userIdToDelete = null;
+        });
+
+        document.getElementById("user-delete-confirm-btn").addEventListener("click", function () {
+            if (!userIdToDelete) return;
+
+            fetch(`/api/users/${userIdToDelete}`, {
+                method: "DELETE"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById("user-delete-confirm-modal").style.display = "none";
+                    const successModal = document.getElementById("success-modals-staff-delete-user");
+                    successModal.style.display = "flex";
+                    setTimeout(() => {
+                        successModal.style.display = "none";
+                        location.reload();
+                    }, 300);
+                } else {
+                    console.error(data.error || "Xóa không thành công!");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gọi API: " + error);
+            });
+        });
+    });
+
+</script>
+
+
+<!-- ✅ Modal xác nhận xoá người dùng -->
+<div id="user-delete-confirm-modal"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden;
+         box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🟢 Header -->
+        <div style="background-color: #2e7d32; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="user-delete-confirm-message" style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                Bạn có chắc chắn muốn xoá người dùng này?
+            </p>
+
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
+                <button id="user-delete-cancel-btn" class="btn btn-secondary"
+                        style="background-color: #f0f0f0; color: #333; padding: 6px 12px; width: 120px; border: 1px solid #ddd; border-radius: 2px; cursor: pointer;">
+                    Huỷ
+                </button>
+
+                <button id="user-delete-confirm-btn" class="btn btn-danger"
+                        style="background-color: #2e7d32; color: white; padding: 6px 12px; width: 120px; border: none; border-radius: 2px; cursor: pointer;">
+                    Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ✅ Modal xác nhận xoá người dùng thành công -->
+<div id="success-modals-staff-delete-user"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+ background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🟢 Header nền xanh đậm -->
+        <div style="background-color: #2e7d32; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                ✔ Xoá thành công!
+            </p>
+        </div>
+    </div>
+</div>
+
+{%endblock%}

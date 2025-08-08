@@ -25,19 +25,6 @@
                 <input type="hidden" name="form_type" value="login">
 
 
-                <!--                                <div class="input-box">-->
-                <!--                                    <div class="custom-dropdown" onclick="toggleDropdown(event)" style="display:inline-block;">-->
-                <!--                                        <div class="custom-dropdown-selected">Khách hàng</div>-->
-                <!--                                        <div class="custom-dropdown-options">-->
-                <!--                                            <div class="role-option selected" onclick="selectRole(event, 'user')">Khách hàng</div>-->
-                <!--                                            <div class="role-option" onclick="selectRole(event, 'admin')">Admin</div>-->
-                <!--                                            <div class="role-option" onclick="selectRole(event, 'staff')">Nhân viên</div>-->
-                <!--                                            <div class="role-option" onclick="selectRole(event, 'manager')">Manager</div>-->
-                <!--                                        </div>-->
-                <!--                                    </div>-->
-                <!--                                    <input type="hidden" name="role" id="role-input" value="user">-->
-                <!--                                </div>-->
-
                 <div class="input-box" style="font-weight:500;">
                     <input type="text" id="username" name="username" placeholder=" Tên đăng nhập "
                            required>
@@ -60,16 +47,19 @@
                   <p> HOẶC </p>
                 </div>
 
-<div class="login-container">
-  <a href="{{ url_for('login_google', next=request.args.get('next')) }}" class="login-button google-button">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google Login">
-    <span>Google</span>
-  </a>
-  <a href="{{ url_for('facebook_login') }}" class="login-button facebook-button">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/2048px-2021_Facebook_icon.svg.png" alt="Facebook Login">
-    <span> Facebook</span>
-  </a>
-</div>
+                <div class="login-container">
+                    <a href="{{ url_for('login_google', next=request.args.get('next')) }}"
+                       class="login-button google-button">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png"
+                             alt="Google Login">
+                        <span>Google</span>
+                    </a>
+                    <a href="{{ url_for('facebook_login') }}" class="login-button facebook-button">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/2048px-2021_Facebook_icon.svg.png"
+                             alt="Facebook Login">
+                        <span> Facebook</span>
+                    </a>
+                </div>
 
 <style>
   .login-container {
@@ -149,6 +139,7 @@
                 <div class="input-box">
                     <input type="email" id="email" name="email" placeholder="Email" required>
                 </div>
+
 
                 <div class="wrap">
                     <button type="submit" class="button"> ĐĂNG KÝ </button>

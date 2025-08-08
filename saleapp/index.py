@@ -13,12 +13,11 @@ import utils
 from flask_admin import BaseView, expose
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from saleapp import app, login, db, mail, google, facebook
+from saleapp import  login, db, mail, google, facebook
 from flask import render_template, request, redirect, abort, session, jsonify, url_for, make_response, flash, \
     current_app
 import dao
-from flask_login import login_user, logout_user, current_user, login_required
-from saleapp import admin
+from flask_login import login_user, logout_user, current_user, login_required, LoginManager
 import cloudinary.uploader
 from saleapp.models import *
 import random
@@ -27,12 +26,29 @@ import requests, hmac, hashlib
 import cloudinary
 from sqlalchemy.orm import joinedload
 
+from flask_login import current_user, logout_user
+from saleapp.models import Role  # hoặc nơi bạn định nghĩa enum Role
 
+from flask import render_template
+from flask_login import login_required, current_user
+from sqlalchemy import func
+from admin_staff import admin_staff_bp  # ✅ import blueprint bạn vừa tạo
+from math import ceil
+
+
+
+
+app.register_blueprint(admin_staff_bp)
 
 
 
 @app.route('/')
 def index():
+    # if current_user.is_authenticated and session.get('user_type') in ['admin_staff', 'admin']:
+    #     logout_user()
+    #     session.pop('user_type', None)
+    #     return redirect('/login')
+
     user = None
     if 'user_id' in session:
         user = dao.get_user_by_id(session['user_id'])
@@ -57,12 +73,10 @@ def index():
                 selected_category_id = selected_category.id
 
                 if selected_category.children:
-                    # Nếu là danh mục cha
                     child_ids = [child.id for child in selected_category.children]
                     query = query.filter(Product.category_id.in_(child_ids))
                     selected_parent_id = selected_category.id
                 else:
-                    # Nếu là danh mục con
                     query = query.filter(Product.category_id == category_id)
                     selected_parent_id = selected_category.parent_id
         except:
@@ -97,9 +111,7 @@ def index():
         selected_parent_id=selected_parent_id,
         show_related_section=True,
         show_full_image=True
-
     )
-
 
 # Xem danh sách thể loại
 @app.route('/load-products')
@@ -198,15 +210,15 @@ def details(id):
     if products is None:
         abort(404)
 
-    # ✅ Lấy danh sách bình luận, JOIN customer + images + receipt_detail.product.category
+    # ✅ Lấy danh sách bình luận, JOIN user + images + receipt_detail.product.category
     comments = Comment.query \
         .join(ReceiptDetail) \
         .filter(ReceiptDetail.product_id == id) \
         .options(
-            joinedload(Comment.customer),
-            joinedload(Comment.images),
-            joinedload(Comment.receipt_detail).joinedload(ReceiptDetail.product).joinedload(Product.category)
-        ) \
+        joinedload(Comment.user),
+        joinedload(Comment.images),
+        joinedload(Comment.receipt_detail).joinedload(ReceiptDetail.product).joinedload(Product.category)
+    ) \
         .order_by(Comment.created_date.desc()) \
         .all()
     if comments:
@@ -219,7 +231,7 @@ def details(id):
     is_liked = False
     if current_user.is_authenticated:
         like = FavoriteProduct.query.filter_by(
-            customer_id=current_user.id, product_id=id
+            user_id=current_user.id, product_id=id
         ).first()
         is_liked = like is not None
 
@@ -237,9 +249,25 @@ def details(id):
     pharma_products = dao.get_category_products_by_daban(parent_id=50000)
     foods_products = dao.get_category_products_by_daban(parent_id=100000)
     plays_products = dao.get_category_products_by_daban(parent_id=20000)
-
-
     comment_stats = dao.get_comment_stats(id)
+
+    total_quantity = db.session.query(db.func.sum(ProductInventory.quantity)) \
+        .filter(ProductInventory.product_id == id).scalar() or 0
+
+    is_out_of_stock = total_quantity <= 0
+
+    # Số lượng sản phẩm đã có trong giỏ hàng của user hiện tại
+    quantity_in_cart = 0
+    if current_user.is_authenticated:
+        cart_item = CartItem.query.filter_by(user_id=current_user.id, product_id=id).first()
+        if cart_item:
+            quantity_in_cart = cart_item.quantity
+
+    # Tính số lượng tối đa có thể thêm
+    max_addable_quantity = total_quantity - quantity_in_cart
+    if max_addable_quantity < 0:
+        max_addable_quantity = 0
+    cart_items = {id: quantity_in_cart}
 
     return render_template(
         'product-details.html',
@@ -256,10 +284,16 @@ def details(id):
         random_pages=random_pages,
         show_related_section=False,
         comments=comments,  # ✅ Truyền bình luận ra template
-        stars_count = comment_stats,
-        total_count = comment_stats['total'],
-        average_rating=avg_rating
+        stars_count=comment_stats,
+        total_count=comment_stats['total'],
+        average_rating=avg_rating,
+        total_quantity=total_quantity,
+        is_out_of_stock= is_out_of_stock,
+        quantity_in_cart=quantity_in_cart,
+        max_addable_quantity=max_addable_quantity,
+        cart_items=cart_items
     )
+
 
 @app.route('/api/product/<int:product_id>/comments')
 def api_product_comments(product_id):
@@ -277,7 +311,7 @@ def api_product_comments(product_id):
         q = q.join(CommentImage).filter(CommentImage.image_url != None)
 
     q = q.options(
-        joinedload(Comment.customer),
+        joinedload(Comment.user),
         joinedload(Comment.images),
         joinedload(Comment.receipt_detail).joinedload(ReceiptDetail.product).joinedload(Product.category)
     ).order_by(Comment.created_date.desc())
@@ -289,8 +323,8 @@ def api_product_comments(product_id):
     data = []
     for c in comments:
         data.append({
-            'name': c.customer.name if c.customer else "Khách",
-            'avatar': c.customer.avatar if c.customer and c.customer.avatar else "",
+            'name': c.user.name if c.user else "Khách",
+            'avatar': c.user.avatar if c.user and c.user.avatar else "",
             'rating': c.rating,
             'content': c.content,
             'created_date': c.created_date.strftime('%Y-%m-%d %H:%M'),
@@ -303,14 +337,13 @@ def api_product_comments(product_id):
         'total': total,
         'pages': ceil(total / per_page)
     })
-from math import ceil
 
 
 @app.route('/api/like-product/<int:product_id>', methods=['POST'])
 @login_required
 def like_product(product_id):
-    favorite = FavoriteProduct.query.filter_by(customer_id=current_user.id, product_id=product_id).first()
-    product = Product.query.get(product_id)
+    favorite = FavoriteProduct.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    product = db.session.get(Product, product_id)
 
     if not product:
         return jsonify({"error": "Product not found"}), 404
@@ -323,7 +356,7 @@ def like_product(product_id):
         return jsonify({"liked": False, "like_count": product.like})
     else:
         # Like
-        new_fav = FavoriteProduct(customer_id=current_user.id, product_id=product_id)
+        new_fav = FavoriteProduct(user_id=current_user.id, product_id=product_id)
         db.session.add(new_fav)
         product.like += 1
         db.session.commit()
@@ -343,50 +376,37 @@ def get_books():
     return jsonify(book_list)
 
 
-# Nhập hóa đơn bán hàng - hoá đơn bán lẻ
-@app.route('/import_bill', methods=['POST'])
-def import_bill():
-    try:
-        data = request.json
-        customer_name = data.get("customerName")
-        invoice_date = data.get("invoiceDate")
-        staff_name = data.get("staffName")
-        details = data.get("details")  # Dạng JSON chứa danh sách sách
 
-        # Tạo một hóa đơn mới
-        date_sale = datetime.now()
-        new_bill = SaleBook(
-            customer_name=customer_name,
-            created_date=date_sale,
-            staff_id=current_user.id  # Thay ID nhân viên xử lý hóa đơn tại đây
-        )
-        db.session.add(new_bill)
-        db.session.flush()  # Đảm bảo `new_bill` có ID để dùng ở bước tiếp theo
-
-        # Thêm chi tiết hóa đơn
-        for detail in details:
-            book = Product.query.get(detail.get("bookId"))
-            if not book or book.quantity < int(detail.get("quantity")):
-                return jsonify({"message": f"Sách {book.name if book else 'không xác định'} không đủ số lượng"}), 400
-
-            book.quantity -= int(detail.get("quantity"))  # Cập nhật tồn kho
-            db.session.add(book)
-
-            bill_detail = SaleBookDetail(
-                sale_book_id=new_bill.id,
-                product_id=detail.get("bookId"),
-                quantity=int(detail.get("quantity")),
-                price=book.price
-            )
-            db.session.add(bill_detail)
-
-        # Lưu thay đổi
-        db.session.commit()
-
-        return jsonify({"message": "Hóa đơn được lưu thành công!"}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": f"Đã xảy ra lỗi: {str(e)}"}), 500
+# @app.route('/confirm/<token>')
+# def confirm_email(token):
+#     email = confirm_token(token)
+#     if not email:
+#         return "Liên kết xác nhận không hợp lệ hoặc đã hết hạn!", 400
+#
+#     user = User.query.filter_by(email=email).first()
+#     if not user:
+#         return "Không tìm thấy người dùng!", 404
+#
+#     if user.is_active:
+#         return "Tài khoản đã được xác nhận trước đó."
+#
+#     user.is_active = True
+#     db.session.commit()
+#     return "✅ Xác nhận thành công! Bạn có thể đăng nhập."
+#
+# @app.route('/cancel/<token>')
+# def cancel_registration(token):
+#     email = confirm_token(token)
+#     if not email:
+#         return "Liên kết huỷ không hợp lệ hoặc đã hết hạn!", 400
+#
+#     user = User.query.filter_by(email=email).first()
+#     if user and not user.is_active:
+#         db.session.delete(user)
+#         db.session.commit()
+#         return "❌ Tài khoản đã bị huỷ đăng ký."
+#
+#     return "Không thể huỷ đăng ký tài khoản này."
 
 
 # Gửi email chào mừng người dùng mới
@@ -406,12 +426,13 @@ def send_welcome_email(to_email, username):
     mail.send(msg)
 
 
+# ✅ Đăng nhập người dùng
 @app.route('/login', methods=['GET', 'POST'])
 def login_my_user():
     err_msg = ""
-    active_form = 'login'  # ✅ Mặc định
+    active_form = 'login'
 
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and session.get('user_type') == 'user':
         return redirect('/')
 
     if request.method == 'GET':
@@ -426,7 +447,7 @@ def login_my_user():
     if request.method == 'POST':
         form_type = request.form.get('form_type')
 
-        # ✅ ---- XỬ LÝ ĐĂNG KÝ ----
+        # ✅ Xử lý đăng ký
         if form_type == 'register':
             active_form = 'register'
             name = request.form.get('name')
@@ -439,21 +460,20 @@ def login_my_user():
                 err_msg = "Mật khẩu không khớp!"
                 return render_template('login.html', err_msg=err_msg, active_form=active_form)
 
-            existing = Customer.query.filter_by(username=username).first()
+            existing = User.query.filter_by(username=username).first()
             if existing:
                 err_msg = "Tên đăng nhập đã tồn tại!"
                 return render_template('login.html', err_msg=err_msg, active_form=active_form)
 
             try:
                 hashed_pw = generate_password_hash(password)
-
-                c = Customer(name=name, username=username, password=hashed_pw,
-                             email=email, user_role=Role.USER, is_active=True)
+                c = User(name=name, username=username, password=hashed_pw,
+                         email=email, user_role=Role.USER, is_active=True)
                 db.session.add(c)
                 db.session.commit()
 
-                # ✅ GỬI MAIL CHÀO MỪNG
-                send_welcome_email(email, name)
+                send_welcome_email(email, name)  # nếu có
+                # send_confirmation_email(email, name)
 
                 return redirect('/login')
             except Exception as e:
@@ -461,37 +481,21 @@ def login_my_user():
                 err_msg = "Đăng ký thất bại: " + str(e)
                 return render_template('login.html', err_msg=err_msg, active_form=active_form)
 
-        # ✅ ---- XỬ LÝ ĐĂNG NHẬP ----
+        # ✅ Xử lý đăng nhập người dùng
         username = request.form.get('username')
         password = request.form.get('password')
-        role = request.form.get('role')
 
-        user = None
-        if role == 'staff':
-            role = Role.STAFF
-            user = dao.auth_staff(username, password, role=role)
-        elif role == 'admin':
-            role = Role.ADMIN
-            user = dao.auth_staff(username, password, role=role)
-        elif role == 'manager':
-            role = Role.MANAGER
-            user = dao.auth_staff(username, password, role=role)
-        else:
-            role = Role.USER
-            user = dao.auth_user(username, password, role=role)
+        user = dao.auth_user(username, password, role=Role.USER)
 
-        if user:
-            login_user(user=user)
+        if user and user.is_active:
+            login_user(user)
+            session['user_type'] = 'user'
             session.modified = True
 
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify(success=True, role=role.name)
+                return jsonify(success=True)
 
             next_page = session.pop('next', None)
-            if role in [Role.ADMIN, Role.MANAGER]:
-                return redirect('/admin')
-            elif role == Role.STAFF:
-                return redirect('/staff')
             return redirect(next_page or '/')
         else:
             err_msg = "*Sai tài khoản hoặc mật khẩu!"
@@ -520,18 +524,17 @@ def google_callback():
     email = user_info['email']
     name = user_info.get('name')
 
-    user = Customer.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()
     if not user:
         # ✅ Tạo pass ngẫu nhiên rồi hash
         random_pw = secrets.token_urlsafe(16)
         hashed_pw = generate_password_hash(random_pw)
 
-        user = Customer(
+        user = User(
             name=name,
             username=email.split('@')[0],
             email=email,
             password=hashed_pw,  # ✅ Không để None
-            user_role=Role.USER,
             is_active=True
         )
         db.session.add(user)
@@ -559,11 +562,11 @@ def facebook_callback():
     email = profile.get('email')
 
     # 👉 Kiểm tra user tồn tại chưa, nếu chưa thì tạo
-    user = Customer.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()
     if not user:
         random_pw = secrets.token_urlsafe(16)
         hashed_pw = generate_password_hash(random_pw)
-        user = Customer(
+        user = user(
             name=name,
             username=email.split('@')[0],
             email=email,
@@ -584,6 +587,8 @@ def logout():
     logout_user()
     session.pop('cart', None)  # Xóa giỏ hàng
     session.pop('voucher_id', None)  # Xóa voucher đã chọn
+    session.pop('user_type', None)
+
     return redirect('/')
 
 
@@ -710,25 +715,28 @@ def cart():
     session.pop('payment_method', None)
     cart_items = []
     stats = {'total_quantity': 0, 'total_amount': 0}
-    all_selected = False  # mặc định ban đầu
+    all_selected = False
+
+    inventory_map = {}
 
     if current_user.is_authenticated:
         cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
-
         total_quantity = sum(item.quantity for item in cart_items)
         total_amount = sum(item.quantity * item.product.price for item in cart_items)
-
-        stats = {
-            'total_quantity': total_quantity,
-            'total_amount': total_amount
-        }
-
+        stats = {'total_quantity': total_quantity, 'total_amount': total_amount}
         all_selected = all(c.is_selected for c in cart_items) if cart_items else False
+
+        # Tạo inventory_map: {product_id: tổng tồn kho}
+        for item in cart_items:
+            total_in_stock = db.session.query(db.func.sum(ProductInventory.quantity)) \
+                .filter(ProductInventory.product_id == item.product_id).scalar() or 0
+            inventory_map[item.product_id] = total_in_stock
 
     return render_template('cart.html',
                            cart_items=cart_items,
                            stats=stats,
-                           all_selected=all_selected)
+                           all_selected=all_selected,
+                           inventory_map=inventory_map)
 
 
 # Trang Thanh Toán - lấy dữu liệu từ giỏ hàng - load địa chỉ, coin, voucher
@@ -736,7 +744,7 @@ def cart():
 @login_required
 def pay():
     # 🛒 Lấy giỏ hàng đã tick
-    addresses = Address.query.filter_by(customer_id=current_user.id).all()
+    addresses = Address.query.filter_by(user_id=current_user.id).all()
     selected_cart_items = CartItem.query.filter_by(user_id=current_user.id, is_selected=True).all()
 
     order_total_product_selected = len(selected_cart_items)
@@ -769,8 +777,8 @@ def pay():
     order_total_amount_after_discount = max(order_total_amount_selected - voucher_discount, 0)
 
     # ✅ Tính coin
-    customer = db.session.get(Customer, current_user.id)
-    coin_balance = customer.coin if customer else 0
+    user = db.session.get(User, current_user.id)
+    coin_balance = user.coin if user else 0
 
     use_coin = session.get('use_coin', False)
     if use_coin:
@@ -796,7 +804,6 @@ def pay():
     )
 
 
-
 @app.route('/api/order', methods=['POST'])
 @login_required
 def create_order():
@@ -813,7 +820,7 @@ def create_order():
         if not cart_items:
             return _clear_processing({"message": "Giỏ hàng trống."}, 400)
 
-        address = Address.query.filter_by(customer_id=current_user.id, is_default=True).first()
+        address = Address.query.filter_by(user_id=current_user.id, is_default=True).first()
         if not address:
             return _clear_processing({"message": "Bạn chưa có địa chỉ mặc định!"}, 400)
 
@@ -828,94 +835,116 @@ def create_order():
             if voucher:
                 voucher_discount = voucher.price_voucher
 
-        customer = db.session.get(Customer, current_user.id)
-        if not customer:
+        user = db.session.get(User, current_user.id)
+        if not user:
             return _clear_processing({"message": "Không tìm thấy thông tin khách hàng!"}, 400)
 
-        # ✅ Xử lý coin
-        coin_used = customer.coin if session.get('use_coin') else 0
+        coin_used = user.coin if session.get('use_coin') else 0
         coin_earned = sum(item.quantity for item in cart_items) * 100
-
         final_amount = max(total_amount - voucher_discount - coin_used, 0)
 
-        customer_address = f"{address.receiver_address_line}, {address.receiver_ward}, {address.receiver_district}, {address.receiver_province}"
+        user_address = f"{address.receiver_address_line}, {address.receiver_ward}, {address.receiver_district}, {address.receiver_province}"
 
-        # === Nếu là COD ===
-        if payment_method == 'COD':
-            new_receipt = Receipt(
-                create_date=datetime.now(),
-                customer_id=current_user.id,
-                customer_phone=address.receiver_phone,
-                customer_address=customer_address,
-                delivery_method="Thanh toán khi nhận hàng",
-                payment_method="COD",
-                total_amount=total_amount,
-                voucher_id=voucher_id,
-                voucher_discount=voucher_discount,
-                coin_used=coin_used,
-                coin_earned=coin_earned,  # ✅ Ghi số xu cộng
-                final_amount=final_amount,
-                note_message=note_message,
-                is_paid=True
+        is_cod = payment_method == 'COD'
+        is_paid = is_cod
+        status = 'Đang xử lý' if is_cod else 'Chờ thanh toán'
+
+        new_receipt = Receipt(
+            create_date=datetime.now(),
+            user_id=current_user.id,
+            receiver_name=address.receiver_name,
+            receiver_phone=address.receiver_phone,
+            receiver_address=user_address,
+            delivery_method="Thanh toán khi nhận hàng" if is_cod else "Thanh toán qua MoMo",
+            payment_method=payment_method,
+            total_amount=total_amount,
+            voucher_id=voucher_id,
+            voucher_discount=voucher_discount,
+            coin_used=coin_used,
+            coin_earned=coin_earned,
+            final_amount=final_amount,
+            note_message=note_message,
+            is_paid=is_paid,
+            status= status,
+            created_by_staff = False
+        )
+
+        db.session.add(new_receipt)
+        db.session.flush()  # Có receipt.id
+
+        # Trừ kho, tạo chi tiết đơn hàng và ghi nhật ký tồn kho
+        for item in cart_items:
+            product_id = item.product_id
+            quantity_to_deduct = item.quantity
+
+            receipt_detail = ReceiptDetail(
+                product_id=product_id,
+                quantity=item.quantity,
+                price=item.product.price
             )
+            new_receipt.receipt_details.append(receipt_detail)
 
-            for item in cart_items:
-                new_receipt.receipt_details.append(ReceiptDetail(
-                    product_id=item.product_id,
-                    quantity=item.quantity,
-                    price=item.product.price
-                ))
+            inventories = ProductInventory.query \
+                .filter(ProductInventory.product_id == product_id,
+                        ProductInventory.status.in_([1, 2]),
+                        ProductInventory.quantity > 0  # chỉ lấy dòng còn hàng
+                        ) \
+                .order_by(ProductInventory.status.desc(), ProductInventory.id.asc()) \
+                .all()
 
-            if coin_used > 0:
-                customer.coin = max(customer.coin - coin_used, 0)
-            customer.coin += coin_earned  # ✅ Cộng xu vừa mua
+            for inventory in inventories:
+                if quantity_to_deduct == 0:
+                    break
 
-            for item in cart_items:
-                db.session.delete(item)
+                deduct_amount = min(quantity_to_deduct, inventory.quantity)
+                inventory.quantity -= deduct_amount  # Trừ kho cả COD và MoMo
 
-            db.session.add(new_receipt)
-            db.session.commit()
+                quantity_to_deduct -= deduct_amount
 
+                receipt_inventory_detail = ReceiptInventoryDetail(
+                    receipt_id=new_receipt.id,
+                    product_id=product_id,
+                    inventory_id=inventory.id,
+                    quantity=deduct_amount
+                )
+                db.session.add(receipt_inventory_detail)
+
+        # Trừ xu nếu có (COD hoặc MoMo đều trừ xu ngay)
+        if coin_used > 0:
+            user.coin = max(user.coin - coin_used, 0)
+
+        # Xoá giỏ hàng sau khi đặt (cả COD và MoMo)
+        for item in cart_items:
+            db.session.delete(item)
+
+        # Nếu là MoMo thì tạo mã thanh toán
+        if not is_cod:
+            momo_order_id = str(uuid.uuid4())
+            pay_url = _create_momo_payment(momo_order_id, final_amount)
+            new_receipt.momo_order_id = momo_order_id
+            new_receipt.pay_url = pay_url
+
+        db.session.commit()
+        if not is_cod:
+            dao.schedule_cancel_unpaid_momo(new_receipt.id)
+
+        if is_cod:
             return _clear_processing({
                 "message": "Đặt hàng COD thành công!",
                 "receipt_id": new_receipt.id,
                 "redirect_url": "/MyReceipt"
             }, 200)
-
-        # === Nếu là MoMo ===
-        momo_order_id = str(uuid.uuid4())
-
-        pending = PendingPayment(
-            momo_order_id=momo_order_id,
-            customer_id=current_user.id,
-            note_message=note_message,
-            customer_phone=address.receiver_phone,
-            customer_address=customer_address,
-            voucher_id=voucher_id,
-            voucher_discount=voucher_discount,
-            coin_used=coin_used,
-            coin_earned=coin_earned,  # ✅ Ghi số xu cộng
-            final_amount=final_amount,
-            cart_items=json.dumps([
-                {"product_id": i.product_id, "quantity": i.quantity, "price": i.product.price}
-                for i in cart_items
-            ])
-        )
-        db.session.add(pending)
-        db.session.commit()
-
-        pay_url = _create_momo_payment(momo_order_id, final_amount)
-
-        return _clear_processing({
-            "message": "Vui lòng quét QR để thanh toán MoMo.",
-            "payUrl": pay_url,
-            "momo_order_id": momo_order_id
-        }, 200)
+        else:
+            return _clear_processing({
+                "message": "Vui lòng quét QR để thanh toán MoMo.",
+                "payUrl": pay_url,
+                "momo_order_id": momo_order_id,
+                "receipt_id": new_receipt.id
+            }, 200)
 
     except Exception as e:
         db.session.rollback()
-        return _clear_processing({"message": f"Lỗi: {str(e)}"}, 500)
-
+        return _clear_processing({"message": f"Lỗi: {str(e)}"}), 500
 
 
 def _clear_processing(payload, status):
@@ -1007,58 +1036,43 @@ def momo_ipn():
     result_code = data.get('resultCode')
 
     if result_code == 0:
-        pending = PendingPayment.query.filter_by(momo_order_id=order_id).first()
-        if not pending:
-            return jsonify({'message': 'Không tìm thấy PendingPayment'}), 400
+        receipt = Receipt.query.filter_by(momo_order_id=order_id).first()
+        if not receipt:
+            return jsonify({'message': 'Không tìm thấy đơn hàng'}), 400
 
-        customer = db.session.get(Customer, pending.customer_id)
-        if not customer:
-            return jsonify({'message': 'Không tìm thấy khách hàng'}), 400
+        if receipt.is_paid:
+            return jsonify({'message': 'Đơn hàng đã được thanh toán'}), 200
 
         try:
-            new_receipt = Receipt(
-                create_date=datetime.now(),
-                customer_id=pending.customer_id,
-                customer_phone=pending.customer_phone,
-                customer_address=pending.customer_address,
-                delivery_method="Giao hàng tận nơi",
-                payment_method="MoMo",
-                total_amount=pending.final_amount,
-                voucher_id=pending.voucher_id,
-                voucher_discount=pending.voucher_discount,
-                coin_used=pending.coin_used,
-                final_amount=pending.final_amount,
-                note_message=pending.note_message,
-                is_paid=True,
-                momo_order_id=order_id
-            )
+            receipt.is_paid = True  # Đánh dấu là đã thanh toán
 
-            items = json.loads(pending.cart_items)
-            for item in items:
-                new_receipt.receipt_details.append(ReceiptDetail(
-                    product_id=item['product_id'],
-                    quantity=item['quantity'],
-                    price=item['price']
-                ))
+            user = db.session.get(User, receipt.user_id)
+            if not user:
+                return jsonify({'message': 'Không tìm thấy khách hàng'}), 400
 
-            if pending.coin_used > 0:
-                customer.coin = max(customer.coin - pending.coin_used, 0)
-            customer.coin += sum(i['quantity'] for i in items) * 100
+            # Trừ xu nếu có dùng
+            if receipt.coin_used > 0:
+                user.coin = max(user.coin - receipt.coin_used, 0)
 
-            CartItem.query.filter_by(user_id=pending.customer_id).delete()
+            # Cộng xu theo số lượng sản phẩm
+            coin_earned = sum(detail.quantity for detail in receipt.receipt_details) * 100
+            user.coin += coin_earned
 
-            db.session.add(new_receipt)
-            db.session.delete(pending)
+            # Xoá giỏ hàng (nếu còn)
+            CartItem.query.filter_by(user_id=receipt.user_id).delete()
+
             db.session.commit()
-
             return jsonify({'message': 'IPN OK'}), 200
 
         except Exception as e:
             db.session.rollback()
-            print(f"Lỗi khi lưu Receipt: {e}")
-            return jsonify({'message': f'Lỗi khi lưu Receipt: {str(e)}'}), 500
+            print(f"Lỗi khi cập nhật Receipt: {e}")
+            return jsonify({'message': f'Lỗi khi cập nhật Receipt: {str(e)}'}), 500
 
     return jsonify({'message': 'IPN FAILED'}), 400
+
+
+
 
 
 @app.route('/api/check_payment')
@@ -1125,8 +1139,8 @@ def set_use_coin():
         if voucher:
             voucher_discount = voucher.price_voucher
 
-    customer = db.session.get(Customer, current_user.id)
-    coin_balance = customer.coin if customer else 0
+    user = db.session.get(User, current_user.id)
+    coin_balance = user.coin if user else 0
 
     if use_coin:
         total_after = max(order_total - voucher_discount - coin_balance, 0)
@@ -1170,13 +1184,8 @@ def comment_respone():
     }
 
 
-# Trang quản trị
-@app.route('/staff', methods=['GET', 'POST'])
-def staff():
-    return render_template('staff.html')
 
 
-# Trang cá nhân của người dùng
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -1208,22 +1217,24 @@ def profile():
         flash('Cập nhật hồ sơ thành công!', 'success')
         return redirect('/profile')
 
-
-
     return render_template(
         'user/profile.html',
         user=current_user,
     )
+
+
 # Trang cá nhân của người dùng - hiển thị thông tin chung
 @app.context_processor
 def inject_user_stats():
     if current_user.is_authenticated:
-        # Tính tổng đã thanh toán:
+        # Tính tổng đã thanh toán chỉ với đơn đã hoàn thành
         total_paid = db.session.query(func.sum(Receipt.final_amount)) \
-            .filter(Receipt.customer_id == current_user.id, Receipt.is_paid == True) \
-            .scalar() or 0
+                         .filter(
+                             Receipt.user_id == current_user.id,
+                             Receipt.status == 'Hoàn thành'  # 💡 Thay bằng đúng status của bạn
+                         ).scalar() or 0
 
-        # Xác định hạng:
+        # Xác định hạng
         if total_paid >= 10_000_000:
             member_rank = "Kim Cương"
             next_rank = None
@@ -1289,32 +1300,34 @@ def change_password():
 
     return render_template('user/changePassword.html', error=error, success=success)
 
-from flask import render_template
-from flask_login import login_required, current_user
-from sqlalchemy import func
+
+
 
 @app.route('/uuDaiThanhVien')
 @login_required
 def uu_dai_thanh_vien():
-    customer = current_user
+    user = current_user
 
-    # Tổng đơn hàng:
-    total_orders = Receipt.query.filter_by(customer_id=customer.id).count()
+    # Tổng đơn hàng (chỉ tính đơn Hoàn thành)
+    total_orders = Receipt.query \
+        .filter_by(user_id=user.id) \
+        .filter(Receipt.status == 'Hoàn thành') \
+        .count()
 
-    # Tổng đã thanh toán:
-    total_paid = db.session.query(func.sum(Receipt.final_amount))\
-        .filter(Receipt.customer_id == customer.id, Receipt.is_paid == True)\
+    # Tổng đã thanh toán (chỉ tính đơn Hoàn thành)
+    total_paid = db.session.query(func.sum(Receipt.final_amount)) \
+        .filter(Receipt.user_id == user.id, Receipt.status == 'Hoàn thành') \
         .scalar() or 0
 
-    # Tổng xu đã dùng:
-    total_coin_used = db.session.query(func.sum(Receipt.coin_used))\
-        .filter(Receipt.customer_id == customer.id)\
+    # Tổng xu đã dùng (chỉ tính đơn Hoàn thành)
+    total_coin_used = db.session.query(func.sum(Receipt.coin_used)) \
+        .filter(Receipt.user_id == user.id, Receipt.status == 'Hoàn thành') \
         .scalar() or 0
 
-    # Số xu còn lại:
-    coin_balance = customer.coin
+    # Số xu còn lại
+    coin_balance = user.coin
 
-    # Tạm freeship
+    # Tạm thời freeship = 0
     freeship_count = 0
 
     return render_template(
@@ -1326,11 +1339,13 @@ def uu_dai_thanh_vien():
         total_coin_used=total_coin_used
     )
 
+
 # Tính số năm hiện taị
 @app.context_processor
 def inject_now():
     from datetime import datetime
     return {'now': datetime.now}
+
 
 @app.route('/MyReceipt')
 @login_required
@@ -1339,77 +1354,49 @@ def order():
     result_code = request.args.get('resultCode')
 
     if momo_order_id:
-        pending = PendingPayment.query.filter_by(momo_order_id=momo_order_id).first()
+        # ✅ Tìm đơn hàng có momo_order_id này (Chờ thanh toán)
+        receipt = Receipt.query.filter_by(momo_order_id=momo_order_id, user_id=current_user.id).first()
 
-        if pending:
-            customer = db.session.get(Customer, pending.customer_id)
+        if receipt:
+            if str(result_code) == '0':
+                # ✅ Cập nhật đơn sang "Đang xử lý"
+                receipt.status = 'Đang xử lý'
+                receipt.is_paid = True
 
-            if result_code == '0':
-                # ✅ MoMo thanh toán thành công → tạo đơn + cộng coin
-                new_receipt = Receipt(
-                    create_date=datetime.now(),
-                    customer_id=pending.customer_id,
-                    customer_phone=pending.customer_phone,
-                    customer_address=pending.customer_address,
-                    delivery_method="Thanh toán online",
-                    payment_method="MoMo",
-                    total_amount=pending.final_amount + pending.voucher_discount + pending.coin_used,
-                    voucher_id=pending.voucher_id,
-                    voucher_discount=pending.voucher_discount,
-                    coin_used=pending.coin_used,
-                    coin_earned=pending.coin_earned,  # ✅ Ghi lại số xu cộng
+                # ✅ Trừ coin nếu dùng
+                if receipt.coin_used and receipt.user:
+                    receipt.user.coin = max(receipt.user.coin - receipt.coin_used, 0)
 
-                    final_amount=pending.final_amount,
-                    note_message=pending.note_message,
-                    is_paid=True,
-                    momo_order_id=momo_order_id
-                )
+                # ✅ Xoá giỏ hàng
+                CartItem.query.filter_by(user_id=current_user.id).delete()
 
-                items = json.loads(pending.cart_items)
-                total_coin_earned = 0
-
-                for item in items:
-                    new_receipt.receipt_details.append(ReceiptDetail(
-                        product_id=item['product_id'],
-                        quantity=item['quantity'],
-                        price=item['price']
-                    ))
-                    total_coin_earned += item['quantity'] * 100
-
-                # ✅ Trừ coin đã dùng, cộng coin thưởng
-                if pending.coin_used > 0:
-                    customer.coin = max(customer.coin - pending.coin_used, 0)
-                customer.coin += total_coin_earned
-
-                # ✅ Xoá giỏ hàng đã mua
-                CartItem.query.filter_by(user_id=pending.customer_id).delete()
-
-                # ✅ Hoàn tất
-                db.session.add(new_receipt)
-                db.session.delete(pending)
                 db.session.commit()
-
                 flash("Thanh toán MoMo thành công!", "success")
-
             else:
-                # ✅ Hủy hoặc lỗi → xoá pending
-                db.session.delete(pending)
+                # ❌ Hủy đơn nếu thanh toán thất bại
+                receipt.status = 'Đã hủy'
                 db.session.commit()
                 flash("Thanh toán MoMo không thành công hoặc đã bị hủy.", "warning")
+        else:
+            flash("Không tìm thấy đơn hàng để cập nhật.", "danger")
 
-    # 🎯 Query danh sách đơn như cũ:
+    # 🎯 Lọc đơn hàng theo trạng thái
     status = request.args.get('status')
     if status:
         session['receipt_status'] = status
     else:
         status = session.get('receipt_status', 'all')
 
-    query = Receipt.query.filter_by(customer_id=current_user.id)
+    query = Receipt.query.filter(
+        Receipt.user_id == current_user.id,
+        Receipt.created_by_staff.is_(False)
+    )
     if status != 'all':
         query = query.filter_by(status=status)
 
     receipts = query.order_by(Receipt.create_date.desc()).all()
 
+    # 🎯 Chuẩn bị danh sách sản phẩm theo đơn
     details_by_receipt = []
     for r in receipts:
         details = []
@@ -1433,6 +1420,54 @@ def order():
     )
 
 
+@app.route('/user/receipt/<int:receipt_id>/cancel', methods=['POST'])
+@login_required
+def user_cancel_receipt(receipt_id):
+    try:
+        receipt = db.session.get(Receipt, receipt_id)
+        if not receipt:
+            return jsonify({'message': 'Không tìm thấy đơn hàng'}), 404
+
+        if receipt.status not in ['Đang xử lý', 'Chờ thanh toán']:
+            return jsonify({'message': 'Đơn hàng không thể huỷ!'}), 400
+
+        # ✅ Đổi trạng thái
+        receipt.status = 'Đã hủy'
+
+        # ✅ Hoàn lại xu đã sử dụng (KHÔNG hoàn coin_earned)
+        user = db.session.get(User, receipt.user_id)
+        if user and receipt.coin_used:
+            user.coin = (user.coin or 0) + receipt.coin_used
+
+        # ✅ Hoàn tồn kho
+        restore_details = ReceiptInventoryDetail.query.filter_by(receipt_id=receipt.id).all()
+
+        for detail in restore_details:
+            inventory = db.session.get(ProductInventory, detail.inventory_id)
+            if inventory:
+                inventory.quantity += detail.quantity
+            else:
+                fallback = ProductInventory.query.filter_by(product_id=detail.product_id, status=2).first()
+                if fallback:
+                    fallback.quantity += detail.quantity
+                else:
+                    fallback = ProductInventory(
+                        product_id=detail.product_id,
+                        quantity=detail.quantity,
+                        status=2
+                    )
+                    db.session.add(fallback)
+
+            db.session.delete(detail)
+
+        db.session.commit()
+        return jsonify({'message': 'Huỷ đơn hàng thành công'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f"Lỗi: {str(e)}"}), 500
+
+
 
 
 @app.route('/api/comment', methods=['POST'])
@@ -1447,7 +1482,7 @@ def create_or_update_comment():
         return jsonify({'error': 'Missing data'}), 400
 
     # Kiểm tra đã có comment chưa
-    comment = Comment.query.filter_by(receipt_detail_id=receipt_detail_id, customer_id=current_user.id).first()
+    comment = Comment.query.filter_by(receipt_detail_id=receipt_detail_id, user_id=current_user.id).first()
 
     if comment:
         if not comment.can_edit:
@@ -1462,7 +1497,7 @@ def create_or_update_comment():
         comment = Comment(
             content=content,
             rating=rating,
-            customer_id=current_user.id,
+            user_id=current_user.id,
             receipt_detail_id=receipt_detail_id
         )
         db.session.add(comment)
@@ -1479,31 +1514,12 @@ def create_or_update_comment():
     return jsonify({'message': 'Comment saved!'})
 
 
-
-
-# Xoá PendingPayment quá hạn 10 phút
-@app.route('/api/cleanup_pending_payment', methods=['POST'])
-def cleanup_pending_payment():
-    now = datetime.utcnow()
-    expired_time = now - timedelta(minutes=10)  # 10 phút
-    expired = PendingPayment.query.filter(PendingPayment.created_at < expired_time).all()
-
-    count = len(expired)
-    for p in expired:
-        db.session.delete(p)
-    db.session.commit()
-
-    return jsonify({
-        "message": f"Đã xoá {count} PendingPayment quá hạn 10 phút!"
-    }), 200
-
-
 @app.route('/api/receipts')
 @login_required
 def api_receipts():
     status = request.args.get('status', 'all')
 
-    query = Receipt.query.filter_by(customer_id=current_user.id)
+    query = Receipt.query.filter_by(user_id=current_user.id)
     if status != 'all':
         query = query.filter_by(status=status)
 
@@ -1567,14 +1583,15 @@ def voucher():
 def love_product():
     liked_products = db.session.query(Product) \
         .join(FavoriteProduct, Product.id == FavoriteProduct.product_id) \
-        .filter(FavoriteProduct.customer_id == current_user.id).all()
+        .filter(FavoriteProduct.user_id == current_user.id).all()
 
     return render_template('user/loveProduct.html', products=liked_products)
+
 
 @app.route('/myComment')
 @login_required
 def my_comment():
-    comments = Comment.query.filter_by(customer_id=current_user.id).all()
+    comments = Comment.query.filter_by(user_id=current_user.id).all()
     comment_details = []
 
     for comment in comments:
@@ -1593,19 +1610,23 @@ def my_comment():
 @app.route('/TDXu')
 @login_required
 def td_xu():
-    customer = db.session.get(Customer, current_user.id)
-    if not customer:
+    user = db.session.get(User, current_user.id)
+    if not user:
         return redirect('/login')
 
     # Tính tổng xu đã dùng
     total_coin_used = db.session.query(func.sum(Receipt.coin_used)) \
-        .filter(Receipt.customer_id == current_user.id) \
-        .scalar() or 0
+                          .filter(Receipt.user_id == current_user.id) \
+                          .scalar() or 0
 
     # Số xu còn lại
-    coin_balance = customer.coin
+    coin_balance = user.coin
 
-    receipts = Receipt.query.filter_by(customer_id=current_user.id).order_by(Receipt.create_date.desc()).all()
+    # 🎯 Lấy các đơn đã hoàn thành
+    receipts = Receipt.query.filter_by(
+        user_id=current_user.id,
+        status='Hoàn thành'
+    ).order_by(Receipt.create_date.desc()).all()
 
     return render_template(
         'user/TDXu.html',
@@ -1619,12 +1640,12 @@ def td_xu():
 @login_required
 def delete_favorite(product_id):
     try:
-        favorite = FavoriteProduct.query.filter_by(customer_id=current_user.id, product_id=product_id).first()
+        favorite = FavoriteProduct.query.filter_by(user_id=current_user.id, product_id=product_id).first()
         if favorite:
             db.session.delete(favorite)
 
             # ✅ Trừ like_count nếu có cột này
-            product = Product.query.get(product_id)
+            product = db.session.get(Product, product_id)
             if product and product.like > 0:
                 product.like -= 1  # hoặc like_count nếu tên cột vậy
 
@@ -1639,7 +1660,7 @@ def delete_favorite(product_id):
 @app.route('/myAddress')
 @login_required
 def my_address():
-    addresses = Address.query.filter_by(customer_id=current_user.id).all()
+    addresses = Address.query.filter_by(user_id=current_user.id).all()
     default_address = next((addr for addr in addresses if addr.is_default), None)
 
     return render_template('user/myAddress.html', addresses=addresses, default_address=default_address)
@@ -1713,13 +1734,13 @@ def set_default_address():
 
     try:
         # 🔑 Tìm địa chỉ đang set
-        address = Address.query.filter_by(id=address_id, customer_id=current_user.id).first()
+        address = Address.query.filter_by(id=address_id, user_id=current_user.id).first()
 
         if not address:
             return jsonify(success=False, error='Địa chỉ không tồn tại')
 
         # 🔑 Reset tất cả địa chỉ của user về is_default = False
-        Address.query.filter_by(customer_id=current_user.id).update({'is_default': False})
+        Address.query.filter_by(user_id=current_user.id).update({'is_default': False})
 
         # 🔑 Set địa chỉ được chọn thành mặc định
         address.is_default = True
@@ -1742,10 +1763,10 @@ def save_address():
     user_id = current_user.id
 
     # Kiểm tra xem user này đã có địa chỉ chưa
-    has_address = Address.query.filter_by(customer_id=user_id).count() > 0
+    has_address = Address.query.filter_by(user_id=user_id).count() > 0
 
     new_address = Address(
-        customer_id=user_id,
+        user_id=user_id,
         receiver_name=data['receiver_name'],
         receiver_phone=data['receiver_phone'],
         receiver_province=data['receiver_province'],
@@ -1772,7 +1793,7 @@ def update_address():
     if not address_id:
         return jsonify({'success': False, 'error': 'Missing ID'})
 
-    address = Address.query.filter_by(id=address_id, customer_id=current_user.id).first()
+    address = Address.query.filter_by(id=address_id, user_id=current_user.id).first()
     if not address:
         return jsonify({'success': False, 'error': 'Address not found'})
 
@@ -1802,7 +1823,7 @@ def delete_address():
 
     try:
         # Tìm địa chỉ
-        address = Address.query.filter_by(id=address_id, customer_id=current_user.id).first()
+        address = Address.query.filter_by(id=address_id, user_id=current_user.id).first()
         if not address:
             return jsonify({'success': False, 'error': 'Không tìm thấy địa chỉ!'})
 
@@ -1815,7 +1836,7 @@ def delete_address():
 
         # Nếu địa chỉ vừa xoá là mặc định ➜ gán địa chỉ còn lại làm mặc định
         if was_default:
-            another = Address.query.filter_by(customer_id=current_user.id).first()
+            another = Address.query.filter_by(user_id=current_user.id).first()
             if another:
                 another.is_default = True
                 db.session.commit()
@@ -1829,6 +1850,7 @@ def delete_address():
 
 if __name__ == "__main__":
     with app.app_context():
+
         app.run(
             debug=True,
             port=5000,

@@ -9,28 +9,36 @@
     <!-- CỘT TRÁI -->
     <div id="col-left"
          style="background: white; border-radius: 2px; display: flex; flex-direction: column; color: #212121; overflow: hidden; height: 100%;">
-        <img src="{{ products.image }}" alt="Ảnh sản phẩm"
-             id="product-image"
-             style="width: 486px; height: 486px; border-radius: 10px 10px 0 0; cursor: zoom-in;">
+        <div style="position: relative; width: 486px; height: 486px;">
+            <img src="{{ products.image }}" alt="Ảnh sản phẩm"
+                 id="product-image"
+                 style="width: 486px; height: 486px; border-radius: 3px 10px 0 0; cursor: zoom-in;">
 
-            <!-- Lightbox -->
-            <div id="image-lightbox" style="
+            {% if is_out_of_stock %}
+            <img src="https://81sneaker.vn/upload/photo/hethang-6928-8952.png"
+                 alt="Hết hàng"
+                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 10;">
+            {% endif %}
+        </div>
+
+        <!-- Lightbox -->
+        <div id="image-lightbox" style="
               display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
               background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 9999;">
-              <div id="lightbox-container" style="position: relative;">
+            <div id="lightbox-container" style="position: relative;">
                 <img id="lightbox-img" src="{{ products.image }}" alt="Ảnh phóng to"
                      style="max-width: 800px; max-height: 800px; border-radius: 5px;">
                 <div id="magnifier" style="
                   display: none; position: absolute; border: 3px solid #fff; border-radius: 50%;
                   cursor: none; width: 200px; height: 200px; overflow: hidden;
                   box-shadow: 0 0 5px rgba(0,0,0,0.5);">
-                  <img id="magnifier-img" src="{{ products.image }}" alt=""
-                       style="position: absolute;">
+                    <img id="magnifier-img" src="{{ products.image }}" alt=""
+                         style="position: absolute;">
                 </div>
-              </div>
             </div>
+        </div>
 
-            <script>
+        <script>
             //✅ Xử lý lightbox và kính lúp
             const productImage = document.getElementById('product-image');
             const lightbox = document.getElementById('image-lightbox');
@@ -88,7 +96,7 @@
             lightboxContainer.addEventListener('mouseleave', () => {
               magnifier.style.display = 'none';
             });
-            </script>
+        </script>
 
         <div style="margin: 0 10px; padding: 20px;">
             <!-- Like -->
@@ -140,13 +148,11 @@
         <!-- Thẻ 1 -->
         <div style="background: white; border-radius: 2px; margin-bottom: 10px; padding: 10px;">
             <img style="width: 60px; height: 60px;" src="https://cdn-icons-png.flaticon.com/128/791/791968.png" alt="">
-            <span style="color: #212121; font-size:1.7rem; font-weight:600;">{{ products.name }}</span>
+            <span style="color: #333333; font-size:1.7rem; font-weight:600;">{{ products.name }}</span>
 
-            <div class="rating-summary" style="display:flex; align-items:center; gap:20px;">
-                <div class="average-rating" style="display:flex; align-items:center; gap:10px;">
-                    <span class="score" style="font-size:20px; color:#f53d2d; font-weight:bold;">
-                      {{ '%.1f' % average_rating }}
-                    </span>
+            <div class="rating-summary">
+                <div class="rating-block">
+                    <span class="score">{{ '%.1f' % average_rating }}</span>
                     <div class="stars">
                         {% for i in range(1, 6) %}
                         {% set star_fill = 0 %}
@@ -158,16 +164,22 @@
                         <span class="star" style="--fill: {{ star_fill }}%;">★</span>
                         {% endfor %}
                     </div>
-
                 </div>
 
-                <div class="rating-divider" style="width:1px; height:30px; background:#ddd;"></div>
+                <div class="divider"></div>
 
-                <div class="total-reviews" style="font-size:14px; color:#333;">
-                    <span class="count" style="font-weight:bold;">
-                      {{ '{:,.0f}'.format(total_count).replace(',', '.') if total_count >= 1000 else total_count }}
-                    </span>
+                <div class="review-block">
+                        <span class="count">
+                            {{ '{:,.0f}'.format(total_count).replace(',', '.') if total_count >= 1000 else total_count }}
+                        </span>
                     <span class="label">Đánh Giá</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="sold-block">
+                    <span class="sold-count">{{ products.daban|int }}</span>
+                    <span class="sold-label">Đã Bán</span>
                 </div>
             </div>
 
@@ -190,7 +202,8 @@
                     </div>
 
                     <div class="flash-sale-price-row">
-                        <p class="price-current">{{ products.price | format_vnd }}đ</p>
+                        <p class="price-current"><span style="vertical-align: 10px; font-size:22px;">₫</span>{{
+                            products.price | format_vnd }}</p>
 
                         <div class="voucher-tag">
                             <img src="{{ url_for('static', filename='images/voucher.png') }}" alt="voucher">
@@ -198,11 +211,13 @@
                         </div>
 
                         <p class="price-original">
-                            <del>{{ (products.price / (1 - products.voucher / 100)) | format_vnd }}đ</del>
+                            <span style="vertical-align: 5px; font-size:15px;">₫</span>
+                            <del>{{ (products.price / (1 - products.voucher / 100)) | format_vnd }}</del>
                         </p>
                     </div>
 
-                    <p class="flash-sale-sold">Đã bán: <span>{{ products.daban|int }}</span></p>
+                    <p class="flash-sale-sold">Số lượng: <span style="color:#333; font-size:20px;">{{ total_quantity|int }}</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -211,6 +226,7 @@
         <div style="background: white; border-radius: 2px; margin-bottom: 10px; padding: 10px;">
             <div style="padding: 10px;">
                 <b style="font-size:18px;">Thông tin vận chuyển</b>
+
                 <table style="font-size: 16px; line-height: 2 ;padding: 10px 20px;   ">
                     <tbody>
                     <tr>
@@ -228,6 +244,7 @@
                         <td>
                             <b>Giao hàng tiêu chuẩn:</b> Đơn hàng sẽ xuất đi sau 2 giờ kể từ khi được đặt
                         </td>
+
                     </tr>
                     </tbody>
                 </table>
@@ -251,25 +268,70 @@
                                 -
                             </button>
 
-                            <!-- Input số lượng -->
-                            <input type="text"
-                                   id="quantity-display-{{ products.id }}"
-                                   value="1"
-                                   oninput="validateQuantity(this)"
-                                   onblur="updateCartPreview({{ products.id }}, this)"
-                                   style="width: 100%;
-                                            text-align: center; color: rgb(238, 77, 45); border: none; font-size: 20px; outline: none; background:
-                                            transparent; display: flex; align-items: center; justify-content: center;">
+                            <!-- Ô nhập số lượng -->
+                            <input
+                                    type="number"
+                                    class="no-spinner"
+                                    max="{{ total_quantity }}"
+                                    min="1"
+                                    id="quantity-display-{{ products.id }}"
+                                    data-max="{{ total_quantity }}"
+                                    data-current-in-cart="{{ cart_items.get(products.id, 0) }}"
+                                    value="1"
+                                    oninput="validateQuantity(this)"
+                                    onblur="validateQuantity(this); updateCartPreview({{ products.id }}, this)"
+                                    style="width: 100%; text-align: center; color: rgb(238, 77, 45); border: none;
+                                                 font-size: 20px; outline: none; background: transparent;"
+                            >
 
 
                             <!-- Nút Tăng -->
                             <button type="button"
-                                    onclick="changeQuantity({{ products.id }}, 1)"
-                                    style="width: 100%;border-right:none; border-left: 1px solid #ccc ; border-top:none ;border-bottom:none ;
-                                     background: transparent; cursor: pointer; font-size: 25px;
-                                     color: #333; display: flex; align-items: center; justify-content: center;">
+                                    onclick="changeQuantityWithLimit({{ products.id }})"
+                                    id="btn-plus-{{ products.id }}"
+                                    style="width: 100%; border-left: 1px solid #ccc; border-right:none; border-top:none; border-bottom:none;
+                                           background: transparent; cursor: pointer; font-size: 25px;
+                                           color: #333; display: flex; align-items: center; justify-content: center;">
                                 +
                             </button>
+
+                            <!-- ✅ Modal Thông Báo -->
+                            <div id="error-modal-staff-import-receipt"
+                                 style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+                                           background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+                                <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%;
+                                                box-shadow: 0 4px 8px rgba(0,0,0,0.3); margin: auto;">
+                                    <div style="background-color: #c0392b; padding: 12px 16px;">
+                                        <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông
+                                            báo</h4>
+                                    </div>
+                                    <div style="padding: 20px 30px; text-align: center;">
+                                        <p id="error-message-staff-import-receipt"
+                                           style="margin-bottom: 20px; color: #333;"></p>
+                                        <button onclick="closeErrorModalStaffImportReceipt()"
+                                                style="padding: 6px 20px; background: #c0392b; color: white;
+                                                 border: none; border-radius: 4px; cursor: pointer;">
+                                            Đóng
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="success-modal-add-to-cart"
+                                 style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+                                       background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+                                <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                                    <div style="background-color: #2e7d32; padding: 12px 16px;">
+                                        <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông
+                                            báo</h4>
+                                    </div>
+                                    <div style="padding: 20px 30px; text-align: center;">
+                                        <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                                            ✔ Thêm thành công
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
 
@@ -282,7 +344,7 @@
                     {% if current_user and current_user.is_authenticated %}
                     {# Nếu người dùng đã đăng nhập #}
                     <a href="#" class="themVaoGioHang"
-                       onclick="addToCart(event, {{ products.id }}, '{{ products.name }}', {{ products.price }}, parseInt(document.getElementById('quantity-display-{{ products.id }}').value))">
+                       onclick="checkAndAddToCart(event, {{ products.id }}, '{{ products.name }}', {{ products.price }}, parseInt(document.getElementById('quantity-display-{{ products.id }}').value))">
                         <div style="display: flex; align-items: center;">
                             <span> Thêm vào giỏ</span>
                         </div>
@@ -306,20 +368,38 @@
         <div style=" background: white;border-radius: 2px; padding: 10px;flex: 1 1 auto;overflow-y: auto;overflow-x:
                hidden; max-height:595px; scrollbar-width: none; ">
             <p style="font-weight: bold;">Thông tin chi tiết</p>
-            <table style="width: 100%; table-layout: fixed; font-size: 16px; line-height: 2.2; word-wrap: break-word;">
-                <tbody>
-                <tr>
-                    <td style="color: #777; width: 30%; padding: 8px 0;">Mã hàng:</td>
-                    <td style="padding: 8px 0;">{{ products.id }}</td>
-                </tr>
-                {% for key in products.extra_info.order %}
-                <tr>
-                    <td style="color: #777; padding: 8px 0;">{{ key }}:</td>
-                    <td style="padding: 8px 0;">{{ products.extra_info[key] }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                <table style="width: 100%; table-layout: fixed; font-size: 16px; line-height: 2.2; word-wrap: break-word;">
+                    <tbody>
+                        <tr>
+                            <td style="color: #777; width: 30%; padding: 8px 0;">Mã hàng:</td>
+                            <td style="padding: 8px 0;">{{ products.id }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Thương hiệu:</td>
+                            <td style="padding: 8px 0;">{{ products.thuong_hieu }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Xuất xứ:</td>
+                            <td style="padding: 8px 0;">{{ products.xuat_xu }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Quy cách đóng gói:</td>
+                            <td style="padding: 8px 0;">{{ products.quy_cach_dong_goi }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Bảo quản:</td>
+                            <td style="padding: 8px 0;">{{ products.bao_quan }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Cách dùng:</td>
+                            <td style="padding: 8px 0;">{{ products.cach_dung }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #777; padding: 8px 0;">Mô tả sản phẩm:</td>
+                            <td style="padding: 8px 0;">{{ products.mo_ta_san_pham }}</td>
+                        </tr>
+                    </tbody>
+                </table>
         </div>
 
     </div>
@@ -550,7 +630,7 @@
     </div>
     <!-- Khung danh sách sản phẩm -->
     <div style="display: grid;grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));gap: 20px;background-color: white;
-    padding: 50px 15px;border-radius: 10px;border: 3px solid rgb(0 172 91);margin-top: 40px;">
+    padding: 50px 15px;border-radius: 3px;border: 3px solid rgb(0 172 91);margin-top: 40px;">
         {% with products = related_products %}
         {% include 'product-items.html' %}
         {% endwith %}
@@ -562,6 +642,19 @@
 {%include 'product-section.html' %}
 
 <style>
+    /* Ẩn spinner trên Chrome/Safari */
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Ẩn spinner trên Firefox */
+    .no-spinner {
+        -moz-appearance: textfield;
+    }
+
+
     /*✅ CSS số sao Sản phẩm bên cột trái */
     .star {
       display: inline-block;
@@ -725,9 +818,9 @@
     }
 
     .price-current {
-        font-size: 24px;
-        font-weight: bold;
-        color: #C92127;
+        font-size: 35px;
+        font-weight: 500;
+        color: #d0011b;
         flex-shrink: 0;
         margin: 0;
     }
@@ -757,7 +850,7 @@
 
     .price-original {
         color: #888;
-        font-size: 15px;
+        font-size: 20px;
         flex-shrink: 1;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -766,184 +859,252 @@
 
     .flash-sale-sold {
         padding:10px  ;
-        font-size: 15px;
-        color: #555;
+        font-size: 17px;
+        color: #767676;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     /*✅ Phần flash sale */
-    .rating-summary {
-        display: flex;
-        align-items: center;
-        font-family: sans-serif;
-        color: #333;
-        max-width: fit-content;
-        margin: 10px;
-        background-color: white;
-    }
+.rating-summary {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: sans-serif;
+    color: #333;
+    background-color: #fff;
+    padding: 10px 0;
+    gap: 30px;
+    flex-wrap: nowrap;
+}
 
-    .average-rating {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding-right: 15px;
-    }
+.rating-block,
+.review-block,
+.sold-block {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
 
-    .average-rating .score {
-        font-size: 1em;
-        font-weight: bold;
-        border-bottom: 1px solid currentColor;
+.score {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f53d2d;
+}
 
-    }
-    .stars {
-        display: flex;
-        align-items: center;
-    }
+.stars {
+    display: flex;
+}
 
-    .star {
-        font-size: 1.2em;
-        color: #ccc;
-        margin: 0 1px;
-    }
+.star {
+    font-size: 18px;
+    color: #ccc;
+    position: relative;
+}
 
-    .star.filled {
-        color: #ffc107;
-    }
+.star::before {
+    content: '★';
+    color: #ffc107;
+    position: absolute;
+    width: var(--fill, 0%);
+    overflow: hidden;
+}
 
-    .rating-divider {
-        width: 1px;
-        background-color: #e0e0e0;
-        height: 30px;
-        margin: 0 15px;
-    }
+.divider {
+    width: 1px;
+    height: 24px;
+    background-color: #ddd;
+}
 
-    .total-reviews {
-        display: flex;
-        align-items: baseline;
-    }
+.review-block .count,
+.sold-block .sold-count {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
 
-    .total-reviews .count {
-        font-size: 1em;
-        font-weight: bold;
-        margin-right: 5px;
-        border-bottom: 1px solid currentColor;
-    }
-
-    .total-reviews .label {
-        font-size: 0.9em;
-        color: #777;
-    }
+.review-block .label,
+.sold-block .sold-label {
+    font-size: 14px;
+    color: #777;
+}
 
 
 </style>
+
 <script>
-    <!--    &lt;!&ndash; ✅JS đồng bộ chiều cao &ndash;&gt;-->
-    <!--  window.addEventListener('load', () => {-->
-    <!--    const left = document.getElementById('col-left');-->
-    <!--    const right = document.getElementById('col-right');-->
-    <!--    right.style.height = left.offsetHeight + 'px';-->
-    <!--  });-->
-    <!--  window.addEventListener('resize', () => {-->
-    <!--    const left = document.getElementById('col-left');-->
-    <!--    const right = document.getElementById('col-right');-->
-    <!--    right.style.height = left.offsetHeight + 'px';-->
-    <!--  });-->
+
+    // ✅Script xử lý số lượng
+<!--    function changeQuantity(productId, delta) {-->
+<!--        const input = document.getElementById("quantity-display-" + productId);-->
+<!--        let value = parseInt(input.value) || 1;-->
+<!--        value = Math.max(1, value + delta);-->
+<!--        input.value = value;-->
+<!--    }-->
+<!--    function validateQuantity(input) {-->
+<!--        let value = parseInt(input.value);-->
+<!--        if (isNaN(value) || value < 1) {-->
+<!--            input.value = 1;-->
+<!--        }-->
+<!--    }-->
+
+    function updateCartPreview(productId, input) {
+    }
 
 
-        // ✅Script xử lý số lượng
-        function changeQuantity(productId, delta) {
-            const input = document.getElementById("quantity-display-" + productId);
-            let value = parseInt(input.value) || 1;
-            value = Math.max(1, value + delta);
-            input.value = value;
-        }
-        function validateQuantity(input) {
-            let value = parseInt(input.value);
-            if (isNaN(value) || value < 1) {
-                input.value = 1;
+    // ✅JavaScript để xử lý lượt thích
+
+    let liked = {{ 'true' if is_liked else 'false' }};
+    let likeCount = {{ products.like }};  // Số lượt thích từ server
+    function toggleLike(productId) {
+        fetch(`/api/like-product/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        }
+        })
+        .then(res => res.json())
+        .then(data => {
+            liked = data.liked;
+            likeCount = data.like_count;
 
-        function updateCartPreview(productId, input) {
-        }
+            const icon = document.getElementById("like-icon");
+            const text = document.getElementById("like-text");
 
-
-        // ✅JavaScript để xử lý lượt thích
-
-        let liked = {{ 'true' if is_liked else 'false' }};
-        let likeCount = {{ products.like }};  // Số lượt thích từ server
-        function toggleLike(productId) {
-            fetch(`/api/like-product/${productId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                liked = data.liked;
-                likeCount = data.like_count;
-
-                const icon = document.getElementById("like-icon");
-                const text = document.getElementById("like-text");
-
-                if (liked) {
-                    icon.classList.remove("fa-regular");
-                    icon.classList.add("fa-solid");
-                } else {
-                    icon.classList.remove("fa-solid");
-                    icon.classList.add("fa-regular");
-                }
-
-                text.textContent = `Đã thích (${likeCount})`;
-            });
-        }
-
-        // ✅JavaScript để xử lý đếm ngược thời gian
-            function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
-            const hoursEl = document.getElementById('hours');
-            const minutesEl = document.getElementById('minutes');
-            const secondsEl = document.getElementById('seconds');
-
-            function getNextTargetTime() {
-                const now = new Date();
-                const target = new Date(now);
-                target.setHours(targetHour, targetMinute, targetSecond, 0);
-
-                if (target.getTime() <= now.getTime()) {
-                    target.setDate(target.getDate() + 1);
-                }
-
-                return target.getTime();
+            if (liked) {
+                icon.classList.remove("fa-regular");
+                icon.classList.add("fa-solid");
+            } else {
+                icon.classList.remove("fa-solid");
+                icon.classList.add("fa-regular");
             }
 
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = nextTargetTime - now;
+            text.textContent = `Đã thích (${likeCount})`;
+        });
+    }
 
-                if (distance <= 0) {
-                    nextTargetTime = getNextTargetTime(); // Reset lại mốc 24h mới
-                }
+    // ✅JavaScript để xử lý đếm ngược thời gian
+        function startRecurringCountdown(targetHour = 20, targetMinute = 0, targetSecond = 0) {
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
 
-                const totalSeconds = Math.floor(distance / 1000);
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
+        function getNextTargetTime() {
+            const now = new Date();
+            const target = new Date(now);
+            target.setHours(targetHour, targetMinute, targetSecond, 0);
 
-                hoursEl.innerText = String(hours).padStart(2, '0');
-                minutesEl.innerText = String(minutes).padStart(2, '0');
-                secondsEl.innerText = String(seconds).padStart(2, '0');
+            if (target.getTime() <= now.getTime()) {
+                target.setDate(target.getDate() + 1);
             }
 
-            let nextTargetTime = getNextTargetTime();
-            setInterval(updateCountdown, 1000);
-            updateCountdown();
+            return target.getTime();
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = nextTargetTime - now;
+
+            if (distance <= 0) {
+                nextTargetTime = getNextTargetTime(); // Reset lại mốc 24h mới
             }
 
-            // Gọi đếm ngược đến 20:00 hàng ngày
-            startRecurringCountdown(20, 0, 0);
+            const totalSeconds = Math.floor(distance / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+        }
+
+        let nextTargetTime = getNextTargetTime();
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        }
+
+        // Gọi đếm ngược đến 20:00 hàng ngày
+        startRecurringCountdown(20, 0, 0);
+
+</script>
+
+// ✅ JavaScript để xử lý số lượng với giới hạn
+<script>
+    function changeQuantityWithLimit(productId) {
+        const input = document.getElementById('quantity-display-' + productId);
+        const max = parseInt(input.dataset.max);
+        let current = parseInt(input.value);
+
+        if (current < max) {
+            input.value = current + 1;
+        } else {
+            showErrorModal("Số lượng không được vượt quá " + max);
+        }
+    }
+
+    function validateQuantity(input) {
+        let value = parseInt(input.value);
+        let max = parseInt(input.dataset.max);
+
+        if (isNaN(value) || value <= 0) {
+            input.value = 1;
+        } else if (value > max) {
+            input.value = max;
+            showErrorModal("Số lượng không được vượt quá " + max);
+        }
+    }
+
+    // ✅ Hiện modal
+    function showErrorModal(message) {
+        document.getElementById("error-message-staff-import-receipt").innerText = message;
+        const modal = document.getElementById("error-modal-staff-import-receipt");
+        modal.style.display = "flex";
+    }
+
+    // ✅ Ẩn modal
+    function closeErrorModalStaffImportReceipt() {
+        document.getElementById("error-modal-staff-import-receipt").style.display = "none";
+    }
+
+    // ✅ Hiện modal thành công khi thêm vào giỏ
+    function showSuccessModalAddToCart() {
+    const modal = document.getElementById("success-modal-add-to-cart");
+    modal.style.display = "flex";
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        }, 500);
+    }
+
+
+    // ✅ Hàm thêm vào giỏ hàng
+    function checkAndAddToCart(event, productId, productName, productPrice) {
+        event.preventDefault();
+
+        const quantityInput = document.getElementById(`quantity-display-${productId}`);
+        const quantity = parseInt(quantityInput.value);
+        const maxQuantity = parseInt(quantityInput.getAttribute("data-max"));
+        const currentInCart = parseInt(quantityInput.getAttribute("data-current-in-cart")) || 0;
+
+        if (isNaN(quantity) || quantity <= 0) {
+            showErrorModal("Số lượng phải lớn hơn 0.");
+            quantityInput.value = 1;
+            return;
+        }
+
+        if (quantity + currentInCart > maxQuantity) {
+            showErrorModal(`Bạn đã có ${currentInCart} sản phẩm trong giỏ. Chỉ được thêm ${maxQuantity - currentInCart}.`);
+            quantityInput.value = Math.max(1, maxQuantity - currentInCart); // tự động điều chỉnh
+            return;
+        }
+
+        // ✅ Nếu hợp lệ thì thêm vào giỏ
+        addToCart(event, productId, productName, productPrice, quantity);
+        showSuccessModalAddToCart();
+    }
 
 </script>
 

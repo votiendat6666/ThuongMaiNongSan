@@ -1,5 +1,6 @@
 <!-- Receipt items -->
 {% for receipt in receipts %}
+    {% if not receipt.created_by_staff %}
 <div class="receipt-item border p-0 mb-4"
      style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 2px;">
 
@@ -14,9 +15,19 @@
             <a href="#" style="text-decoration: none;">Xem chi tiết</a>
         </div>
         <div class="d-flex align-items-center gap-2">
-      <span style="color: #26aa99; padding-right: 10px; border-right: 1px solid #ccc;">
-        {{ receipt.status|title }}
-      </span>
+                <span style="
+                    padding-right: 10px;
+                    border-right: 1px solid #ccc;
+                    color:
+                      {% if receipt.status == 'Đang xử lý' %}#ff9800      {# Cam #}
+                      {% elif receipt.status == 'Đã hủy' %}#e74c3c         {# Đỏ #}
+                      {% elif receipt.status == 'Chờ thanh toán' %}blue
+                      {% elif receipt.status == 'Hoàn thành' %}#26aa99     {# Xanh ngọc #}
+                      {% else %}#999999                                    {# Mặc định xám nếu lỡ sai status #}
+                      {% endif %}
+                ">
+                  {{ receipt.status }}
+                </span>
             <span style="color:#ee4d2d;">HOÀN THÀNH</span>
         </div>
     </div>
@@ -44,8 +55,8 @@
              style="display: flex; flex-direction: column; align-items: flex-end; font-size: 13px;">
             <div style="display: flex; margin-bottom: 6px;">
                 <del style="color: #888;">
-                    <span style="font-size: 10px; position: relative; top: -3px;">₫</span>{{ ((detail.product.price) /
-                    (1 - detail.product.voucher / 100)) | format_vnd }}
+                    <span style="font-size: 10px; position: relative; top: -3px;">₫</span>
+                    {{ ((detail.product.price) / (1 - detail.product.voucher / 100)) | format_vnd }}
                 </del>
             </div>
             <div style="color: #ee4d2d; display: flex; position: relative; margin-bottom: 10px;">
@@ -53,6 +64,8 @@
                 <span>{{ '{:,.0f}'.format(detail.price).replace(',', '.') }}</span>
             </div>
 
+            {# Nếu đơn hàng HOÀN THÀNH thì mới cho đánh giá/sửa bình luận #}
+            {% if receipt.status == 'Hoàn thành' %}
             {% if detail.comment %}
             {% if detail.comment.can_edit %}
             <button
@@ -69,8 +82,8 @@
             </button>
             {% else %}
             <span style="color: #469c4b; display: inline-flex; align-items: center; gap: 6px;">
-              <i class="fa-solid fa-check"></i> Đã bình luận
-            </span>
+                  <i class="fa-solid fa-check"></i> Đã bình luận
+                </span>
             {% endif %}
             {% else %}
             <button
@@ -81,13 +94,19 @@
                     data-category="{{ detail.product.category.name }}"
                     data-comment-content=""
                     data-comment-rating="0"
-                    data-can-edit="True"
-            >
+                    data-can-edit="True">
                 Đánh giá sản phẩm
             </button>
             {% endif %}
 
+            {% elif receipt.status == 'Đang xử lý' or receipt.status == 'Chờ thanh toán' %}
+            <button onclick="openUserCancelModal({{ receipt.id }})"
+                    class="danh-gia-san-pham">
+                Hủy đơn hàng
+            </button>
+            {% endif %}
         </div>
+
     </div>
     {% endfor %}
 
@@ -101,15 +120,21 @@
             </span>
         </div>
 
-
         <!-- Dòng 4: Các nút thao tác -->
         <div class="d-flex justify-content-end gap-2 mt-3">
             {% set one = rebuy_by_receipt | selectattr("receipt_id", "equalto", receipt.id) | first %}
             {% if one %}
-            <button class="mua-hang-lai"
-                    onclick='addAllToCart({{ one.details | tojson | safe }})'>
-                Mua lại
-            </button>
+                {% if receipt.status == 'Chờ thanh toán' and receipt.payment_method == 'MoMo' and receipt.pay_url %}
+                <a href="{{ receipt.pay_url }}">
+                    <button class="mua-hang-lai">
+                        Thanh toán
+                    </button>
+                </a>
+                 {% endif %}
+                <button class="mua-hang-lai"
+                        onclick='addAllToCart({{ one.details | tojson | safe }})'>
+                    Mua lại
+                </button>
             {% endif %}
             <button class="hien-he-shop">Liên hệ shop</button>
         </div>
@@ -117,7 +142,9 @@
 
 
 </div>
+    {% endif %}
 {% endfor %}
+
 <script>
     async function addAllToCart(products) {
       if (!products || products.length === 0) {
@@ -147,3 +174,72 @@
       window.location.href = '/cart';
     }
 </script>
+
+
+<script>
+    //✅ Huỷ đơn hàng cho user
+    let userSelectedReceiptId = null;
+
+    function openUserCancelModal(receiptId) {
+        userSelectedReceiptId = receiptId;
+        document.getElementById("userConfirmCancelModal").style.display = "flex";
+    }
+
+    function closeUserCancelModal() {
+        document.getElementById("userConfirmCancelModal").style.display = "none";
+        userSelectedReceiptId = null;
+    }
+
+    function confirmUserCancel() {
+        if (!userSelectedReceiptId) return;
+
+        fetch(`/user/receipt/${userSelectedReceiptId}/cancel`, {
+            method: 'POST'
+        })
+        .then(res => {
+            closeUserCancelModal();
+            if (res.ok) location.reload();
+            else res.json().then(data => alert(data.message || "Có lỗi xảy ra!"));
+        });
+    }
+</script>
+
+<!--✅ Modal xác nhận huỷ đơn hàng cho user -->
+<div id="userConfirmCancelModal"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+ background-color: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+
+    <div style="background: white; padding: 30px 40px; border-radius: 10px; text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2); width: 400px;">
+
+        <!-- Icon dấu hỏi -->
+        <div style="width: 60px; height: 60px; margin: 0 auto 16px; border-radius: 50%; background-color: #e0f0ff;
+                display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 32px; font-weight: bold; color: #007bff;">?</span>
+        </div>
+
+        <!-- Tiêu đề -->
+        <h3 style="margin: 10px 0; font-size: 20px; font-weight: bold; color: #333;">
+            Huỷ đơn hàng
+        </h3>
+
+        <!-- Mô tả -->
+        <p style="margin-bottom: 24px; font-size: 14px; color: #666;">
+            Bạn có chắc chắn muốn huỷ đơn hàng này?
+        </p>
+
+        <!-- Nút hành động -->
+        <div style="display: flex; justify-content: center; gap: 16px; margin-top: 20px;">
+            <button onclick="closeUserCancelModal()"
+                    style="padding: 8px 20px; background: white; color: red;
+                       border: 1px solid #ddd; border-radius: 3px; cursor: pointer; width: 150px;">
+                Không
+            </button>
+            <button onclick="confirmUserCancel()"
+                    style="padding: 8px 20px; background: #e74c3c; color: white;
+                       border: none; border-radius: 3px; cursor: pointer; width: 150px;">
+                Có
+            </button>
+        </div>
+    </div>
+</div>

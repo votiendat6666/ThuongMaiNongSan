@@ -110,7 +110,7 @@
             </a>
 
             <!-- User dropdown -->
-            <div class="nav-item dropdown ms-auto flex-nowrap " style="margin-top:4px;" id="cartDropdown">
+            <div class="nav-item dropdown ms-auto flex-nowrap " style="margin-top:4px; " id="cartDropdown">
 
                 <!-- Người dùng -->
                 {% if current_user.is_authenticated %}
@@ -146,8 +146,8 @@
                             <i class="fa-regular fa-user"
                                style="font-size: 40px; color: gray; margin-right: 20px; padding-top: 2px;"></i>
                             {% endif %}
-                            <div>
-                                <div style="color:black; font-size:24px;">{{ current_user.name }}</div>
+                            <div style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                                <div style="color:black; font-size:24px; ">{{ current_user.name }}</div>
                                 <div style="font-size: 12px; color: gray;">Thành viên TDFood</div>
                             </div>
                         </li>
@@ -157,7 +157,7 @@
                           <a href="/profile"
                              style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
                             <span class="material-symbols-outlined"
-                                  style="font-size: 25px; color: #5084C1;font-weight:200;">
+                                  style="font-size: 25px; color: #333;font-weight:300;">
                               account_circle
                             </span>
                             <span style="margin-left: 10px;">Thông tin tài khoản</span>
@@ -168,7 +168,7 @@
                           <a href="/MyReceipt"
                              style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
                             <span class="material-symbols-outlined"
-                                  style="font-size: 24px; color: #f56b0f;font-weight:200;">
+                                  style="font-size: 24px; color: #333;font-weight:300;">
                               receipt_long
                             </span>
                             <span style="margin-left: 10px;">Đơn hàng của tôi</span>
@@ -179,7 +179,7 @@
                           <a href="/loveProduct"
                              style="display: flex; align-items: center; width: 100%; text-decoration: none; color: inherit;">
                             <span class="material-symbols-outlined"
-                                  style="font-size: 24px; color: #EA3323; font-weight:300">
+                                  style="font-size: 24px; color: #333; font-weight:300">
                               favorite
                             </span>
                             <span style="margin-left: 10px;">Sản phẩm yêu thích</span>
@@ -192,10 +192,10 @@
                             <button type="submit"
                               style="display:flex; align-items:center; width:100%; border:none; background:none; padding:0; cursor:pointer; text-align:left;">
                               <span class="material-symbols-outlined"
-                                style="font-size:24px; margin-left:10px; color:#EA3323; font-variation-settings:'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;">
+                                style="font-size:24px; margin-left:10px; color:#333; font-variation-settings:'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">
                                 logout
                               </span>
-                              <span style="margin-left:10px; color:#EA3323;">Đăng xuất</span>
+                              <span style="margin-left:10px; color:##333;">Đăng xuất</span>
                             </button>
                           </form>
                         </li>

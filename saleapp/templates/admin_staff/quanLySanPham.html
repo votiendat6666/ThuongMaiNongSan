@@ -1,0 +1,1121 @@
+{%extends "admin_staff/quantri.html" %}
+
+{% block content_right %}
+<div class="staff-page-heading" style="margin-bottom: 20px; box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);">
+    <h1>Quản lý sản phẩm</h1>
+    <div class="staff-page-datetime" id="current-datetime-layout-all">
+    </div>
+</div>
+
+
+<div style="background: #fff; border-radius: 8px; padding: 20px;box-shadow: 0 4px 16px rgba(0,0,0,0.2);margin-top: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #FFD43B; padding-bottom: 8px;">
+        <!-- Tiêu đề bên trái -->
+        <div style="display: flex; gap: 12px;">
+            <div onclick="openModalCreateProduct()"
+                 style="background-color: #E5F5E4; padding: 8px 14px; border-radius: 2 px; display: inline-block; color: green; cursor: pointer; border: 1px solid green;">
+                <i class="fas fa-plus"></i> THÊM SẢN PHẨM
+            </div>
+
+            <div onclick="openDeletedProductHistory()"
+                 style="background-color: #FFE5E5; padding: 8px 14px; border-radius: 2px; display: inline-block; color: darkred; cursor: pointer; border: 1px solid darkred;">
+                <i class="fas fa-history"></i> SẢN PHẨM XOÁ
+            </div>
+        </div>
+
+        <!-- Thanh tìm kiếm bên phải -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input id="searchProductInput" type="text" placeholder="Nhập ID hoặc tên sản phẩm..."
+                   style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; width: 300px;">
+            <button onclick="searchProduct()"
+                    style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px;cursor:pointer;">
+                Tìm kiếm
+            </button>
+        </div>
+        <!-- ✅ JS tìm kiếm -->
+        <script>
+            // ✅ Hàm loại bỏ dấu tiếng Việt để so sánh gần đúng
+            function removeVietnameseTones(str) {
+                return str.normalize('NFD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                          .toLowerCase();
+            }
+
+            function searchProduct() {
+                const keyword = document.getElementById("searchProductInput").value.trim().toLowerCase();
+                if (!keyword) {
+                    showErrorModalStaffImportReceipt("Vui lòng nhập từ khóa để tìm kiếm!");
+                    return;
+                }
+
+                const keywordNoAccent = removeVietnameseTones(keyword);
+                const keywordWords = keywordNoAccent.split(/\s+/); // Tách từng từ trong từ khóa
+
+                const rows = document.querySelectorAll("#product-table tbody tr");
+                let found = false;
+
+                rows.forEach(row => {
+                    row.style.backgroundColor = ""; // Reset màu
+                    const cells = row.querySelectorAll("td");
+                    if (cells.length === 0) return;
+
+                    const productId = cells[0].textContent.trim().toLowerCase();
+                    const productName = removeVietnameseTones(cells[1].textContent.trim());
+
+                    // ✅ So khớp từng từ trong keyword phải có mặt trong tên sản phẩm
+                    const matched = keywordWords.every(word => productName.includes(word));
+
+                    if (productId.includes(keyword) || matched) {
+                        row.style.transition = "background-color 0.5s";
+                        row.style.backgroundColor = "#ffff66";
+                        row.scrollIntoView({ behavior: "smooth", block: "center" });
+                        found = true;
+                    }
+                });
+
+                if (!found) {
+                    showErrorModalStaffImportReceipt("Không tìm thấy sản phẩm!");
+                }
+            }
+
+            function showErrorModalStaffImportReceipt(message) {
+                document.getElementById("error-message-staff-import-receipt").innerText = message;
+                document.getElementById("error-modals-staff-view-product-detail").style.display = "flex";
+            }
+
+            function closeErrorModalStaffImportReceipt() {
+                document.getElementById("error-modals-staff-view-product-detail").style.display = "none";
+            }
+
+            // ✅ Bấm Enter để tìm
+            document.getElementById("searchProductInput").addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    searchProduct();
+                }
+            });
+        </script>
+    </div>
+
+
+    <!-- ✅ Khunh sản phẩm -->
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px;" id="product-table">
+            <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> ID</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Tên sản phẩm</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Ảnh</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Số lượng</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Tình trạng</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Giá bán</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Danh mục</th>
+                <th style="padding: 12px 10px; border: 1px solid #ccc;"> Tính năng</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for p in products %}
+            <tr style="text-align: center;">
+                <td style="padding: 10px; border: 1px solid #ccc;">{{ p.id }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;text-align:left; max-width:250px;">{{ p.name }}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;max-width:50px;">
+                    {% if p.image %}
+                    <img src="{{ p.image }}" alt="{{ p.name }}"
+                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
+                    {% else %}
+                    <span style="color: #999;">Không có ảnh</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {{ inventory_quantity_map[p.id]|int if p.id in inventory_quantity_map else 0 }}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {% set qty = inventory_quantity_map[p.id]|int if p.id in inventory_quantity_map else 0 %}
+
+                    {% if qty == 0 %}
+                    <span style="background-color: red; color: white; padding: 4px 8px; border-radius: 4px;">
+                            Đã hết hàng
+                        </span>
+                    {% elif qty <= 10 %}
+                    <span style="background-color: #f6c23e; color: black; padding: 4px 8px; border-radius: 4px;">
+                            Cần nhập hàng
+                        </span>
+                    {% else %}
+                    <span style="background-color: #1cc88a; color: white; padding: 4px 8px; border-radius: 4px;">
+                            Còn hàng
+                        </span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {{ "{:,.0f}".format(p.price) }} đ
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {{ p.category.name if p.category else 'Không có' }}
+                </td>
+
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    <button class="btn btn-primary btn-sm btn-edit-product"
+                            data-product-id="{{ p.id }}"
+                            style="cursor:pointer; background-color: #B6FFB0; margin-right:3px; border: 1px solid #0F6D08; color: #0F6D08; padding:4px 8px; border-radius: 3px;"
+                            type="button" title="Chi tiết sản phẩm">
+                        <i class="fa-solid fa-pen-to-square" style="font-size:12px;"></i>
+                    </button>
+
+                    <button class="btn btn-primary btn-sm btn-delete-product"
+                            title="Xoá sản phẩm"
+                            data-product-id="{{ p.id }}"
+                            style="cursor:pointer; color: rgb(245, 157, 57); background-color:rgb(251, 226, 197); border:1px solid rgb(245, 157, 57); padding:4px 8px; border-radius: 3px;">
+                        <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+
+
+<!-- ✅Modal khôi phục sản phẩn đã xoá -->
+<div id="modal-deleted-product"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+    <div style="background: white; width: 1200px; margin: 40px auto; border-radius: 6px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2); max-height: 90%; overflow-y: auto; scrollbar-width: none;">
+        <div style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%); color: white; padding: 16px;
+                    text-align: center; margin-bottom: 30px; font-size: 22px; font-weight: bold;">
+            SẢN PHẨM ĐÃ XOÁ
+        </div>
+
+        <div style="padding: 20px;">
+            <!-- Table hiển thị sản phẩm đã xoá -->
+            <table class="table-deleted-product" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Người xoá</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody id="deleted-product-tbody" style="text-align: center;">
+                <!-- Dữ liệu sẽ được thêm bằng JS -->
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; text-align: right;">
+                <button onclick="closeDeletedProductHistory()"
+                        style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%);
+                         padding: 8px 25px; border-radius: 2px;color: white; cursor: pointer; width:150px; border: none; font-size: 15px;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--✅ JS khôi phục sản phẩn đã xoá  -->
+<script>
+    let currentRestoreProductId = null;
+
+    // Mở modal lịch sử sản phẩm đã xoá
+    function openDeletedProductHistory() {
+        document.getElementById('modal-deleted-product').style.display = 'block';
+        loadDeletedProducts();
+    }
+
+    // Đóng modal
+    function closeDeletedProductHistory() {
+        document.getElementById('modal-deleted-product').style.display = 'none';
+    }
+
+    // Tải danh sách sản phẩm đã xoá
+    function loadDeletedProducts() {
+        fetch('/api/deleted-products')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('deleted-product-tbody');
+                tbody.innerHTML = '';
+
+                data.forEach((item, index) => {
+                    const tr = document.createElement('tr');
+
+                    tr.innerHTML = `
+                        <td style="border: 1px solid #ccc; text-align: center;">${index + 1}</td>
+                        <td style="border: 1px solid #ccc; text-align: center;">
+                            <img src="${item.image}" alt="Ảnh" style="height: 60px; object-fit: cover; border-radius: 4px;">
+                        </td>
+                        <td style="border: 1px solid #ccc; width: 500px; text-align: left;">${item.name}</td>
+                        <td style="border: 1px solid #ccc; text-align: center;">${item.price.toLocaleString()} đ</td>
+                        <td style="border: 1px solid #ccc; text-align: center;">${item.deleted_by}</td>
+                        <td style="border: 1px solid #ccc; text-align: center;">
+                            <button onclick="openRestoreConfirmModal(${item.id})"
+                                    style="padding: 6px 10px; border: none; background-color: green; color: white; border-radius: 4px; cursor: pointer;">
+                                Khôi phục
+                            </button>
+                        </td>
+                    `;
+
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error('Lỗi khi load sản phẩm đã xoá:', err);
+                alert('Không thể tải danh sách sản phẩm đã xoá.');
+            });
+    }
+
+    // Mở modal xác nhận khôi phục
+   function openRestoreConfirmModal(productId) {
+        currentRestoreProductId = productId;
+        document.getElementById('modal-staff-delete-product').style.display = 'flex';
+        document.getElementById('user-delete-confirm-message').textContent = 'Bạn có chắc chắn muốn khôi phục sản phẩm này?';
+
+        const confirmBtn = document.getElementById('staff-confirm-delete-product');
+        const newConfirmBtn = confirmBtn.cloneNode(true); // clone để xóa mọi listener cũ
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        // ✅ Gán sự kiện mới
+        newConfirmBtn.addEventListener('click', function () {
+            if (!currentRestoreProductId) return;
+
+            fetch(`/api/products/${currentRestoreProductId}/restore`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Restore failed");
+                return res.json();
+            })
+            .then(data => {
+                // Ẩn modal xác nhận
+                document.getElementById('modal-staff-delete-product').style.display = 'none';
+
+                // Hiện modal thành công
+                const successModal = document.getElementById('success-modals-staff-update-product');
+                successModal.style.display = 'flex';
+                setTimeout(() => {
+                    successModal.style.display = 'none';
+                    loadDeletedProducts(); // Tải lại danh sách
+                }, 300);
+            })
+            .catch(err => {
+                console.error('Lỗi khi khôi phục:', err);
+                alert('Đã xảy ra lỗi khi khôi phục sản phẩm.');
+            });
+        });
+    }
+
+</script>
+
+
+<!-- ✅Modal thêm sản phẩm -->
+<div id="modal-create-product"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+
+    <div style="background: white; width: 1300px; margin: 40px auto;  border-radius: 6px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2); max-height: 80%; overflow-y: auto; scrollbar-width:none">
+        <div style="background: radial-gradient(159.85% 367.97% at 150% 123.85%, #ffe147 0, #65ae17 38.76%, #469c4b 59.65%, #00713b 100%); color: white; padding: 16px; text-align: center; margin-bottom: 30px; font-size: 22px; font-weight: bold;">
+            THÊM SẢN PHẨM
+        </div>
+        <div style="padding: 20px;">
+            <table class="table table-bordered" id="product-input-table">
+                <thead>
+                <tr>
+                    <th style="padding: 10px; border: 1px solid #ccc;">STT</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Tên sản phẩm</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Giá (VNĐ)</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Đơn vị</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Thể loại</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Hình ảnh</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Hành động</th>
+                </tr>
+                </thead>
+                <tbody id="product-input-tbody" style="text-align: center;">
+                <!-- Dòng input đầu tiên -->
+                </tbody>
+            </table>
+
+            <button class="btn btn-sm btn-secondary" onclick="addProductInputRow()"
+                    style="background-color: rgba(0, 0, 0, .02); border: 1px solid green;color:green;  padding: 10px 14px; border-radius: 2px; display: inline-block; cursor: pointer; margin-top:20px;    ">
+                <i class="fas fa-plus" style="color:green;"></i> Thêm Sản Phẩm
+            </button>
+
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-danger" onclick="closeModalCreateProduct()"
+                        style="background-color: rgba(0, 0, 0, .02);  padding: 10px 25px; border-radius: 2px; display: inline-block; color: #333; cursor: pointer; width:150px;   border: 1px solid rgba(0, 0, 0, .09);">
+                    Huỷ
+                </button>
+                <button class="btn btn-success" onclick="submitProductForm()"
+                        style="background-color: green; color: white; border: 1px solid #28a745 ; padding: 10px 25px; border-radius: 2px; cursor: pointer;width:150px;">
+                    Thêm sản phẩm
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--✅Js thêm sản phẩm-->
+<script>
+    let productInputIndex = 0;
+    let childCategories = []; // Chứa danh sách thể loại con
+
+    function openModalCreateProduct() {
+        document.getElementById('modal-create-product').style.display = 'block';
+        productInputIndex = 0;
+        document.getElementById('product-input-tbody').innerHTML = '';
+
+        // ✅ Gọi API load danh sách category
+        fetch('/api/categories')
+            .then(res => res.json())
+            .then(categories => {
+                childCategories = categories.filter(cat => cat.parent_id !== null);
+                addProductInputRow(); // ✅ Gọi sau khi load category
+            });
+    }
+
+    function closeModalCreateProduct() {
+        document.getElementById('modal-create-product').style.display = 'none';
+    }
+
+    function addProductInputRow() {
+        const tbody = document.getElementById('product-input-tbody');
+        const row = document.createElement('tr');
+
+        // ✅ Tạo <select> thể loại
+        const categorySelect = document.createElement('select');
+        categorySelect.name = "category_id";
+        categorySelect.className = "form-control";
+
+        childCategories.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat.id;
+            option.textContent = `${cat.id} - ${cat.name}`;
+            categorySelect.appendChild(option);
+        });
+
+        row.innerHTML = `
+            <td style="border: 1px solid #ccc;">${productInputIndex + 1}</td>
+
+            <td style="border: 1px solid #ccc;"><input type="text" name="name" class="form-control" /></td>
+            <td style="border: 1px solid #ccc;"><input type="text" name="price" class="form-control" /></td>
+            <td style="border: 1px solid #ccc;"><input type="text" name="unit" class="form-control" /></td>
+            <td style="border: 1px solid #ccc;" class="category-cell"></td>
+            <td style="border: 1px solid #ccc;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                       <input type="text" name="image_url" placeholder="Link ảnh" class="form-control" style="flex: 1;" />
+                        <label style="background-color: none; color: green; font-size:12px; padding: 6px 12px; border-radius: 2px; cursor: pointer;">
+                            Chọn ảnh
+                            <input type="file" onchange="handleImageUpload(this)" accept="image/*" style="display: none;" />
+                        </label>
+                </div>
+            </td>
+            <td style="border: 1px solid #ccc; min-width:100px;">
+                <button class="btn btn-danger btn-sm" onclick="removeProductRow(this)"
+                    style="background-color: #f7c3c2; border: none; color: #de0400; cursor: pointer; padding: 4px 8px; border-radius: 3px;">
+                    <i class="fas fa-trash-alt" style="font-size:12px;"></i>
+                </button>
+            </td>
+        `;
+
+        // ✅ Chèn select vào cột thể loại
+        row.querySelector(".category-cell").appendChild(categorySelect);
+
+        tbody.appendChild(row);
+        productInputIndex++;
+    }
+
+    function handleImageUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const urlInput = input.closest('tr').querySelector('input[name="image_url"]');
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // 👉 Hiện spinner
+        document.getElementById("modals-comment-loading").style.display = "flex";
+
+        fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.url) {
+                urlInput.value = data.url;
+            } else {
+                alert("Lỗi upload ảnh: " + data.error);
+            }
+        })
+        .catch(err => {
+            console.error("Upload error:", err);
+            alert("Lỗi kết nối tới server");
+        })
+        .finally(() => {
+            // 👉 Luôn ẩn spinner sau khi xong
+            document.getElementById("modals-comment-loading").style.display = "none";
+        });
+    }
+
+    function removeProductRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+
+        // Cập nhật lại STT
+        const rows = document.querySelectorAll('#product-input-tbody tr');
+        rows.forEach((row, index) => {
+            const sttCell = row.querySelector('td');
+            if (sttCell) sttCell.textContent = index + 1;
+        });
+
+        productInputIndex = rows.length;
+    }
+    function showError(message) {
+        document.getElementById("error-message-staff-import-receipt").textContent = message;
+        document.getElementById("error-modals-staff-view-product-detail").style.display = "flex";
+    }
+
+    function closeErrorModalStaffImportReceipt() {
+        document.getElementById("error-modals-staff-view-product-detail").style.display = "none";
+    }
+
+    function submitProductForm() {
+        const rows = document.querySelectorAll('#product-input-tbody tr');
+        const products = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const name = row.querySelector('input[name="name"]').value.trim();
+            const price = row.querySelector('input[name="price"]').value.trim();
+            const unit = row.querySelector('input[name="unit"]').value.trim();
+            const category_id = row.querySelector('select[name="category_id"]').value;
+            const image_url = row.querySelector('input[name="image_url"]').value.trim();
+
+            if (!name || !price || !unit || !category_id || !image_url) {
+                showError(`Không được để trống bất kỳ trường nào.`);
+                return;
+            }
+
+            if (name.length > 100) {
+                showError(`Tên sản phẩm không được vượt quá 100 ký tự.`);
+                return;
+            }
+
+            const priceNumber = parseFloat(price);
+            if (isNaN(priceNumber) || priceNumber < 0 || priceNumber > 10000000) {
+                showError(`Giá phải là số từ 0 đến 10,000,000.`);
+                return;
+            }
+
+            if (unit.length > 10) {
+                showError(`Đơn vị không được vượt quá 10 ký tự.`);
+                return;
+            }
+
+            products.push({
+                name,
+                price: priceNumber,
+                unit,
+                category_id,
+                image_url
+            });
+        }
+
+        // ✅ Gửi dữ liệu
+        fetch('/api/products/bulk-create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(products)
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.message) {
+                const successModal = document.getElementById("success-modals-staff-update-product");
+                successModal.style.display = "flex";
+                setTimeout(() => {
+                    successModal.style.display = "none";
+                    closeModalCreateProduct();
+                    location.reload();
+                }, 300);
+            }
+            else {
+                showError("Có lỗi xảy ra khi lưu sản phẩm.");
+            }
+        })
+        .catch(err => {
+            showError("Lỗi kết nối đến server.");
+            console.error(err);
+        });
+    }
+
+</script>
+
+
+<!-- ✅Modal sửa Sản phẩm -->
+<div id="modal-edit-product"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;background-color: rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+
+    <div style="background:white; border-radius:2px; width:1000px; max-height:90%; overflow:auto;scrollbar-width:none;">
+        <!-- Header -->
+        <div style="background-color: #28a745; padding: 16px;">
+            <h3 style="margin: 0; text-align: center; color: white;">CHI TIẾT SẢN PHẨM </h3>
+        </div>
+
+        <div style="padding:20px;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 14px; padding:20px; margin-bottom: 30px;">
+                <thead>
+                <tr style="background-color: #f8f9fa;">
+                    <th style="padding: 10px; border: 1px solid #dee2e6;">Mã Đơn</th>
+                    <th style="padding: 10px; border: 1px solid #dee2e6;">Ảnh</th>
+                    <th style="padding: 10px; border: 1px solid #dee2e6;">Tên sản phẩm</th>
+                    <th style="padding: 10px; border: 1px solid #dee2e6;">Số lượng</th>
+                    <th style="padding: 10px; border: 1px solid #dee2e6;">Loại hàng</th>
+                </tr>
+                </thead>
+                <tbody id="inventory-detail-table" style="text-align: center;">
+                <!-- JS sẽ render dữ liệu vào đây -->
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Form -->
+        <form id="edit-product-form"
+              style="padding: 20px; display: flex; flex-direction: column; gap: 16px;font-family: 'Roboto', sans-serif;">
+            <input type="hidden" id="product-id">
+
+            <!-- Hàng 1: Tên, Giá -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tên sản phẩm:</label>
+                    <input type="text" id="product-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Giá:</label>
+                    <input type="number" id="product-price" class="form-control">
+                </div>
+            </div>
+
+            <!-- Hàng 2: Danh mục, Voucher -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Danh mục:</label>
+                    <select id="product-category" class="form-control">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Voucher:</label>
+                    <input type="number" id="product-voucher" class="form-control">
+                </div>
+            </div>
+
+            <!-- Hàng 3: Đã bán, Lượt thích -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Đã bán:</label>
+                    <input type="number" id="product-daban" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Lượt thích:</label>
+                    <input type="number" id="product-like" class="form-control">
+                </div>
+            </div>
+
+            <!-- Hàng 4: Đơn vị tính, Hình ảnh -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Đơn vị tính:</label>
+                    <input type="text" id="product-donvitinh" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Hình ảnh:</label>
+                    <input type="text" id="product-image" class="form-control">
+                </div>
+            </div>
+
+            <!-- Các dòng 1 cột -->
+            <div class="form-group full-width">
+                <label>Thương hiệu:</label>
+                <input type="text" id="product-thuong_hieu" class="form-control">
+            </div>
+
+            <div class="form-group full-width">
+                <label>Xuất xứ:</label>
+                <input type="text" id="product-xuat_xu" class="form-control">
+            </div>
+
+            <div class="form-group full-width">
+                <label>Quy cách đóng gói:</label>
+                <input type="text" id="product-quy_cach_dong_goi" class="form-control">
+            </div>
+
+            <div class="form-group full-width">
+                <label>Bảo quản:</label>
+                <textarea id="product-bao_quan" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Cách dùng:</label>
+                <textarea id="product-cach_dung" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Mô tả sản phẩm chi tiết:</label>
+                <textarea id="product-mo_ta_san_pham" class="form-control"></textarea>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 16px; text-align: right;">
+                <button type="button" onclick="closeEditProductModal()" class="btn btn-secondary"
+                        style=" padding: 7px 16px; width:180px; background-color: white; color: #111; border: 1px solid #555; border-radius: 2px; cursor: pointer;">
+                    Đóng
+                </button>
+                <button type="submit" class="btn btn-success"
+                        style=" padding: 7px 16px; width:180px; background-color: #28a745; color: white; border: 1px solid #28a745; border-radius: 2px; cursor: pointer;">
+                    Lưu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--✅ JS sửa sản phẩm-->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".btn-edit-product").forEach(button => {
+            button.addEventListener("click", () => {
+                const productId = button.getAttribute("data-product-id");
+                fetch(`/api/productsEdit/${productId}`)
+                    .then(res => res.json())
+                    .then(product => {
+                        document.getElementById("product-id").value = product.id;
+                        document.getElementById("product-name").value = product.name || "";
+                        document.getElementById("product-price").value = product.price || 0;
+                        document.getElementById("product-image").value = product.image || "";
+                        document.getElementById("product-voucher").value = product.voucher || 0;
+                        document.getElementById("product-daban").value = product.daban || 0;
+                        document.getElementById("product-like").value = product.like || 0;
+                        document.getElementById("product-donvitinh").value = product.donvitinh || "";
+                        document.getElementById("product-thuong_hieu").value = product.thuong_hieu || "";
+                        document.getElementById("product-xuat_xu").value = product.xuat_xu || "";
+                        document.getElementById("product-quy_cach_dong_goi").value = product.quy_cach_dong_goi || "";
+                        document.getElementById("product-bao_quan").value = product.bao_quan || "";
+                        document.getElementById("product-cach_dung").value = product.cach_dung || "";
+                        document.getElementById("product-mo_ta_san_pham").value = product.mo_ta_san_pham || "";
+
+                        // ✅ Load danh sách danh mục từ API
+                        fetch('/api/categories')
+                            .then(res => res.json())
+                            .then(categories => {
+                                const select = document.getElementById("product-category");
+                                select.innerHTML = "";
+
+                                // ❌ Bỏ qua các thể loại cha (parent_id === null)
+                                const childCategories = categories.filter(cat => cat.parent_id !== null);
+
+                                childCategories.forEach(cat => {
+                                    const option = document.createElement("option");
+                                    option.value = cat.id;
+                                    option.textContent = `${cat.id} - ${cat.name}`;
+                                    select.appendChild(option);
+                                });
+
+                                // ✅ Gán giá trị đã chọn nếu có
+                                select.value = product.category_id || "";
+                            });
+
+                        // ✅ Hiển thị modal và load tồn kho
+                        document.getElementById("modal-edit-product").style.display = "flex";
+                        fetchProductInventory(productId);
+                    });
+            });
+        });
+    });
+
+
+    function fetchProductInventory(productId) {
+        fetch(`/api/product-inventory/${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById("inventory-detail-table");
+                tbody.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 12px;">Không có dữ liệu tồn kho.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(p => {
+                    const typeColor = p.type === 1 ? 'green' : 'orange';
+                    const typeLabel = p.type === 1 ? 'Hàng mới' : 'Hàng cũ';
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="padding: 8px; border: 1px solid #ccc;">${p.id}</td>
+                        <td style="padding: 8px; border: 1px solid #ccc;">
+                            <img src="${p.image}" alt="Ảnh" style="width: 60px; height: auto;">
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ccc;">${p.name}</td>
+                        <td style="padding: 8px; border: 1px solid #ccc;">${p.quantity}</td>
+                        <td style="padding: 8px; border: 1px solid #ccc; color: ${typeColor}; font-weight: bold;">
+                            ${typeLabel}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => {
+                console.error("Lỗi khi lấy dữ liệu tồn kho:", err);
+                const tbody = document.getElementById("inventory-detail-table");
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 12px;">Lỗi khi tải dữ liệu tồn kho.</td></tr>`;
+            });
+    }
+
+    function closeEditProductModal() {
+        document.getElementById("modal-edit-product").style.display = "none";
+    }
+
+    document.getElementById("edit-product-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const requiredFields = [
+            "product-name",
+            "product-price",
+            "product-image",
+            "product-category",
+            "product-donvitinh",
+            "product-thuong_hieu",
+            "product-xuat_xu",
+            "product-quy_cach_dong_goi",
+            "product-bao_quan",
+            "product-cach_dung",
+            "product-mo_ta_san_pham"
+        ];
+
+        for (let fieldId of requiredFields) {
+            const input = document.getElementById(fieldId);
+            if (!input.value || input.value.trim() === "") {
+                modalsViewProductDetail("Trường \"" + input.previousElementSibling?.innerText + "\" không được để trống.");
+                return;
+            }
+        }
+
+        const id = document.getElementById("product-id").value;
+        const data = {
+            name: document.getElementById("product-name").value,
+            price: parseFloat(document.getElementById("product-price").value),
+            image: document.getElementById("product-image").value,
+            category_id: parseInt(document.getElementById("product-category").value),
+            voucher: parseFloat(document.getElementById("product-voucher").value || 0),
+            daban: parseFloat(document.getElementById("product-daban").value || 0),
+            like: parseInt(document.getElementById("product-like").value || 0),
+            donvitinh: document.getElementById("product-donvitinh").value,
+            thuong_hieu: document.getElementById("product-thuong_hieu").value,
+            xuat_xu: document.getElementById("product-xuat_xu").value,
+            quy_cach_dong_goi: document.getElementById("product-quy_cach_dong_goi").value,
+            bao_quan: document.getElementById("product-bao_quan").value,
+            cach_dung: document.getElementById("product-cach_dung").value,
+            mo_ta_san_pham: document.getElementById("product-mo_ta_san_pham").value
+        };
+
+        fetch(`/api/productsEdit/${id}`, {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(response => {
+                modalsViewUpdateProductSuccess();
+                closeEditProductModal();
+                location.reload();
+            })
+            .catch(err => modalsViewProductDetail("Cập nhật thất bại: " + err));
+    });
+
+    function modalsViewProductDetail(message) {
+        const modal = document.getElementById("error-modals-staff-view-product-detail");
+        const messageBox = document.getElementById("error-message-staff-import-receipt");
+
+        messageBox.textContent = message || "Đã xảy ra lỗi!";
+        modal.style.display = "flex";  // hiển thị dạng flex để align center
+    }
+
+    function closeErrorModalStaffImportReceipt() {
+        const modal = document.getElementById("error-modals-staff-view-product-detail");
+        modal.style.display = "none";
+    }
+
+    function modalsViewUpdateProductSuccess() {
+        const modal = document.getElementById("success-modals-staff-update-product");
+        modal.style.display = "flex";
+
+        setTimeout(() => {
+            modal.style.display = "none";
+        }, 300); // 0.3 giây
+    }
+</script>
+
+
+
+<!--🔴  Modal thông báo lỗi khi sửa sản phẩm -->
+<div id="error-modals-staff-view-product-detail"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+         background: rgba(0,0,0,0.4);  justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- Header nền đỏ đậm -->
+        <div style="background-color: #c0392b; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align:center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="error-message-staff-import-receipt" style="margin-bottom: 20px; color: #333;"></p>
+            <button onclick="closeErrorModalStaffImportReceipt()"
+                    style="padding: 6px 20px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal Thành Công -->
+<div id="success-modals-staff-update-product"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+ background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🟢 Header nền xanh đậm -->
+        <div style="background-color: #2e7d32; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung thông báo -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                ✔ Cập nhật thành công!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Modal xác nhận xoá sản phẩm -->
+<div id="modal-staff-delete-product"
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+     background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+
+    <div style="background: white; border-radius: 8px; max-width: 400px; width: 90%; overflow: hidden;
+         box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+        <!-- 🟢 Header -->
+        <div style="background-color: #2e7d32; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="user-delete-confirm-message" style="margin: 0; font-size: 16px; color: #2e7d32; font-weight: bold;">
+                Bạn có chắc chắn muốn xoá sản phẩm này?
+            </p>
+
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
+                <button id="staff-not-confirm-delete-product" class="btn btn-secondary"
+                        style="background-color: #f0f0f0; color: #333; padding: 6px 12px; width: 120px; border: 1px solid #ddd; border-radius: 2px; cursor: pointer;">
+                    Huỷ
+                </button>
+
+                <button id="staff-confirm-delete-product" class="btn btn-danger"
+                        style="background-color: #2e7d32; color: white; padding: 6px 12px; width: 120px; border: none; border-radius: 2px; cursor: pointer;">
+                    Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--/ ✅ JS xoá sản phẩm-->
+<script>
+    let selectedProductId = null;
+    let originalSuccessMessage = "";
+
+    // Khi ấn vào nút xoá
+    document.querySelectorAll('.btn-delete-product').forEach(btn => {
+        btn.addEventListener('click', function () {
+            selectedProductId = this.getAttribute('data-product-id');
+            document.getElementById('modal-staff-delete-product').style.display = 'flex';
+        });
+    });
+
+    // Ấn Huỷ
+    document.getElementById('staff-not-confirm-delete-product').addEventListener('click', function () {
+        document.getElementById('modal-staff-delete-product').style.display = 'none';
+        selectedProductId = null;
+    });
+
+    // Ấn Xác nhận
+    document.getElementById('staff-confirm-delete-product').addEventListener('click', async function () {
+        if (!selectedProductId) return;
+
+        try {
+            const res = await fetch(`/delete_product/${selectedProductId}`, {
+                method: 'POST'
+            });
+
+            if (res.ok) {
+                // Ẩn modal xác nhận
+                document.getElementById('modal-staff-delete-product').style.display = 'none';
+
+                // ✅ Ghi nhớ thông báo gốc
+                const successModal = document.getElementById('success-modals-staff-update-product');
+                const msgElem = successModal.querySelector("p");
+
+                originalSuccessMessage = msgElem.innerText;
+                msgElem.innerText = "✔ Xoá thành công!";
+
+                // Hiện modal thành công
+                successModal.style.display = 'flex';
+
+                // Sau 0.3s thì ẩn và reset lại nội dung cũ
+                setTimeout(() => {
+                    successModal.style.display = 'none';
+                    msgElem.innerText = originalSuccessMessage;
+
+                    // ✅ Reload trang (nếu cần thiết)
+                    location.reload();
+                }, 300);
+            } else {
+                alert("Lỗi khi xoá sản phẩm!");
+            }
+        } catch (err) {
+            console.error("Lỗi:", err);
+            alert("Lỗi server!");
+        }
+    });
+</script>
+<!--✅ Spinner overlay -->
+<div id="modals-comment-loading"
+     style="display: none;position: fixed; z-index: 9999; top: 0; left: 0;width: 100%; height: 100%;background: rgba(255,255,255,0.7);align-items: center; justify-content: center;">
+    <div class="spinner"></div>
+</div>
+
+
+<!--✅ Style -->
+<style>
+    #product-input-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #product-input-table th,
+    #product-input-table td {
+        border-bottom: 1px solid #ccc;
+        vertical-align: middle;
+    }
+
+    #product-input-table th {
+        background-color: #f5f5f5;
+    }
+
+    /* Xoá viền input như bạn muốn */
+    #product-input-table input {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background: transparent;
+    }
+
+    #product-input-table input:focus {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    #product-input-tbody select {
+        border: none;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
+    }
+        .form-row {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+    }
+
+    .form-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .full-width {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    textarea.form-control {
+        resize: none;
+        height: 120px;
+        overflow-y: auto;
+                font-family: 'Roboto', sans-serif;
+
+    }
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3498db;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+        .table-deleted-product {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #ccc; /* Viền ngoài bảng */
+    }
+
+    .table-deleted-product th,
+    .table-deleted-product td {
+        padding: 12px;
+        border: 1px solid #ccc; /* Viền giữa các ô: dọc và ngang */
+        text-align: center;
+    }
+
+    .table-deleted-product thead th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+</style>
+
+{%endblock%}

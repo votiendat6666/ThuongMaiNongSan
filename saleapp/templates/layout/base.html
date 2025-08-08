@@ -64,16 +64,10 @@
           }
 
         .container {
-            max-width: 1240px;
+            max-width: 1190px;
             margin: 0 auto;
         }
 
-      body.dark-mode {
-          background-color: #1f1f1f;
-          color: #fff;
-        }
-
-        /* tuỳ chỉnh thêm nếu bạn muốn đổi navbar, dropdown, text, v.v. */
         body.dark-mode .dropdown-menu {
           background-color: #white;
           color: white;
@@ -123,15 +117,18 @@
         min-height: 100vh; /* Chiều cao tối thiểu = chiều cao màn hình */
         display: flex;
         flex-direction: column;
-}
+        }
 
-main {
-    flex: 1; /* Chiếm toàn bộ phần còn lại để đẩy footer xuống cuối */
-}
+        main {
+            flex: 1;
+        }
     </style>
 </head>
 
-<body id="page-body" class="">
+<body id="page-body">
+    {% block fullwidth_content %}
+
+    {% endblock %}
 
 
     <div class="wrapper d-flex flex-column min-vh-100">
@@ -139,26 +136,22 @@ main {
         {%include 'layout/header.html' with context%}
         {%endblock%}
 
-<!--        Thanh navbar-->
         {%block navbar%}
         {%endblock%}
 
         {% block wrapper %}
-        {% block imageBackground %}
-        {% if show_full_image %}
-
-        <!-- ẢNH FULL SCREEN NẰM NGOÀI CONTAINER -->
-        <img src="https://nonglamfood.com/uploads/images/images-trangchu/bg-top.png" class=""
-             alt=""
-             style="width: 80%; height: auto; display: block;">
-        {% endif %}
-        {% endblock %}
-        <!-- Container content -->
-        <div class="container flex-grow-1">
-            {% block content %}
-            <!-- Nội dung index -->
+            {% block imageBackground %}
+                {% if show_full_image %}
+                <!-- ẢNH FULL SCREEN NẰM NGOÀI CONTAINER -->
+                <img src="https://nonglamfood.com/uploads/images/images-trangchu/bg-top.png"
+                     style="width: 80%; height: auto; display: block;">
+                {% endif %}
             {% endblock %}
-        </div>
+
+            <div class="container flex-grow-1">
+                {% block content %}
+                {% endblock %}
+            </div>
         {% endblock %}
 
 
@@ -183,9 +176,10 @@ main {
     background-color: rgb(238, 77, 45);
     color: white;
     font-size: 17px;
-    padding: 9px 45px;
-    border-radius: 4px;
+    padding: 7px 45px;
+    border-radius: 2px;
     text-decoration: none;
+    border: none;
     }
   .themVaoGioHang:hover {
     background-color: #d73211;

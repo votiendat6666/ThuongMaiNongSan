@@ -62,6 +62,7 @@
                         <input type="checkbox"
                                class="cart-checkbox"
                                data-cart-id="{{ c.id }}"
+                               data-product-name="{{ c.product.name }}"
                                data-product-id="{{ c.product.id }}"
                                data-price="{{ c.product.price }}"
                                data-quantity="{{ c.quantity }}"
@@ -144,10 +145,7 @@
                 </h5>
             </div>
 
-            <button class="btn btn-success"
-                    style="background-color: rgb(238, 77, 45); color: white; font-size: 17px; padding: 8px 35px; border-radius: 8px; text-decoration: none; border: none;"
-                    onmouseover="this.style.transform='scale(1.01)';"
-                    onmouseout="this.style.transform='scale(1)'; this.style.fontWeight='normal';"
+            <button class="themVaoGioHang"
                     onclick="handlePayment()">Thanh toán
             </button>
         </div>
@@ -156,37 +154,119 @@
 </div>
 
 
-<!-- Modal cảnh báo -->
+<!-- ✅ Modal Cảnh báo - Không có sản phẩm -->
 <div id="no-product-modal"
-     style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
-    <div style="background:white;padding:30px;border-radius:8px;max-width:400px;text-align:center;">
-        <h4 style="margin-bottom:20px;">Thông báo</h4>
-        <p style="margin-bottom:20px;">Bạn chưa chọn sản phẩm nào để thanh toán!</p>
-        <button onclick="hideNoProductModal()"
-                style="background:#00713b;color:white;border:none;padding:8px 20px;border-radius:4px;">Đóng
-        </button>
+     style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 8px; max-width: 500px; width: 100%; overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3); margin: auto;">
+        <!-- Header đỏ -->
+        <div style="background-color: #c0392b; padding: 12px 16px;">
+            <h4 style="color: white; margin: 0; font-size: 18px; text-align: center;">Thông báo</h4>
+        </div>
+
+        <!-- Nội dung -->
+        <div style="padding: 20px 30px; text-align: center;">
+            <p id="no-product-message"
+               style="margin-bottom: 20px; color: #333;">
+               Bạn chưa chọn sản phẩm nào để thanh toán!
+            </p>
+            <button onclick="hideNoProductModal()"
+                    style="padding: 6px 20px; background: #c0392b; color: white;
+                           border: none; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
     </div>
 </div>
 
+<script>
+  const inventoryMap = {{ inventory_map|tojson }};
+</script>
 
 <script>
     //✅ hàm xử lý khi giỏ hàng rổng thì hiện modals thông báo -> không được thanh toán
-  function handlePayment() {
+function handlePayment() {
     const checked = document.querySelectorAll('.cart-checkbox:checked');
+
+    // ✅ Không chọn sản phẩm nào
     if (checked.length === 0) {
-      showNoProductModal();
-    } else {
-      window.location.href = '/api/pay';
+        showNoProductModal();
+        return;
     }
-  }
 
-  function showNoProductModal() {
-    document.getElementById('no-product-modal').style.display = 'flex';
-  }
+    // ✅ Kiểm tra tồn kho từng sản phẩm đã chọn
+    for (let checkbox of checked) {
+        const productId = checkbox.getAttribute('data-product-id');  // bạn sẽ thêm thuộc tính này phía dưới
+        const productName = checkbox.getAttribute('data-product-name');
+        const quantityInput = document.getElementById('quantity-display-' + productId);
+        if (!quantityInput) continue;
 
-  function hideNoProductModal() {
-    document.getElementById('no-product-modal').style.display = 'none';
-  }
+        const quantity = parseInt(quantityInput.value) || 0;
+        const maxInventory = inventoryMap[productId] || 0;
+
+        if (quantity > maxInventory) {
+            // ✅ Hiện thông báo nếu vượt tồn kho
+            showErrorModal(`Đã vượt quá số lượng đang có (${quantity} > ${maxInventory})`);
+            return;
+        }
+    }
+
+    // ✅ Nếu hợp lệ → thanh toán
+    window.location.href = '/api/pay';
+    }
+
+    // ✅ Hiện modal lỗi tồn kho
+    function showErrorModal(message) {
+        document.getElementById("no-product-message").innerText = message;
+        document.getElementById("no-product-modal").style.display = "flex";
+    }
+
+    function showNoProductModal() {
+        document.getElementById("no-product-message").innerText = "Bạn chưa chọn sản phẩm nào để thanh toán!";
+        document.getElementById("no-product-modal").style.display = "flex";
+    }
+
+    function hideNoProductModal() {
+        document.getElementById('no-product-modal').style.display = 'none';
+    }
+
+function changeQuantity(productId, delta) {
+    const input = document.getElementById('quantity-display-' + productId);
+    const inventory = inventoryMap[productId] || 0;
+
+    let value = parseInt(input.value) || 0;
+    value += delta;
+
+    if (value > inventory) {
+        input.value = inventory;
+        showErrorModal(`Đã vượt quá số lượng đang có (${value} > ${inventory})`);
+        return;
+    }
+
+    if (value < 1) value = 1;
+
+    input.value = value;
+    updateCart(productId, input);
+}
+
+function validateQuantity(input) {
+    const productId = input.id.replace('quantity-display-', '');
+    const inventory = inventoryMap[productId] || 0;
+
+    let value = parseInt(input.value) || 1;
+
+    if (value > inventory) {
+        input.value = inventory;
+        showErrorModal(`Đã vượt quá số lượng đang có (${value} > ${inventory})`);
+        return;
+    }
+
+    if (value < 1) input.value = 1;
+}
+
+
+
 
     document.addEventListener('DOMContentLoaded', function () {
       // ✅ Style chung pseudo ::after
