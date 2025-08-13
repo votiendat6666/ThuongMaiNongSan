@@ -1,18 +1,18 @@
 # Thương mại nông sản
 1) Công nghệ sử dụng
-  Front-end: HTML5, CSS3, Bootstrap 5, JavaScript (ES6), AJAX (Fetch/axios).
-
-  Back-end: Python 3.x, Flask (Blueprints, Jinja2, Flask-Login, Flask-WTF, Flask-Mail, Flask-SocketIO).
+    Front-end: HTML5, CSS3, Bootstrap 5, JavaScript (ES6), AJAX (Fetch/axios).
   
-  Database: MySQL + SQLAlchemy ORM (migrations: Alembic).
-  
-  Thanh toán: Tích hợp MoMo (Sandbox) hoặc mô phỏng thanh toán online.
-  
-  AI Chatbot: API LLM (có thể nội bộ/3rd), logic fallback Q&A.
-  
-  Triển khai: Gunicorn/uwsgi + Nginx, .env cho secrets, Docker (tùy chọn).
-  
-  Chat với nhân viên cửa hàng.
+    Back-end: Python 3.x, Flask (Blueprints, Jinja2, Flask-Login, Flask-WTF, Flask-Mail, Flask-SocketIO).
+    
+    Database: MySQL + SQLAlchemy ORM (migrations: Alembic).
+    
+    Thanh toán: Tích hợp MoMo (Sandbox) hoặc mô phỏng thanh toán online.
+    
+    AI Chatbot: API LLM (có thể nội bộ/3rd), logic fallback Q&A.
+    
+    Triển khai: Gunicorn/uwsgi + Nginx, .env cho secrets, Docker (tùy chọn).
+    
+    Chat với nhân viên cửa hàng.
 
 3) Nhóm chức năng người dùng (User)
    
